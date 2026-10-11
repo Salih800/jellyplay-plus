@@ -559,6 +559,13 @@ internal fun PlayerControls(
                         } else Modifier
                     ),
             ) {
+                // The full prev/play/next row renders on every form factor.
+                // TV needs it: D-pad episode skipping requires focusable
+                // targets. Touch keeps it too — the buttons only intercept
+                // taps while the controls are visible (they auto-hide), and
+                // the double-tap seek zones stay reachable whenever the
+                // chrome is dismissed. The ⋮ menu carries the same episode
+                // verbs (previous-episode item; next rides mark-watched-&-skip).
                 val tvPreviousEpisodeFocusState = rememberTvFocusState(focusedScale = 1.08f)
                 FilledTonalIconButton(
                     onClick = transport.onPreviousEpisode,
@@ -934,6 +941,11 @@ internal fun PlayerControls(
                 sheets.onToggleAudioOnly()
             },
             hasNextEpisode = transport.hasNextEpisode,
+            hasPreviousEpisode = transport.hasPreviousEpisode,
+            onPreviousEpisode = {
+                showOverflow = false
+                transport.onPreviousEpisode()
+            },
             incognitoModeEnabled = sheets.incognitoModeEnabled,
             onMarkWatchedAndSkip = {
                 showOverflow = false
