@@ -159,6 +159,27 @@ class PlayerInputSummonHealTest {
     }
 
     @Test
+    fun duplicate_pattern_only_first_row_counts() {
+        // Hand-edited blob (the editor blocks this save): a DISABLED first Tap
+        // row followed by an enabled duplicate. Runtime lookups keep the first
+        // row (first-wins), so the enabled duplicate is dead code — the heal
+        // must not be fooled by it into skipping the repair.
+        val fooled = PlayerInputMap(
+            disabled(*allSummonIds).bindings +
+                PlayerBinding(
+                    id = "hand-edited-duplicate",
+                    pattern = InputPattern.Tap,
+                    action = PlayerAction.TOGGLE_CONTROLS,
+                    enabled = true,
+                ),
+        )
+        val healed = fooled.ensureControlsSummonable()
+        val tap = healed.bindings.first { it.pattern == InputPattern.Tap }
+        assertTrue(tap.enabled, "the FIRST tap row is the effective one and must wake up")
+        assertEquals(PlayerInputDefaults.ID_TAP, tap.id)
+    }
+
+    @Test
     fun heal_is_idempotent() {
         val locked = disabled(*allSummonIds)
         val healed = locked.ensureControlsSummonable()

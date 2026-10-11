@@ -417,7 +417,10 @@ private val InputPattern.isRemoteFamily: Boolean
  * healthy map) returns unchanged.
  */
 fun PlayerInputMap.ensureControlsSummonable(): PlayerInputMap {
-    val summonable = bindings.any { binding ->
+    // First-wins per pattern, matching enabledBindingFor: only a pattern's
+    // FIRST row is effective at runtime, so an enabled duplicate behind a
+    // disabled first row must not read as a live summon.
+    val summonable = bindings.distinctBy { it.pattern }.any { binding ->
         binding.enabled && summonsControls(binding.action, binding.pattern)
     }
     if (summonable) return this
