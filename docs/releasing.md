@@ -19,8 +19,8 @@ these signing files as release assets.
 
 ## Build
 
-Choose a new version name and a strictly increasing version code. Version 0.1.1
-uses code 101. From PowerShell at the repository root:
+Choose a new version name and a strictly increasing version code. Version 0.1.2
+uses code 102. From PowerShell at the repository root:
 
 ```powershell
 $credential = Import-Clixml "$env:USERPROFILE\.android\jellyplay-plus-release-signing.clixml"
@@ -29,7 +29,7 @@ $env:KEY_PASSWORD = $env:KEYSTORE_PASSWORD
 $env:KEY_ALIAS = $credential.UserName
 $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 try {
-    .\gradlew.bat :app:assemblePhoneRelease '-PversionName=0.1.1' '-PversionCode=101'
+    .\gradlew.bat :app:assemblePhoneRelease '-PversionName=0.1.2' '-PversionCode=102'
     if ($LASTEXITCODE -ne 0) { throw 'Release build failed.' }
 } finally {
     Remove-Item Env:KEYSTORE_PASSWORD, Env:KEY_PASSWORD, Env:KEY_ALIAS -ErrorAction SilentlyContinue
@@ -39,7 +39,7 @@ try {
 Verify the resulting APK with the Android SDK's `apksigner verify --verbose
 --print-certs` and `aapt dump badging`. Confirm the package, version, ABI, and
 signing certificate before uploading it. The phone release package must be
-`com.raulshma.jellyplay.plus`; do not publish an APK with upstream's package ID.
+`com.salih800.jellyplay.plus`; do not publish an APK with upstream's package ID.
 Confirm launcher shortcuts and provider authorities resolve to the final package.
 Keep R8 mappings locally for crash
 diagnosis. Create SHA-256 checksums for the public APK assets.
@@ -57,12 +57,15 @@ and upload the APK and checksum file. Do not upload local diagnostic databases,
 device fixtures, signing files, or build logs containing user data. Verify the
 published tag, version, asset sizes, and checksums after publication.
 
-Since 0.1.1, the phone release application ID is `com.raulshma.jellyplay.plus`,
+Since 0.1.2, the phone release application ID is `com.salih800.jellyplay.plus`,
 separate from upstream's `com.raulshma.jellyplay` and the existing local development
 app's `com.raulshma.jellyplay.dev`. The TV release uses
-`com.raulshma.jellyplay.tv.plus`. Source namespaces remain unchanged.
+`com.salih800.jellyplay.plus.tv`. Debug variants explicitly preserve their legacy
+phone/TV application IDs to retain existing development data. Source namespaces
+remain unchanged.
 
-Version 0.1.0 incorrectly reused upstream's application ID. Its installed data
-does not automatically transfer to the new application ID; 0.1.1 installs as a
-separate app. Do not uninstall upstream or erase existing data to install this
-fork. Continue using the same JellyPlay+ signing key for future `.plus` updates.
+Version 0.1.0 incorrectly reused upstream's application ID; 0.1.1 used
+`com.raulshma.jellyplay.plus`. Their installed data does not automatically transfer
+to the final application ID in 0.1.2. Do not uninstall existing apps or erase their
+data to install this fork. Continue using the same JellyPlay+ signing key for
+future `com.salih800.jellyplay.plus` updates.

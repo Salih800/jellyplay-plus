@@ -16,7 +16,7 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.raulshma.jellyplay"
+        applicationId = "com.salih800.jellyplay.plus"
         minSdk = 28
         targetSdk = 37
         versionCode = (project.findProperty("versionCode") as? String)?.toInt() ?: 1
@@ -99,8 +99,6 @@ android {
             resValue("string", "app_name", "JellyPlay+ Dev")
         }
         release {
-            // Keep this fork installable beside upstream; preserve the existing debug ID and data.
-            applicationIdSuffix = ".plus"
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -185,6 +183,11 @@ abstract class GenerateLauncherShortcutsTask : DefaultTask() {
 
 androidComponents {
     onVariants { variant ->
+        if (variant.buildType == "debug") {
+            // Keep existing development installs and their downloaded media accessible.
+            val platformSuffix = if (variant.productFlavors.any { it.second == "tv" }) ".tv" else ""
+            variant.applicationId.set("com.raulshma.jellyplay$platformSuffix.dev")
+        }
         // Shortcut intent targetPackage requires a literal, not a resource or manifest placeholder.
         val shortcuts = tasks.register<GenerateLauncherShortcutsTask>(
             "generate${variant.name.replaceFirstChar { it.uppercase() }}LauncherShortcuts",
