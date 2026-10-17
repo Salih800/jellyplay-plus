@@ -110,6 +110,7 @@ internal fun DownloadItemRow(
     val cardRowFocusState = rememberTvFocusState(focusedScale = 1.01f)
 
     ElevatedCard(
+        shape = ShapeCache.smooth12,
         // Caller-supplied modifier comes first so the shared entrance
         // graphicsLayer wraps the whole card.
         modifier = modifier

@@ -33,12 +33,16 @@ val downloadsModule: Module = module {
             queue = get(),
             offlineRepository = get(),
             resync = get(),
+            episodeCounts = get(),
         )
     }
     viewModel {
         OfflineLibraryViewModel(
             offlineRepository = get(),
             userDataMutator = get(),
+            seriesEpisodes = get(),
+            queue = get(),
+            episodeCounts = get(),
         )
     }
 }

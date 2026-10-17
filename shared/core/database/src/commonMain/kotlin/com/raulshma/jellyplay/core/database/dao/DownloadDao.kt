@@ -384,6 +384,7 @@ interface DownloadDao {
     @Query(
         """
         SELECT m.seriesId AS seriesId,
+            SUM(CASE WHEN d.status = 'COMPLETED' THEN 1 ELSE 0 END) AS episodeCount,
             COALESCE(SUM(d.totalSizeBytes), 0) AS totalSizeBytes,
             COALESCE(SUM(d.downloadedBytes), 0) AS downloadedBytes
         FROM downloads d
@@ -459,6 +460,7 @@ data class SeriesSizeAggregate(
     val seriesId: String,
     val totalSizeBytes: Long,
     val downloadedBytes: Long,
+    val episodeCount: Int = 0,
 )
 
 /**

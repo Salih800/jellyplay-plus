@@ -177,7 +177,7 @@ class PlayedStateSyncImpl(
             if (!downloadsStore.value.downloads.first().autoDeleteAfterWatch) return
             val download = downloadRepository.value.getDownloadByMediaItemId(itemId) ?: return
             if (download.status != DownloadStatus.COMPLETED) return
-            runCatchingRethrowingCancellation { downloadRepository.value.deleteDownload(download.id) }
+            runCatchingRethrowingCancellation { downloadRepository.value.deleteDownload(download.id).getOrThrow() }
                 .onFailure { Log.w(TAG, "Auto-delete-after-watch failed for $itemId", it) }
         } catch (e: Exception) {
             Log.w(TAG, "Auto-delete-after-watch lookup failed for $itemId", e)

@@ -75,6 +75,27 @@ class DownloadDaoTest {
     }
 
     @Test
+    fun `series summary counts local episodes including legacy rows without download series id`() = runTest {
+        val media = database.offlineMediaDao()
+        media.upsertAll(listOf(
+            com.raulshma.jellyplay.core.database.entity.OfflineMediaEntity(
+                id = "episode-1", name = "One", mediaType = "EPISODE", seriesId = "show",
+            ),
+            com.raulshma.jellyplay.core.database.entity.OfflineMediaEntity(
+                id = "episode-2", name = "Two", mediaType = "EPISODE", seriesId = "show",
+            ),
+        ))
+        downloadDao.insertDownload(createDownload("one", "episode-1", downloadedBytes = 200, status = "COMPLETED"))
+        downloadDao.insertDownload(createDownload("two", "episode-2", downloadedBytes = 300, status = "COMPLETED"))
+        downloadDao.insertDownload(createDownload("unrelated", "movie", downloadedBytes = 900))
+        val summary = downloadDao.getSeriesSizeAggregatesFlow(listOf("show")).first().single()
+        assertEquals(2, summary.episodeCount)
+        assertEquals(500L, summary.downloadedBytes)
+        downloadDao.deleteDownloadById("two")
+        assertEquals(1, downloadDao.getSeriesSizeAggregatesFlow(listOf("show")).first().single().episodeCount)
+    }
+
+    @Test
     fun `getDownloadByMediaItemId finds matching download`() = runTest {
         downloadDao.insertDownload(createDownload(mediaItemId = "item-1"))
 

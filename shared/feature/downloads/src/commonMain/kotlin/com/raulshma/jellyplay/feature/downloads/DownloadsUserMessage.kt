@@ -17,6 +17,7 @@ sealed interface DownloadsUserMessage {
      * Emitted by both the per-item delete and the bulk selection delete.
      */
     data object Deleted : DownloadsUserMessage
+    data class OperationFailed(val count: Int) : DownloadsUserMessage
     /** Raw failure text (exception message or fixed fallback). */
     data class Raw(val text: String) : DownloadsUserMessage
 }

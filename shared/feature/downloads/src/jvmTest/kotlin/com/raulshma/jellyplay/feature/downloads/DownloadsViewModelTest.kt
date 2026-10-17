@@ -64,6 +64,11 @@ class DownloadsViewModelTest {
         // The JVM queue seam is supported in production; the VM only emits
         // success messages when the seam says deletions are real.
         every { downloadRepository.isSupported } returns true
+        coEvery { downloadRepository.deleteDownload(any()) } returns Result.success(Unit)
+        coEvery { downloadRepository.pauseDownload(any()) } returns Result.success(Unit)
+        coEvery { downloadRepository.resumeDownload(any()) } returns Result.success(Unit)
+        coEvery { downloadRepository.cancelDownload(any()) } returns Result.success(Unit)
+        coEvery { downloadRepository.retryDownload(any()) } returns Result.success(Unit)
         every { downloadRepository.getActiveDownloadProgress() } returns progressFlow
         // forceResyncCandidates() reads the suspend snapshot; answer with the
         // flow's current value so pushItems drives both paths.
@@ -226,6 +231,8 @@ class DownloadsViewModelTest {
 
     @Test
     fun deleteDownload_calls_repository_and_emits_Deleted_message() = runTest(mainDispatcher) {
+        pushItems(listOf(item("d9", status = DownloadStatus.COMPLETED)))
+        advanceUntilIdle()
         viewModel.deleteDownload(item("d9", status = DownloadStatus.COMPLETED))
         advanceUntilIdle()
 
@@ -325,6 +332,54 @@ class DownloadsViewModelTest {
     }
 
     // ── Bulk actions (status-filtered targets) ────────────────────────────
+
+    @Test
+    fun group_selection_is_additive_and_partial_groups_become_fully_selected() = runTest(mainDispatcher) {
+        val movie = item("movie")
+        val e1 = item("e1")
+        pushItems(listOf(movie, e1, item("e2")))
+        advanceUntilIdle()
+        viewModel.toggleSelection(movie)
+        viewModel.toggleSelection(e1)
+        viewModel.toggleGroupSelection(listOf("e1", "e2", "missing"))
+        assertEquals(setOf("movie", "e1", "e2"), viewModel.uiState.value.selectedIds)
+        viewModel.toggleGroupSelection(listOf("e1", "e2"))
+        assertEquals(setOf("movie"), viewModel.uiState.value.selectedIds)
+    }
+
+    @Test
+    fun delete_failure_keeps_failed_items_selected_and_does_not_claim_success() = runTest(mainDispatcher) {
+        pushItems(listOf(item("ok"), item("failed")))
+        advanceUntilIdle()
+        coEvery { downloadRepository.deleteDownload("failed") } returns Result.failure(java.io.IOException("disk error"))
+        viewModel.selectAll()
+        viewModel.applyBulkAction(DownloadBulkAction.DELETE, DownloadActionScope.Selected)
+        advanceUntilIdle()
+        assertEquals(setOf("failed"), viewModel.uiState.value.selectedIds)
+        assertEquals(DownloadsUserMessage.OperationFailed(1), viewModel.messages.first())
+        assertFalse(viewModel.uiState.value.actionInProgress)
+    }
+
+    @Test
+    fun failed_resume_does_not_enqueue_a_worker() = runTest(mainDispatcher) {
+        pushItems(listOf(item("paused", status = DownloadStatus.PAUSED)))
+        advanceUntilIdle()
+        coEvery { downloadRepository.resumeDownload("paused") } returns Result.failure(java.io.IOException("unavailable"))
+        viewModel.applyBulkAction(DownloadBulkAction.RESUME, DownloadActionScope.Item("paused"))
+        advanceUntilIdle()
+        io.mockk.verify(exactly = 0) { downloadRepository.enqueueDownload("paused") }
+        assertEquals(DownloadsUserMessage.OperationFailed(1), viewModel.messages.first())
+    }
+
+    @Test
+    fun selectAll_stays_within_category_and_ignores_missing_ids() = runTest(mainDispatcher) {
+        pushItems(listOf(item("movie"), item("episode"), item("music")))
+        advanceUntilIdle()
+        viewModel.selectAll(setOf("episode", "deleted"))
+        assertEquals(setOf("episode"), viewModel.uiState.value.selectedIds)
+        viewModel.selectAll(emptySet())
+        assertFalse(viewModel.uiState.value.selectionMode)
+    }
 
     @Test
     fun applyBulkAction_delete_selected_deletes_each_target_clears_selection_and_emits_Deleted() = runTest(mainDispatcher) {

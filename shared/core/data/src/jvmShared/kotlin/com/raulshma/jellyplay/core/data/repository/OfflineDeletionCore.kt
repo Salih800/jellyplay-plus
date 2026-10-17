@@ -26,8 +26,8 @@ import kotlinx.coroutines.coroutineScope
  *  1. **Artifact files before the DB delete** — each download's media file and per-item
  *     artifacts ([DownloadArtifacts.cleanup], scoped by mediaItemId so one item's cleanup never
  *     clobbers another item's images in the shared flat downloads dir) go first, concurrently
- *     off the caller's dispatcher; the subsequent DB transaction does not depend on the file
- *     deletion result.
+ *     off the caller's dispatcher. Failure to remove a media file aborts database removal,
+ *     preserving its record so the operation can be retried.
  *  2. **Capture before the rows are removed** — the affected dirs and the cast ids decoded from
  *     each row's persisted `peopleJson` are captured before the transaction so the cast images
  *     written beside each download at fetch time can be pruned afterward (the reference scan
@@ -126,8 +126,8 @@ internal class OfflineDeletionCore(
     /**
      * Deletes downloaded artifact files concurrently (was a serial per-episode
      * `File.delete()` + `cleanup()` loop — for a 100-episode series that was
-     * 100+ serial FS syscalls). Runs on Dispatchers.IO; the subsequent DB
-     * transaction does not depend on the file deletion result.
+     * 100+ serial FS syscalls). Runs on Dispatchers.IO; failed media deletion
+     * aborts the subsequent database transaction.
      *
      * Each download's per-item poster/backdrop are scoped by [DownloadEntity.mediaItemId]
      * so deleting one item's artifacts never clobbers another item's images in
@@ -141,7 +141,9 @@ internal class OfflineDeletionCore(
             nonBlank.map { entity ->
                 async(Dispatchers.IO) {
                     val file = File(entity.downloadPath)
-                    if (file.exists()) file.delete()
+                    if (file.exists() && !file.delete() && file.exists()) {
+                        throw java.io.IOException("Unable to remove downloaded media: ${entity.mediaItemId}")
+                    }
                     DownloadArtifacts.cleanup(file.parentFile, entity.mediaItemId)
                 }
             }.awaitAll()

@@ -183,6 +183,12 @@ internal val dataRepositoriesModule: Module = module {
 
     single { OfflineRepositoryImpl(get(), get(), get(), get(), get(), timeSource = get()) }
     single<OfflineRepository> { get<OfflineRepositoryImpl>() }
+    single<com.raulshma.jellyplay.core.data.repository.OfflineSeriesEpisodes> { get<OfflineRepositoryImpl>() }
+    single<com.raulshma.jellyplay.core.data.download.DownloadEpisodeCounts> {
+        com.raulshma.jellyplay.core.data.download.DownloadEpisodeCountsImpl(
+            get<com.raulshma.jellyplay.core.database.JellyPlayDatabase>().downloadEpisodeCountDao(), get(), get(), get(),
+        )
+    }
 
     single { PlaybackOutboxRepositoryImpl(get(), get()) }
     single<PlaybackOutboxRepository> { get<PlaybackOutboxRepositoryImpl>() }

@@ -48,6 +48,8 @@ import com.raulshma.jellyplay.core.database.entity.SeenMediaEntity
 import com.raulshma.jellyplay.core.database.entity.ServerEntity
 import com.raulshma.jellyplay.core.database.entity.SmartPlaylistEntity
 import com.raulshma.jellyplay.core.database.entity.UserEntity
+import com.raulshma.jellyplay.core.database.entity.DownloadEpisodeCountEntity
+import com.raulshma.jellyplay.core.database.dao.DownloadEpisodeCountDao
 
 /**
  * Current Room schema version. Single source of truth: bumping this requires a
@@ -55,10 +57,11 @@ import com.raulshma.jellyplay.core.database.entity.UserEntity
  * the previous version in [com.raulshma.jellyplay.core.database.migration.allMigrations];
  * `allMigrations_coversContiguousRange` enforces that chain.
  */
-const val JELLY_PLAY_DATABASE_VERSION: Int = 60
+const val JELLY_PLAY_DATABASE_VERSION: Int = 61
 
 @Database(
     entities = [
+        DownloadEpisodeCountEntity::class,
         ServerEntity::class,
         UserEntity::class,
         DownloadEntity::class,
@@ -89,6 +92,7 @@ const val JELLY_PLAY_DATABASE_VERSION: Int = 60
 @ConstructedBy(JellyPlayDatabaseConstructor::class)
 @ColumnTypeConverters(Converters::class)
 abstract class JellyPlayDatabase : RoomDatabase() {
+    abstract fun downloadEpisodeCountDao(): DownloadEpisodeCountDao
     abstract fun serverDao(): ServerDao
     abstract fun userDao(): UserDao
     abstract fun downloadDao(): DownloadDao

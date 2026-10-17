@@ -26,6 +26,7 @@ fun EntryProviderScope<NavKey>.downloadsSection(
                 }
             },
             onBack = { navigator.goBack() },
+            onOpenLibrary = { navigator.navigate(Route.OfflineLibrary) },
         )
     }
     entry<Route.OfflineLibrary> {

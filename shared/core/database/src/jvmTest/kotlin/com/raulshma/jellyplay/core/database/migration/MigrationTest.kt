@@ -1120,6 +1120,21 @@ class MigrationTest {
         assertEquals(expected, migrations.last().endVersion)
     }
 
+    @Test
+    fun migrateV60_61_addsEpisodeCountCacheWithoutChangingExistingMedia() = runTest {
+        createDatabase(60) { db ->
+            execSchema(db, 60)
+            db.execSQL("INSERT INTO offline_media (id, name, mediaType, createdAt) VALUES ('preserved', 'Existing movie', 'MOVIE', 1)")
+        }
+        val db = openWithMigrations()
+        assertNotNull(db.offlineMediaDao().getById("preserved"))
+        val dao = db.downloadEpisodeCountDao()
+        dao.upsert(listOf(com.raulshma.jellyplay.core.database.entity.DownloadEpisodeCountEntity("server:user", "show", 26, 123)))
+        assertEquals(26, dao.get("server:user", "show")?.episodeCount)
+        assertNull(dao.get("server:other", "show"))
+        db.close()
+    }
+
     /**
      * Verifies the v50→v51 migration adds the nullable `chaptersJson` column to
      * `offline_media` (feature contract: OfflineMediaItem.chapters).

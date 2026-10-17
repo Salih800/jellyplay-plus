@@ -30,6 +30,12 @@ data class SelectionState<T>(val ids: Set<T> = emptySet()) {
     fun toggled(id: T): SelectionState<T> =
         SelectionState(if (id in ids) ids - id else ids + id)
 
+    /** Select every group member, or clear that group when all are already selected. */
+    fun toggledGroup(candidates: Collection<T>): SelectionState<T> {
+        if (candidates.isEmpty()) return this
+        return SelectionState(if (ids.containsAll(candidates)) ids - candidates.toSet() else ids + candidates)
+    }
+
     /** Copy with the selection emptied — the full reset write. */
     fun cleared(): SelectionState<T> = SelectionState()
 

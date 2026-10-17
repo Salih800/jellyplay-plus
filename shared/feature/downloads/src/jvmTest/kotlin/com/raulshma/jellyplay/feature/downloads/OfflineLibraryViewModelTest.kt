@@ -1,22 +1,29 @@
 package com.raulshma.jellyplay.feature.downloads
 
 import com.raulshma.jellyplay.core.data.repository.OfflineRepository
+import com.raulshma.jellyplay.core.data.repository.OfflineSeriesEpisodes
 import com.raulshma.jellyplay.core.data.repository.UserDataMutator
 import com.raulshma.jellyplay.core.model.MediaItem
 import com.raulshma.jellyplay.core.model.MediaType
 import com.raulshma.jellyplay.core.model.OfflineMediaItem
 import io.mockk.coVerify
+import io.mockk.coEvery
+import com.raulshma.jellyplay.core.data.download.DownloadQueue
+import com.raulshma.jellyplay.core.model.DownloadStatus
+import com.raulshma.jellyplay.core.model.DownloadItem
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.setMain
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -46,7 +53,7 @@ class OfflineLibraryViewModelTest {
         userDataMutator = mockk(relaxed = true)
         libraryFlow = MutableStateFlow(emptyList())
         every { offlineRepository.getOfflineLibrary() } returns libraryFlow
-        viewModel = OfflineLibraryViewModel(offlineRepository, userDataMutator)
+        viewModel = OfflineLibraryViewModel(offlineRepository, userDataMutator, mockk(relaxed = true), mockk(relaxed = true))
     }
 
     @AfterTest
@@ -89,7 +96,7 @@ class OfflineLibraryViewModelTest {
     // ── Filter tabs ───────────────────────────────────────────────────────
 
     @Test
-    fun videos_tab_keeps_series_and_movies_only() = runTest(mainDispatcher) {
+    fun movies_tab_excludes_series_and_episodes() = runTest(mainDispatcher) {
         libraryFlow.value = listOf(
             offline("ser", mediaType = MediaType.SERIES),
             offline("mov", mediaType = MediaType.MOVIE),
@@ -97,9 +104,9 @@ class OfflineLibraryViewModelTest {
             offline("aud", mediaType = MediaType.AUDIO),
         )
         val job = collectAndSettle()
-        viewModel.setFilter(OfflineLibraryFilter.VIDEOS)
+        viewModel.setFilter(OfflineLibraryFilter.MOVIES)
 
-        awaitLibrary(listOf("ser", "mov"))
+        awaitLibrary(listOf("mov"))
         job.cancel()
     }
 
@@ -131,6 +138,76 @@ class OfflineLibraryViewModelTest {
     }
 
     // ── Search query ──────────────────────────────────────────────────────
+
+    @Test
+    fun selecting_a_collapsed_series_loads_all_its_local_episodes() = runTest(mainDispatcher) {
+        val queue = mockk<DownloadQueue>(relaxed = true)
+        val vm = OfflineLibraryViewModel(offlineRepository, userDataMutator, mockk(relaxed = true), queue)
+        val episodes = listOf(
+            offline("e1", mediaType = MediaType.EPISODE).copy(downloadStatus = DownloadStatus.COMPLETED),
+            offline("e2", mediaType = MediaType.EPISODE).copy(downloadStatus = DownloadStatus.COMPLETED),
+        )
+        coEvery { offlineRepository.getEpisodesForSeries("show") } returns episodes
+        vm.toggleSeriesSelection("show")
+        advanceUntilIdle()
+        assertEquals(setOf("e1", "e2"), vm.selectedItems.value.keys)
+        vm.toggleSeriesSelection("show")
+        advanceUntilIdle()
+        assertTrue(vm.selectedItems.value.isEmpty())
+    }
+
+    @Test
+    fun library_bulk_delete_retains_failed_selection_and_uses_engine_ids() = runTest(mainDispatcher) {
+        val queue = mockk<DownloadQueue>(relaxed = true)
+        val vm = OfflineLibraryViewModel(offlineRepository, userDataMutator, mockk(relaxed = true), queue)
+        val episode = offline("media-id", mediaType = MediaType.EPISODE).copy(downloadStatus = DownloadStatus.COMPLETED)
+        val download = DownloadItem("engine-id", "media-id", "Episode", MediaType.EPISODE,
+            "/tmp/episode.mkv", "", 100, 100, DownloadStatus.COMPLETED)
+        val other = episode.copy(id = "ok-media")
+        coEvery { queue.getAllDownloadsSnapshot() } returns listOf(download, download.copy(id = "ok-engine", mediaItemId = "ok-media"))
+        coEvery { queue.deleteDownload("engine-id") } returns Result.failure(java.io.IOException("disk error"))
+        coEvery { queue.deleteDownload("ok-engine") } returns Result.success(Unit)
+        vm.toggleGroupSelection(listOf(episode, other), "series:show")
+        vm.deleteSelected(listOf(episode, other))
+        advanceUntilIdle()
+        assertEquals(setOf("media-id"), vm.selectedItems.value.keys)
+        assertEquals(setOf("media-id"), vm.selectionGroups.value["series:show"])
+        assertEquals(DownloadsUserMessage.OperationFailed(1), vm.messages.first())
+        assertFalse(vm.actionInProgress.value)
+        coVerify(exactly = 1) { queue.deleteDownload("engine-id") }
+    }
+
+    @Test
+    fun series_tab_excludes_movies_music_and_books() = runTest(mainDispatcher) {
+        libraryFlow.value = listOf(
+            offline("ser", mediaType = MediaType.SERIES),
+            offline("mov", mediaType = MediaType.MOVIE),
+            offline("aud", mediaType = MediaType.AUDIO),
+            offline("book", mediaType = MediaType.BOOK),
+        )
+        val job = collectAndSettle()
+        viewModel.setFilter(OfflineLibraryFilter.SERIES)
+        awaitLibrary(listOf("ser"))
+        job.cancel()
+    }
+
+    @Test
+    fun expanded_series_observes_only_requested_ids_and_reflects_deletion() = runTest(mainDispatcher) {
+        val episodes = mockk<OfflineSeriesEpisodes>()
+        val episodeFlow = MutableStateFlow(listOf(offline("e1", mediaType = MediaType.EPISODE)))
+        every { episodes.observeEpisodesForSeries("show") } returns episodeFlow
+        val vm = OfflineLibraryViewModel(offlineRepository, userDataMutator, episodes, mockk(relaxed = true))
+        assertTrue(vm.expandedSeriesEpisodes(emptySet()).first().isEmpty())
+        val results = mutableListOf<Map<String, List<OfflineMediaItem>>>()
+        val job = backgroundScope.launch { vm.expandedSeriesEpisodes(setOf("show")).collect { results += it } }
+        runCurrent()
+        assertEquals(listOf("e1"), results.last().getValue("show").map { it.id })
+        episodeFlow.value = emptyList()
+        runCurrent()
+        assertTrue(results.last().getValue("show").isEmpty())
+        io.mockk.verify(exactly = 1) { episodes.observeEpisodesForSeries("show") }
+        job.cancel()
+    }
 
     @Test
     fun query_under_two_chars_does_not_filter() = runTest(mainDispatcher) {

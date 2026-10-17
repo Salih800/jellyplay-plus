@@ -435,6 +435,28 @@ class OfflineMediaDaoTest {
     }
 
     @Test
+    fun `series observation is ordered scoped and refreshes after deleting an episode`() = runTest {
+        offlineMediaDao.upsertAll(listOf(
+            createMedia("e10", "EPISODE", seriesId = "show").copy(seasonNumber = 2, episodeNumber = 10),
+            createMedia("e2", "EPISODE", seriesId = "show").copy(seasonNumber = 1, episodeNumber = 2),
+            createMedia("other", "EPISODE", seriesId = "another"),
+            createMedia("season", "SEASON", seriesId = "show"),
+        ))
+        val updates = Channel<List<String>>(Channel.UNLIMITED)
+        val observer = launch {
+            offlineMediaDao.observeEpisodesForSeries("show").collect { rows ->
+                updates.send(rows.map { it.media.id })
+            }
+        }
+        assertEquals(listOf("e2", "e10"), updates.receive())
+        offlineMediaDao.deleteById("e2")
+        var ids = updates.receive()
+        while (ids != listOf("e10")) ids = updates.receive()
+        assertEquals(listOf("e10"), ids)
+        observer.cancel()
+    }
+
+    @Test
     fun `getChildrenByParent returns the parent's rows ordered by indexNumber`() = runTest {
         fun child(id: String, parent: String, index: Int?) = OfflineMediaEntity(
             id = id, name = id, mediaType = "MOVIE", parentId = parent, indexNumber = index,

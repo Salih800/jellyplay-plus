@@ -170,6 +170,31 @@ Open **Settings → Storage** to tune downloads. Defaults are shown below.
 
 Open **Downloads** to see every download and its live state.
 
+The **Movies** and **Series** tabs separate films from episodes; music, books,
+and other media retain their own categories. **All** shows category headings.
+Expand a series to browse its episodes. When downloads span several seasons,
+expand a season within that series; a single season shows its episodes directly.
+Seasons and episodes always use ascending numeric order, independent of download
+date. Series and season headers show completed downloads / actual episodes available
+on the active server, plus downloaded size. Missing or unaired virtual episodes do
+not count toward the denominator. The last successful totals are cached per server
+and user for offline browsing; unknown totals show only the completed local count.
+Pending, paused, failed, and cancelled rows do not count as completed downloads.
+
+Use a series or season checkbox to select all of its local downloads, even when
+collapsed. Partial selections show an indeterminate checkbox; toggling a partial
+group selects its remaining episodes. Group selection works in both Downloads
+and Offline Library. Deletion still requires confirmation. Failed operations keep
+the failed items selected and report an error instead of claiming successful deletion.
+**Select all** selects only items in the current category, including collapsed
+groups. Changing category clears the selection.
+
+The folder action opens **Offline Library**, which uses the same grouping and
+keeps standalone titles as poster cards. Its title-level search and sort do not
+change episode order. Expanded series update when local episodes or playback
+state change. Long-press a series or episode for its existing quick actions, or
+use **Details** to open the series detail page.
+
 **Download states:** `Pending` → `Queued` → `Downloading` → `Completed`
 (or `Paused` / `Failed` / `Cancelled`).
 

@@ -22,7 +22,7 @@ import kotlin.test.assertTrue
  * single offline vocabulary:
  *  1. progress recording always goes to the offline store (no-op semantics for
  *     non-downloaded items stay the DAO's concern);
- *  2. `deleteDownload` returns true only when a download row existed;
+ *  2. `deleteDownload` returns true only when a row existed and deletion succeeded;
  *  3. `getResumePositionTicks` honors ONLY COMPLETED downloads with a strictly
  *     positive recorded position — anything else seeds the player at 0;
  *  4. `getDownloadPath` passes the on-disk path through (null without a row);
@@ -76,6 +76,13 @@ class OfflinePlaybackFacadeTest {
 
         assertFalse(facade.deleteDownload(ITEM))
         coVerify(exactly = 0) { downloadRepository.deleteDownload(any()) }
+    }
+
+    @Test
+    fun `deleteDownload returns false when the repository could not delete the file`() = runTest {
+        coEvery { downloadRepository.getDownloadByMediaItemId(ITEM) } returns downloadRow(DownloadStatus.COMPLETED)
+        coEvery { downloadRepository.deleteDownload(DOWNLOAD_ID) } returns Result.failure(java.io.IOException("disk error"))
+        assertFalse(facade.deleteDownload(ITEM))
     }
 
     @Test

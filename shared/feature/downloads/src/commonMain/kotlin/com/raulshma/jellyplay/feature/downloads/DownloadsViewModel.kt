@@ -1,6 +1,7 @@
 package com.raulshma.jellyplay.feature.downloads
 
 import androidx.compose.runtime.Immutable
+import com.raulshma.jellyplay.core.concurrency.runCatchingRethrowingCancellation
 import com.raulshma.jellyplay.core.data.download.DownloadQueue
 import com.raulshma.jellyplay.core.data.download.OfflineResync
 import com.raulshma.jellyplay.core.data.error.UserErrorMessages
@@ -37,6 +38,7 @@ data class DownloadsUiState(
     val downloads: List<DownloadItem> = emptyList(),
     val isLoading: Boolean = true,
     val error: String? = null,
+    val actionInProgress: Boolean = false,
     /** Stable ids currently in selection mode. */
     val selection: SelectionState<String> = SelectionState(),
 ) {
@@ -68,10 +70,17 @@ class DownloadsViewModel(
     private val queue: DownloadQueue,
     private val offlineRepository: OfflineRepository,
     private val resync: OfflineResync,
+    private val episodeCounts: com.raulshma.jellyplay.core.data.download.DownloadEpisodeCounts = com.raulshma.jellyplay.core.data.download.EmptyDownloadEpisodeCounts,
 ) : JellyPlayViewModel() {
 
     private val _uiState = stateFlow(DownloadsUiState())
     val uiState: StateFlow<DownloadsUiState> = _uiState.flow
+
+    val episodeTotals = episodeCounts.observe().stateIn(scope, SharingStarted.WhileSubscribed(5_000), emptyMap())
+
+    fun refreshEpisodeTotals(seriesIds: Set<String>) {
+        launch { seriesIds.forEach { episodeCounts.refresh(it) } }
+    }
 
     // ── Delete confirmations ─────────────────────────────────────────────
     // Deleting a completed download removes the file from disk, so we confirm
@@ -222,44 +231,43 @@ class DownloadsViewModel(
      * The single dispatch for every [DownloadBulkAction]. Target selection is
      * the pure [DownloadActions] fold (scope ∩ live list ∩ admission table);
      * a no-target call is a guarded no-op, exactly like the per-action funs it
-     * replaced. DELETE additionally clears the selection (bulk scope only) and
-     * emits the one-shot Deleted message at every scope — the former
+     * replaced. DELETE clears successful selections, retains failed targets,
+     * and emits Deleted only when every target succeeds — the former
      * deleteSelected/deleteDownload side effects.
      */
     fun applyBulkAction(action: DownloadBulkAction, scope: DownloadActionScope) {
         val state = _uiState.value
+        if (state.actionInProgress) return
         val targets = DownloadActions.targets(action, state.downloads, state.selectedIds, scope)
         if (targets.isEmpty()) return
+        _uiState.update { it.copy(actionInProgress = true) }
         launch {
-            bulkMap(targets) { item ->
+            try {
+            val results = bulkMap(targets) { item ->
                 when (action) {
                     DownloadBulkAction.PAUSE -> queue.pauseDownload(item.id)
                     DownloadBulkAction.RESUME -> {
-                        queue.resumeDownload(item.id)
-                        queue.enqueueDownload(item.id)
+                        queue.resumeDownload(item.id).onSuccess { queue.enqueueDownload(item.id) }
                     }
                     DownloadBulkAction.CANCEL -> queue.cancelDownload(item.id)
                     DownloadBulkAction.RETRY_FAILED -> {
-                        queue.retryDownload(item.id)
-                        queue.enqueueDownload(item.id)
+                        queue.retryDownload(item.id).onSuccess { queue.enqueueDownload(item.id) }
                     }
                     DownloadBulkAction.DELETE -> queue.deleteDownload(item.id)
                 }
             }
-            if (action == DownloadBulkAction.DELETE) {
-                if (scope == DownloadActionScope.Selected) clearSelection()
-                // Only claim success where deletions are real — a
-                // fabricated "Deleted" toast would lie.
-                if (queue.isSupported) messageChannel.trySend(DownloadsUserMessage.Deleted)
+            val failedIds = targets.zip(results).filter { it.second.isFailure }.map { it.first.id }.toSet()
+            if (action == DownloadBulkAction.DELETE && scope == DownloadActionScope.Selected) {
+                _uiState.update { it.copy(selection = SelectionState(it.selectedIds.intersect(failedIds))) }
             }
+            if (failedIds.isNotEmpty()) messageChannel.trySend(DownloadsUserMessage.OperationFailed(failedIds.size))
+            else if (action == DownloadBulkAction.DELETE && queue.isSupported) messageChannel.trySend(DownloadsUserMessage.Deleted)
+            } finally { _uiState.update { it.copy(actionInProgress = false) } }
         }
     }
 
     fun deleteDownload(item: DownloadItem) {
-        launch {
-            queue.deleteDownload(item.id)
-            if (queue.isSupported) messageChannel.trySend(DownloadsUserMessage.Deleted)
-        }
+        applyBulkAction(DownloadBulkAction.DELETE, DownloadActionScope.Item(item.id))
     }
 
     fun moveToFront(item: DownloadItem) {
@@ -279,15 +287,29 @@ class DownloadsViewModel(
     // ── Selection ────────────────────────────────────────────────────────
 
     fun toggleSelection(item: DownloadItem) {
+        if (_uiState.value.actionInProgress) return
         _uiState.update { it.copy(selection = it.selection.toggled(item.id)) }
     }
 
+    fun toggleGroupSelection(candidateIds: Collection<String>) {
+        if (_uiState.value.actionInProgress) return
+        _uiState.update { state ->
+            val liveIds = state.downloads.map { it.id }.toSet()
+            state.copy(selection = state.selection.toggledGroup(candidateIds.filter { it in liveIds }))
+        }
+    }
+
     fun clearSelection() {
+        if (_uiState.value.actionInProgress) return
         _uiState.update { it.copy(selection = it.selection.cleared()) }
     }
 
-    fun selectAll() {
-        _uiState.update { it.copy(selection = it.selection.selectAll(it.downloads.map { item -> item.id })) }
+    fun selectAll(candidateIds: Set<String>? = null) {
+        if (_uiState.value.actionInProgress) return
+        _uiState.update { state ->
+            val ids = state.downloads.map { it.id }.filter { candidateIds == null || it in candidateIds }
+            state.copy(selection = state.selection.selectAll(ids))
+        }
     }
 
     // ── Bulk actions ─────────────────────────────────────────────────────
@@ -303,12 +325,11 @@ class DownloadsViewModel(
      */
     private suspend inline fun <T> bulkMap(
         targets: List<T>,
-        crossinline action: suspend (T) -> Unit,
-    ) {
+        crossinline action: suspend (T) -> Result<Unit>,
+    ): List<Result<Unit>> =
         coroutineScope {
-            targets.map { item -> async { action(item) } }.awaitAll()
+            targets.map { item -> async { runCatchingRethrowingCancellation { action(item).getOrThrow() } } }.awaitAll()
         }
-    }
 
     // ── Freshness check / resync ────────────────────────────────────────
 

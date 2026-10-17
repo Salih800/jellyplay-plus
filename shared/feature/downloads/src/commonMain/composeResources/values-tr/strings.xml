@@ -34,6 +34,7 @@
     <string name="downloads_sort_cd">Sırala</string>
     <string name="downloads_search_downloads_placeholder">İndirilenleri ara…</string>
     <string name="downloads_selection_hint">Toplu işlemleri seçmek ve uygulamak için bir indirmeye uzun basın</string>
+    <string name="downloads_selection_actions">Seçili indirmeler için işlemler</string>
     <string name="downloads_delete_download_title">İndirmeyi sil</string>
     <string name="downloads_delete_download_message">"%1$s" cihazınızdan kaldırılsın mı? Bu, %2$s adlı kişinin serbest kalmasını sağlar.</string>
     <string name="downloads_delete_downloads_title">İndirilenleri sil</string>
@@ -45,6 +46,7 @@
     <string name="downloads_deleted">Silindi</string>
     <string name="downloads_deleted_message">İndirme kaldırıldı</string>
     <string name="downloads_status_queued">Sırada</string>
+    <string name="downloads_status_downloading">İndiriliyor</string>
     <string name="downloads_status_waiting">Bekleniyor…</string>
     <string name="downloads_status_failed">Başarısız</string>
     <string name="downloads_status_paused">Duraklatıldı</string>
@@ -55,6 +57,28 @@
     <string name="downloads_sort_rating">Puan</string>
     <string name="downloads_sort_size">Boyut</string>
     <string name="downloads_filter_all">Tümü</string>
+    <string name="downloads_filter_movies">Filmler</string>
+    <string name="downloads_filter_series">Diziler</string>
+    <string name="downloads_filter_other">Diğer</string>
+    <string name="downloads_season_number">Sezon %1$d</string>
+    <string name="downloads_specials">Özel bölümler</string>
+    <string name="downloads_unknown_season">Sezon bilgisi yok</string>
+    <string name="downloads_expanded">Açık</string>
+    <string name="downloads_collapsed">Kapalı</string>
+    <string name="downloads_details">Ayrıntılar</string>
+    <string name="downloads_select_group">%1$s içindeki indirmeleri seç</string>
+    <string name="downloads_episode_fraction">%1$d / %2$d bölüm indirildi</string>
+    <string name="downloads_operation_failed">%1$d indirme işlemi başarısız oldu. Lütfen tekrar deneyin.</string>
+    <string name="downloads_watched">İzlendi</string>
+    <plurals name="downloads_active_count">
+        <item quantity="one">%1$d etkin indirme</item>
+        <item quantity="other">%1$d etkin indirme</item>
+    </plurals>
+    <string name="downloads_browse_library">İndirilen kitaplığına göz at</string>
+    <plurals name="downloads_episode_count">
+        <item quantity="one">%1$d bölüm indirildi</item>
+        <item quantity="other">%1$d bölüm indirildi</item>
+    </plurals>
     <string name="downloads_filter_videos">Videolar</string>
     <string name="downloads_filter_music">Müzik</string>
     <string name="downloads_filter_books">Kitaplar</string>

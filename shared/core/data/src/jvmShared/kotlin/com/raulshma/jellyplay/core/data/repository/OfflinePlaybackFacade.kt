@@ -72,8 +72,7 @@ class OfflinePlaybackFacade(
      */
     suspend fun deleteDownload(itemId: String): Boolean {
         val download = downloadRepository.getDownloadByMediaItemId(itemId) ?: return false
-        downloadRepository.deleteDownload(download.id)
-        return true
+        return downloadRepository.deleteDownload(download.id).isSuccess
     }
 
     /**

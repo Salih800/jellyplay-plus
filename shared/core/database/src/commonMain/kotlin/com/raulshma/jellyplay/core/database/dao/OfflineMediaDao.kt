@@ -85,6 +85,9 @@ interface OfflineMediaDao {
     )
     suspend fun getEpisodesForSeries(seriesId: String): List<OfflineMediaWithPlayback>
 
+    @Query("SELECT * FROM offline_media_with_playback WHERE seriesId = :seriesId AND mediaType = 'EPISODE' ORDER BY seasonNumber ASC, episodeNumber ASC")
+    fun observeEpisodesForSeries(seriesId: String): Flow<List<OfflineMediaWithPlayback>>
+
     /**
      * Every downloaded episode in one reactive query, with playback state
      * joined — the data source behind the offline home's Continue Watching /

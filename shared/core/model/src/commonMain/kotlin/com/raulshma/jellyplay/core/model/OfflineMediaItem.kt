@@ -30,6 +30,8 @@ data class OfflineMediaItem(
     val downloadedBytes: Long = 0L,
     val totalSizeBytes: Long = 0L,
     val childCount: Int = 0,
+    /** Actual downloaded episode rows, independent of the server's child count. */
+    val downloadedEpisodeCount: Int? = null,
     // Downloaded episodes of this series/season that are not yet finished,
     // derived at read time by the repository from its episode rows (not
     // persisted — the count tracks offline playback, so it is recomputed on

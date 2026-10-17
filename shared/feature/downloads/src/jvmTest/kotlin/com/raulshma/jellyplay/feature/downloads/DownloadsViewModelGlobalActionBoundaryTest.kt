@@ -61,6 +61,11 @@ class DownloadsViewModelGlobalActionBoundaryTest {
     fun setUp() {
         Dispatchers.setMain(mainDispatcher)
         downloadRepository = mockk<DownloadQueue>(relaxed = true)
+        coEvery { downloadRepository.pauseDownload(any()) } returns Result.success(Unit)
+        coEvery { downloadRepository.resumeDownload(any()) } returns Result.success(Unit)
+        coEvery { downloadRepository.cancelDownload(any()) } returns Result.success(Unit)
+        coEvery { downloadRepository.retryDownload(any()) } returns Result.success(Unit)
+        coEvery { downloadRepository.deleteDownload(any()) } returns Result.success(Unit)
         offlineRepository = mockk(relaxed = true)
         syncManager = mockk<OfflineResync>(relaxed = true)
         downloadsFlow = MutableStateFlow(emptyList())

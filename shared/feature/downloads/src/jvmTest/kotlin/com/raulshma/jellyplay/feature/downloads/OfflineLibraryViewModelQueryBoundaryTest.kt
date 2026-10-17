@@ -50,7 +50,7 @@ class OfflineLibraryViewModelQueryBoundaryTest {
         offlineRepository = mockk(relaxed = true)
         libraryFlow = MutableStateFlow(emptyList())
         every { offlineRepository.getOfflineLibrary() } returns libraryFlow
-        viewModel = OfflineLibraryViewModel(offlineRepository, mockk(relaxed = true))
+        viewModel = OfflineLibraryViewModel(offlineRepository, mockk(relaxed = true), mockk(relaxed = true), mockk(relaxed = true))
     }
 
     @AfterTest

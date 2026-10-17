@@ -69,7 +69,7 @@ class OfflineRepositoryImpl constructor(
     private val database: JellyPlayDatabase,
     /** Clock seam for the `lastPlayedDate` stamps (updatePlaybackProgress / applyPlayedState). */
     private val timeSource: TimeSource,
-) : OfflineRepository {
+) : OfflineRepository, OfflineSeriesEpisodes {
 
     /**
      * The shared deletion choreography (see the class KDoc for the six-step
@@ -208,6 +208,7 @@ class OfflineRepositoryImpl constructor(
                     item.copy(
                         downloadedBytes = agg?.downloadedBytes ?: 0L,
                         totalSizeBytes = agg?.totalSizeBytes ?: 0L,
+                        downloadedEpisodeCount = agg?.episodeCount ?: 0,
                         unplayedEpisodeCount = unplayedMap[item.id],
                     )
                 } else {
@@ -323,6 +324,11 @@ class OfflineRepositoryImpl constructor(
             row.toOfflineMediaItem().withDownload(downloadMap[row.media.id])
         })
     }
+
+    override fun observeEpisodesForSeries(seriesId: String): Flow<List<OfflineMediaItem>> =
+        offlineMediaDao.observeEpisodesForSeries(seriesId).flatMapLatest { rows ->
+            rowsWithDownloadsAndArtwork(rows)
+        }.distinctUntilChanged()
 
     override suspend fun getOfflineItem(id: String): OfflineMediaItem? =
         offlineMediaDao.getByIdWithPlayback(id)?.toOfflineMediaItem()

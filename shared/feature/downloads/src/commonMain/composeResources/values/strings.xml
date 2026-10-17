@@ -43,6 +43,7 @@
     <string name="downloads_sort_cd">Sort</string>
     <string name="downloads_search_downloads_placeholder">Search downloads…</string>
     <string name="downloads_selection_hint">Long-press a download to select and apply bulk actions</string>
+    <string name="downloads_selection_actions">Actions for selected downloads</string>
 
     <!-- Delete dialogs -->
     <string name="downloads_delete_download_title">Delete download</string>
@@ -58,6 +59,7 @@
 
     <!-- Download statuses -->
     <string name="downloads_status_queued">Queued</string>
+    <string name="downloads_status_downloading">Downloading</string>
     <string name="downloads_status_waiting">Waiting…</string>
     <string name="downloads_status_failed">Failed</string>
     <string name="downloads_status_paused">Paused</string>
@@ -74,6 +76,28 @@
     <string name="downloads_sort_rating">Rating</string>
     <string name="downloads_sort_size">Size</string>
     <string name="downloads_filter_all">All</string>
+    <string name="downloads_filter_movies">Movies</string>
+    <string name="downloads_filter_series">Series</string>
+    <string name="downloads_filter_other">Other</string>
+    <string name="downloads_season_number">Season %1$d</string>
+    <string name="downloads_specials">Specials</string>
+    <string name="downloads_unknown_season">Unknown season</string>
+    <string name="downloads_expanded">Expanded</string>
+    <string name="downloads_collapsed">Collapsed</string>
+    <string name="downloads_details">Details</string>
+    <string name="downloads_select_group">Select downloads in %1$s</string>
+    <string name="downloads_episode_fraction">%1$d / %2$d episodes downloaded</string>
+    <string name="downloads_operation_failed">%1$d download operations failed. Please try again.</string>
+    <string name="downloads_watched">Watched</string>
+    <plurals name="downloads_active_count">
+        <item quantity="one">%1$d active download</item>
+        <item quantity="other">%1$d active downloads</item>
+    </plurals>
+    <string name="downloads_browse_library">Browse downloaded library</string>
+    <plurals name="downloads_episode_count">
+        <item quantity="one">%1$d episode downloaded</item>
+        <item quantity="other">%1$d episodes downloaded</item>
+    </plurals>
     <string name="downloads_filter_videos">Videos</string>
     <string name="downloads_filter_music">Music</string>
     <string name="downloads_filter_books">Books</string>

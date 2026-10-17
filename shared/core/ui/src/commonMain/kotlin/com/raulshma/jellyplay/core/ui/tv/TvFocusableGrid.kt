@@ -4,6 +4,8 @@ import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridItemSpanScope
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -65,6 +67,7 @@ fun TvFocusableGrid(
     contentType: (index: Int) -> Any? = { null },
     onFocusedIndexChange: (Int) -> Unit = {},
     extraContent: LazyGridScope.() -> Unit = {},
+    span: (LazyGridItemSpanScope.(Int) -> GridItemSpan)? = null,
     itemContent: @Composable (index: Int, modifier: Modifier) -> Unit,
 ) {
     val isTv = LocalTvMode.current
@@ -135,6 +138,7 @@ fun TvFocusableGrid(
             count = itemCount,
             key = key,
             contentType = contentType,
+            span = span,
         ) { index ->
             // animateItem (LazyItemScope) animates placement so reorders/removals
             // glide instead of snapping. Placement spec routes through
@@ -219,6 +223,7 @@ fun <T> TvFocusableGrid(
     contentType: (T) -> Any? = { null },
     onFocusedIndexChange: (Int) -> Unit = {},
     extraContent: LazyGridScope.() -> Unit = {},
+    span: (LazyGridItemSpanScope.(T) -> GridItemSpan)? = null,
     itemContent: @Composable (
         index: Int,
         item: T,
@@ -240,6 +245,7 @@ fun <T> TvFocusableGrid(
         contentType = { index -> contentType(items[index]) },
         onFocusedIndexChange = onFocusedIndexChange,
         extraContent = extraContent,
+        span = span?.let { itemSpan -> { index -> itemSpan(items[index]) } },
     ) { index, itemModifier ->
         itemContent(index, items[index], itemModifier)
     }
