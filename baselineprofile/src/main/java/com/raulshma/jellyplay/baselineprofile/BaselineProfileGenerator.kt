@@ -19,7 +19,7 @@ class BaselineProfileGenerator {
     @Test
     fun generate() {
         baselineProfileRule.collect(
-            packageName = "com.raulshma.jellyplay",
+            packageName = "com.raulshma.jellyplay.plus",
             includeInStartupProfile = true,
         ) {
             pressHome()

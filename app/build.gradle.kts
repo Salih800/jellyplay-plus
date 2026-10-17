@@ -99,6 +99,8 @@ android {
             resValue("string", "app_name", "JellyPlay+ Dev")
         }
         release {
+            // Keep this fork installable beside upstream; preserve the existing debug ID and data.
+            applicationIdSuffix = ".plus"
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -159,6 +161,39 @@ android {
                 "lib/x86_64/libc++_shared.so"
             )
         }
+    }
+}
+
+abstract class GenerateLauncherShortcutsTask : DefaultTask() {
+    @get:InputFile
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val templateFile: RegularFileProperty
+
+    @get:Input
+    abstract val applicationId: Property<String>
+
+    @get:OutputDirectory
+    abstract val outputDirectory: DirectoryProperty
+
+    @TaskAction
+    fun generate() {
+        val target = outputDirectory.file("xml/shortcuts.xml").get().asFile
+        target.parentFile.mkdirs()
+        target.writeText(templateFile.get().asFile.readText().replace("@APPLICATION_ID@", applicationId.get()))
+    }
+}
+
+androidComponents {
+    onVariants { variant ->
+        // Shortcut intent targetPackage requires a literal, not a resource or manifest placeholder.
+        val shortcuts = tasks.register<GenerateLauncherShortcutsTask>(
+            "generate${variant.name.replaceFirstChar { it.uppercase() }}LauncherShortcuts",
+        ) {
+            templateFile.set(layout.projectDirectory.file("src/main/shortcuts.xml"))
+            applicationId.set(variant.applicationId)
+            outputDirectory.set(layout.buildDirectory.dir("generated/res/launcherShortcuts/${variant.name}"))
+        }
+        variant.sources.res?.addGeneratedSourceDirectory(shortcuts, GenerateLauncherShortcutsTask::outputDirectory)
     }
 }
 

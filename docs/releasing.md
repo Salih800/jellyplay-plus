@@ -1,8 +1,8 @@
 # Android phone releases
 
-The first JellyPlay+ release is built locally and uploaded to GitHub Releases.
+JellyPlay+ Android phone releases are built locally and uploaded to GitHub Releases.
 The inherited `release.yml` workflow also builds TV and desktop packages and
-requires upstream-style repository signing secrets; it is not used for this cut.
+requires upstream-style repository signing secrets; it is not used for these cuts.
 
 ## Signing
 
@@ -19,8 +19,8 @@ these signing files as release assets.
 
 ## Build
 
-Choose a new version name and a strictly increasing version code. Version 0.1.0
-uses code 100. From PowerShell at the repository root:
+Choose a new version name and a strictly increasing version code. Version 0.1.1
+uses code 101. From PowerShell at the repository root:
 
 ```powershell
 $credential = Import-Clixml "$env:USERPROFILE\.android\jellyplay-plus-release-signing.clixml"
@@ -29,7 +29,7 @@ $env:KEY_PASSWORD = $env:KEYSTORE_PASSWORD
 $env:KEY_ALIAS = $credential.UserName
 $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 try {
-    .\gradlew.bat :app:assemblePhoneRelease '-PversionName=0.1.0' '-PversionCode=100'
+    .\gradlew.bat :app:assemblePhoneRelease '-PversionName=0.1.1' '-PversionCode=101'
     if ($LASTEXITCODE -ne 0) { throw 'Release build failed.' }
 } finally {
     Remove-Item Env:KEYSTORE_PASSWORD, Env:KEY_PASSWORD, Env:KEY_ALIAS -ErrorAction SilentlyContinue
@@ -38,8 +38,16 @@ try {
 
 Verify the resulting APK with the Android SDK's `apksigner verify --verbose
 --print-certs` and `aapt dump badging`. Confirm the package, version, ABI, and
-signing certificate before uploading it. Keep R8 mappings locally for crash
+signing certificate before uploading it. The phone release package must be
+`com.raulshma.jellyplay.plus`; do not publish an APK with upstream's package ID.
+Confirm launcher shortcuts and provider authorities resolve to the final package.
+Keep R8 mappings locally for crash
 diagnosis. Create SHA-256 checksums for the public APK assets.
+
+The launcher shortcut template is `app/src/main/shortcuts.xml`.
+`GenerateLauncherShortcutsTask` writes a resource XML for each variant using its
+final application ID. Android shortcut intent `targetPackage` requires a literal;
+neither a string resource reference nor a manifest placeholder works there.
 
 ## Publish
 
@@ -49,6 +57,12 @@ and upload the APK and checksum file. Do not upload local diagnostic databases,
 device fixtures, signing files, or build logs containing user data. Verify the
 published tag, version, asset sizes, and checksums after publication.
 
-The release application ID is `com.raulshma.jellyplay`, separate from the local
-development app's `com.raulshma.jellyplay.dev`. This fork's release key also differs
-from upstream JellyPlay's key; upstream installations cannot be updated in place.
+Since 0.1.1, the phone release application ID is `com.raulshma.jellyplay.plus`,
+separate from upstream's `com.raulshma.jellyplay` and the existing local development
+app's `com.raulshma.jellyplay.dev`. The TV release uses
+`com.raulshma.jellyplay.tv.plus`. Source namespaces remain unchanged.
+
+Version 0.1.0 incorrectly reused upstream's application ID. Its installed data
+does not automatically transfer to the new application ID; 0.1.1 installs as a
+separate app. Do not uninstall upstream or erase existing data to install this
+fork. Continue using the same JellyPlay+ signing key for future `.plus` updates.

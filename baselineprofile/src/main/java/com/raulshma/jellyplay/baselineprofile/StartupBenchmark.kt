@@ -27,7 +27,7 @@ class StartupBenchmark {
     @Test
     fun coldStartup() {
         benchmarkRule.measureRepeated(
-            packageName = "com.raulshma.jellyplay",
+            packageName = "com.raulshma.jellyplay.plus",
             metrics = listOf(StartupTimingMetric()),
             compilationMode = CompilationMode.None(),
             startupMode = StartupMode.COLD,
