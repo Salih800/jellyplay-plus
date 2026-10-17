@@ -10,7 +10,7 @@
     <string name="settings_preset_saved">Salvato "%1$s"</string>
     <string name="settings_preset_applied_named">Applicato "%1$s"</string>
     <string name="settings_preset_deleted">Eliminato "%1$s"</string>
-    <string name="settings_home_layout_subject">Layout home JellyPlay: %1$s</string>
+    <string name="settings_home_layout_subject">Layout home JellyPlay+: %1$s</string>
     <string name="settings_browse_favorites">Sfoglia preferiti</string>
     <string name="settings_browse_favorites_subtitle">Visualizza i tuoi contenuti preferiti</string>
     <string name="settings_watch_history_heatmap">Mappa di calore cronologia visione</string>
@@ -52,7 +52,7 @@
     <string name="settings_save_current_layout_subtitle">Cattura il tuo layout home attuale come preset denominato</string>
     <string name="settings_share_current_layout">Condividi layout attuale</string>
     <string name="settings_share_current_layout_subtitle">Esporta il tuo layout attuale come JSON condivisibile</string>
-    <string name="settings_home_layout_subject_plain">Layout home JellyPlay</string>
+    <string name="settings_home_layout_subject_plain">Layout home JellyPlay+</string>
     <string name="settings_share_home_layout">Condividi layout home</string>
     <string name="settings_saved_presets">Preset salvati</string>
     <string name="settings_saved_presets_summary">Tocca un preset per caricarlo, condividerlo o eliminarlo</string>

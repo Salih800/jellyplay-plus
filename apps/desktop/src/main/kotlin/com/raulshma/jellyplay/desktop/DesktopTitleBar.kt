@@ -129,7 +129,7 @@ internal fun WindowScope.DesktopTitleBar(
                         )
                     }
                     Text(
-                        "JellyPlay",
+                        "JellyPlay+",
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1,

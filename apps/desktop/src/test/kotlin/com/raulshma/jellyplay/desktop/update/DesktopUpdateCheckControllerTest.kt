@@ -51,7 +51,7 @@ class DesktopUpdateCheckControllerTest {
 
     private fun info(available: Boolean = true) = AppUpdateInfo(
         latestVersion = "0.11.0",
-        htmlUrl = "https://github.com/raulshma/jellyplay/releases/tag/v0.11.0",
+        htmlUrl = "https://github.com/Salih800/jellyplay-plus/releases/tag/v0.11.0",
         releaseNotes = "notes",
         isUpdateAvailable = available,
         downloadAssetUrl = null,
@@ -73,7 +73,7 @@ class DesktopUpdateCheckControllerTest {
         advanceUntilIdle()
 
         assertEquals(
-            listOf("https://github.com/raulshma/jellyplay/releases/tag/v0.11.0"),
+            listOf("https://github.com/Salih800/jellyplay-plus/releases/tag/v0.11.0"),
             openedUrls,
             "the release PAGE url is what the browser receives (DesktopUpdateLinks.pick)",
         )

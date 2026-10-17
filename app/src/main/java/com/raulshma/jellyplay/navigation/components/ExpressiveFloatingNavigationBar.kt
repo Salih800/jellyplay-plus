@@ -36,6 +36,7 @@ import com.raulshma.jellyplay.core.ui.components.focusIndicator
 import com.raulshma.jellyplay.core.ui.feedback.rememberSelectionTickHaptic
 import com.raulshma.jellyplay.navigation.NavIcon
 import com.raulshma.jellyplay.core.ui.navigation.Route
+import com.raulshma.jellyplay.core.ui.navigation.localizedNavLabel
 
 /**
  * Material Design 3 Expressive Floating Navigation Bar (Google Photos redesign style).
@@ -86,8 +87,9 @@ fun ExpressiveFloatingNavigationBar(
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    mainRoutes.forEach { (route, label) ->
+                    mainRoutes.forEach { (route, _) ->
                         androidx.compose.runtime.key(route) {
+                            val label = route.localizedNavLabel()
                             // Selection tick on tab pick (gated by the haptics
                             // preference); confirm-grade would overstate a
                             // tab switch.
@@ -232,7 +234,7 @@ fun ExpressiveFloatingNavigationBar(
                         ) {
                             Icon(
                                 imageVector = Tabler.Outline.Search,
-                                contentDescription = searchEntry.value,
+                                contentDescription = searchEntry.key.localizedNavLabel(),
                                 tint = searchTint,
                                 modifier = Modifier.size(22.dp),
                             )

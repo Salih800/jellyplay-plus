@@ -10,7 +10,7 @@
     <string name="settings_preset_saved">Saved "%1$s"</string>
     <string name="settings_preset_applied_named">Applied "%1$s"</string>
     <string name="settings_preset_deleted">Deleted "%1$s"</string>
-    <string name="settings_home_layout_subject">JellyPlay Home Layout: %1$s</string>
+    <string name="settings_home_layout_subject">JellyPlay+ Home Layout: %1$s</string>
     <string name="settings_browse_categories">Browse Categories</string>
     <string name="settings_browse_favorites">Browse Favorites</string>
     <string name="settings_browse_favorites_subtitle">View your favourited media</string>
@@ -56,7 +56,7 @@
     <string name="settings_save_current_layout_subtitle">Snapshot your current home layout as a named preset</string>
     <string name="settings_share_current_layout">Share Current Layout</string>
     <string name="settings_share_current_layout_subtitle">Export your current layout as shareable JSON</string>
-    <string name="settings_home_layout_subject_plain">JellyPlay Home Layout</string>
+    <string name="settings_home_layout_subject_plain">JellyPlay+ Home Layout</string>
     <string name="settings_share_home_layout">Share Home Layout</string>
     <string name="settings_saved_presets">Saved Presets</string>
     <string name="settings_saved_presets_summary">Tap a preset to load, share or delete it</string>

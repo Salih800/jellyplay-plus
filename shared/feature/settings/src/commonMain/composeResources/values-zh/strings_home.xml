@@ -10,7 +10,7 @@
     <string name="settings_preset_saved">已保存“%1$s”</string>
     <string name="settings_preset_applied_named">已应用“%1$s”</string>
     <string name="settings_preset_deleted">已删除“%1$s”</string>
-    <string name="settings_home_layout_subject">JellyPlay 主页布局：%1$s</string>
+    <string name="settings_home_layout_subject">JellyPlay+ 主页布局：%1$s</string>
     <string name="settings_browse_favorites">浏览收藏</string>
     <string name="settings_browse_favorites_subtitle">查看你收藏的媒体</string>
     <string name="settings_watch_history_heatmap">观看历史热力图</string>
@@ -52,7 +52,7 @@
     <string name="settings_save_current_layout_subtitle">将当前主页布局快照保存为命名预设</string>
     <string name="settings_share_current_layout">分享当前布局</string>
     <string name="settings_share_current_layout_subtitle">将当前布局导出为可分享的 JSON</string>
-    <string name="settings_home_layout_subject_plain">JellyPlay 主页布局</string>
+    <string name="settings_home_layout_subject_plain">JellyPlay+ 主页布局</string>
     <string name="settings_share_home_layout">分享主页布局</string>
     <string name="settings_saved_presets">已保存的预设</string>
     <string name="settings_saved_presets_summary">点击预设以加载、分享或删除</string>

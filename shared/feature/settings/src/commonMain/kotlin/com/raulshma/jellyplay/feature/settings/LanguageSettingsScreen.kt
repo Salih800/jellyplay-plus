@@ -1,5 +1,7 @@
 package com.raulshma.jellyplay.feature.settings
 
+import com.raulshma.jellyplay.feature.settings.generated.resources.settings_subtitle_opacity_value
+
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -121,11 +123,11 @@ sealed class LanguageSettingsDialog {
 /** Which subtitle row's free-form hex dialog the sheet handed off to. */
 private enum class SubtitleColorTarget { TEXT, BACKGROUND }
 
-// App display languages. MUST stay in lockstep with `resourceConfigurations` in
+// App display languages. MUST stay in lockstep with `localeFilters` in
 // app/build.gradle.kts — that list is the source of truth for which locales have
 // shipped values-<locale>/strings.xml. Advertising a locale here without translations
 // causes a silent fallback to English, so never add an entry whose
-// tag isn't also in resourceConfigurations.
+// tag isn't also in localeFilters.
 internal val appLanguages = listOf(
     null to "System Default",
     "en" to "English",
@@ -137,6 +139,7 @@ internal val appLanguages = listOf(
     "ja" to "日本語",
     "ko" to "한국어",
     "zh" to "中文",
+    "tr" to "Türkçe",
 )
 
 private val appLanguageNameByCode: Map<String?, String> = appLanguages.associate { it.first to it.second }
@@ -202,7 +205,7 @@ fun LanguageSettingsScreen(
                     title = stringResource(Res.string.settings_language),
                     summary = {
                         val parts = mutableListOf<String>()
-                        val appLangLabel = appLanguages.firstOrNull { it.first == preferences.appLanguage }?.second
+                        val appLangLabel = appLanguages.firstOrNull { it.first != null && it.first == preferences.appLanguage }?.second
                             ?: preferences.appLanguage ?: stringResource(Res.string.settings_lang_system_default)
                         parts.add(stringResource(Res.string.settings_ui_label, appLangLabel))
                         parts.add(stringResource(Res.string.settings_audio_label, preferences.preferredAudioLanguage ?: stringResource(Res.string.settings_lang_default)))
@@ -211,7 +214,7 @@ fun LanguageSettingsScreen(
                     modifier = Modifier.padding(vertical = 8.dp),
                     initiallyExpanded = true,
                 ) {
-                    val appLangLabel = appLanguages.firstOrNull { it.first == preferences.appLanguage }?.second
+                    val appLangLabel = appLanguages.firstOrNull { it.first != null && it.first == preferences.appLanguage }?.second
                         ?: preferences.appLanguage ?: stringResource(Res.string.settings_lang_system_default)
                     val appLangFallback = stringResource(Res.string.settings_lang_system_default)
                     val audioLangTitle = rowTitle(LanguageRows.AudioLanguage)
@@ -239,7 +242,7 @@ fun LanguageSettingsScreen(
                                 activePicker.value = PickerState.List(
                                     title = displayLanguageTitle,
                                     items = appLanguages.map { it.first },
-                                    label = { code -> appLanguageNameByCode[code] ?: code ?: appLangFallback },
+                                    label = { code -> code?.let { appLanguageNameByCode[it] ?: it } ?: appLangFallback },
                                     isSelected = { it == preferences.appLanguage },
                                     onSelect = { viewModel.setAppLanguage(it) },
                                 )
@@ -712,7 +715,7 @@ fun LanguageSettingsScreen(
                 )
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    "Opacity: ${(bgOpacity * 100).toInt()}%",
+                    stringResource(Res.string.settings_subtitle_opacity_value, (bgOpacity * 100).toInt()),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )

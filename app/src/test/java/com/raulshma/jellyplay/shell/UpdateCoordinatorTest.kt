@@ -243,10 +243,10 @@ class UpdateCoordinatorTest {
 
     private fun updateInfo(latestVersion: String, isAvailable: Boolean = true) = AppUpdateInfo(
         latestVersion = latestVersion,
-        htmlUrl = "https://github.com/raulshma/JellyPlay/releases/tag/v$latestVersion",
+        htmlUrl = "https://github.com/Salih800/jellyplay-plus/releases/tag/v$latestVersion",
         releaseNotes = "",
         isUpdateAvailable = isAvailable,
-        downloadAssetUrl = "https://github.com/raulshma/JellyPlay/releases/download/v$latestVersion/app.apk",
+        downloadAssetUrl = "https://github.com/Salih800/jellyplay-plus/releases/download/v$latestVersion/app.apk",
         downloadAssetName = "app.apk",
         releaseSize = 1L,
     )

@@ -41,13 +41,13 @@
     <string name="auth_error_cleartext">不允许使用 HTTP 连接。请使用 HTTPS。</string>
     <string name="auth_error_connection_failed">连接服务器失败</string>
     <string name="auth_tls_trust_title">信任此服务器的证书？</string>
-    <string name="auth_tls_trust_body">%1$s 服务器使用了 JellyPlay 无法验证的证书（自签名或不受信任）。信任后 JellyPlay 即可安全连接该服务器。之后可在“设置 → 服务器管理”中撤销。</string>
+    <string name="auth_tls_trust_body">%1$s 服务器使用了 JellyPlay+ 无法验证的证书（自签名或不受信任）。信任后 JellyPlay+ 即可安全连接该服务器。之后可在“设置 → 服务器管理”中撤销。</string>
     <string name="auth_tls_trust_confirm">信任并连接</string>
 
     <!-- Android 17+ local network permission -->
     <string name="auth_error_local_network_denied">本地网络访问已被阻止。请授予本地网络权限以访问您 Wi-Fi 上的服务器。</string>
     <string name="auth_local_network_rationale_title">本地网络访问</string>
-    <string name="auth_local_network_rationale_body">JellyPlay 需要本地网络访问权限才能发现并连接您 Wi-Fi 上的 Jellyfin 服务器。</string>
+    <string name="auth_local_network_rationale_body">JellyPlay+ 需要本地网络访问权限才能发现并连接您 Wi-Fi 上的 Jellyfin 服务器。</string>
     <string name="auth_local_network_allow">允许访问</string>
 
     <!-- Quick Connect screen -->

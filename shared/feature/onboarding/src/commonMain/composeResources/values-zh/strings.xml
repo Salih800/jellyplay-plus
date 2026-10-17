@@ -5,14 +5,14 @@
     <string name="onboarding_skip">跳过</string>
     <string name="onboarding_next">下一步</string>
     <string name="onboarding_completion_title">全部就绪！</string>
-    <string name="onboarding_completion_subtitle">您的 JellyPlay 已配置完成，可以开始使用。您可以稍后随时更改这些设置。</string>
+    <string name="onboarding_completion_subtitle">您的 JellyPlay+ 已配置完成，可以开始使用。您可以稍后随时更改这些设置。</string>
     <string name="onboarding_completion_start_watching">开始观看</string>
     <string name="onboarding_seerr_connection">连接</string>
     <string name="onboarding_seerr_connected">已连接</string>
     <string name="onboarding_seerr_features">功能</string>
     <string name="onboarding_seerr_regions">地区</string>
 
-    <string name="onboarding_welcome_title">欢迎使用\nJellyPlay</string>
+    <string name="onboarding_welcome_title">欢迎使用\nJellyPlay+</string>
     <string name="onboarding_welcome_subtitle">你的专属 Jellyfin 客户端。让我们做一些简单的设置来帮你开始使用。</string>
     <string name="onboarding_feature_stream">在线播放电影 &amp; 剧集</string>
     <string name="onboarding_feature_music">带高级音效的音乐播放器</string>
@@ -80,7 +80,7 @@
 
     <!-- AppearanceStep -->
     <string name="onboarding_appearance_title">外观</string>
-    <string name="onboarding_appearance_subtitle">选择 JellyPlay 为你呈现的外观</string>
+    <string name="onboarding_appearance_subtitle">选择 JellyPlay+ 为你呈现的外观</string>
     <string name="onboarding_appearance_theme">主题</string>
     <string name="onboarding_appearance_theme_system">跟随系统</string>
     <string name="onboarding_appearance_theme_light">浅色</string>

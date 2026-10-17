@@ -1,5 +1,15 @@
 package com.raulshma.jellyplay.feature.player.video.components
 
+import com.raulshma.jellyplay.feature.player.video.generated.resources.Res
+import org.jetbrains.compose.resources.stringResource
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_option_inherit
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_option_quality_profile
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_option_render_help
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_option_save_series
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_option_shader_pack
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_option_tone_mapping
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_video_rendering
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -39,8 +49,7 @@ import com.raulshma.jellyplay.core.ui.components.SheetHeader
  * session only; on = pinned to the series row, or the item row for
  * standalone movies). "Inherit (follow global)" clears the stored override.
  *
- * English literals match the sibling sheets (PlaybackModeSheet et al.) —
- * sheet bodies are the established hard-coded-string surface.
+ * Presentation labels are locale-aware; persisted engine keys stay unchanged.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -68,20 +77,19 @@ fun RenderSheet(
                 .padding(bottom = 32.dp),
         ) {
             SheetHeader(
-                title = "Rendering",
+                title = stringResource(Res.string.player_video_rendering),
                 icon = Tabler.Outline.Wand,
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                "GPU shader packs, tone mapping and quality profiles. " +
-                    "Applies immediately; \"Save for this series\" pins it for future playback.",
+                stringResource(Res.string.player_option_render_help),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 24.dp),
             )
             Spacer(Modifier.height(16.dp))
 
-            RenderSectionTitle("Shader Pack")
+            RenderSectionTitle(stringResource(Res.string.player_option_shader_pack))
             FlowRow(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -89,7 +97,7 @@ fun RenderSheet(
             ) {
                 MpvShaderPack.entries.forEach { pack ->
                     RenderChip(
-                        label = pack.displayName,
+                        label = pack.localizedPlayerLabel(),
                         selected = pack == shaderPack,
                         onClick = { onShaderPackSelect(pack) },
                     )
@@ -97,7 +105,7 @@ fun RenderSheet(
             }
 
             Spacer(Modifier.height(16.dp))
-            RenderSectionTitle("Tone Mapping (HDR → SDR)")
+            RenderSectionTitle(stringResource(Res.string.player_option_tone_mapping))
             FlowRow(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -105,7 +113,7 @@ fun RenderSheet(
             ) {
                 MpvToneMapping.entries.forEach { mapping ->
                     RenderChip(
-                        label = mapping.displayName,
+                        label = mapping.localizedPlayerLabel(),
                         selected = mapping == toneMapping,
                         onClick = { onToneMappingSelect(mapping) },
                     )
@@ -113,7 +121,7 @@ fun RenderSheet(
             }
 
             Spacer(Modifier.height(16.dp))
-            RenderSectionTitle("Quality Profile")
+            RenderSectionTitle(stringResource(Res.string.player_option_quality_profile))
             FlowRow(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -121,7 +129,7 @@ fun RenderSheet(
             ) {
                 MpvRenderQuality.entries.forEach { quality ->
                     RenderChip(
-                        label = quality.displayName,
+                        label = quality.localizedPlayerLabel(),
                         selected = quality == renderQuality,
                         onClick = { onRenderQualitySelect(quality) },
                     )
@@ -136,7 +144,7 @@ fun RenderSheet(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        "Save for this series",
+                        stringResource(Res.string.player_option_save_series),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurface,
                     )
@@ -153,7 +161,7 @@ fun RenderSheet(
                 horizontalArrangement = Arrangement.End,
             ) {
                 TextButton(onClick = onInherit, enabled = hasStoredOverride) {
-                    Text("Inherit (follow global)")
+                    Text(stringResource(Res.string.player_option_inherit))
                 }
             }
         }

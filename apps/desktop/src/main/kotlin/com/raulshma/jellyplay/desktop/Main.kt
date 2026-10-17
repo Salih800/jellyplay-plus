@@ -240,7 +240,7 @@ fun main(args: Array<String>) {
 
         Window(
             state = windowState,
-            title = "JellyPlay",
+            title = "JellyPlay+",
             icon = appIcon,
             undecorated = true,
             onCloseRequest = ::exitApplication,
@@ -448,9 +448,9 @@ fun main(args: Array<String>) {
         if (appIcon != null && systemTrayAvailable()) {
             Tray(
                 icon = appIcon,
-                tooltip = "JellyPlay",
+                tooltip = "JellyPlay+",
                 menu = {
-                    Item("Show JellyPlay") {
+                    Item("Show JellyPlay+") {
                         // Tray item clicks come back through AWT menu
                         // machinery; compose desktop's own composition runs on
                         // that same AWT event thread, and this hop costs one

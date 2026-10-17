@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="calendar_title">Yakında</string>
+    <string name="calendar_today">Bugün</string>
+    <string name="calendar_pick_date_cd">Bir tarih seçin</string>
+    <string name="calendar_prev_month_cd">Önceki ay</string>
+    <string name="calendar_next_month_cd">Gelecek ay</string>
+    <string name="calendar_refresh_cd">Yenile</string>
+    <string name="calendar_filter_all">Tümü</string>
+    <string name="calendar_filter_movies">Filmler</string>
+    <string name="calendar_filter_series">Dizi</string>
+    <string name="calendar_releases_count">%1$d sürümler</string>
+    <string name="calendar_empty_title">Gelecek bir şey yok</string>
+    <string name="calendar_empty_desc">Bu ay içinde yayın planlanmadı.</string>
+    <string name="calendar_go_today">Bugüne git</string>
+    <string name="calendar_error_unknown">Takvim yüklenemedi.</string>
+    <string name="calendar_no_detail">Bu öğe için ayrıntı mevcut değil.</string>
+    <string name="calendar_feature_disabled_title">Doğrudan *arr Entegrasyonu kapalı</string>
+    <string name="calendar_feature_disabled_desc">Sonarr ve Radarr'nin gelecek sürümlerini görmek için bunu Ayarlar → Entegrasyonlar'da etkinleştirin.</string>
+    <string name="calendar_open_settings">*arr Ayarlarını Aç</string>
+</resources>

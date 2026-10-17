@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
  * WebSocket connect on the auth edge, remote-control receiver start/stop,
  * endpoint selection, capabilities re-posting on every socket reconnect — is
  * the shared [RealtimeSessionController], built through its `create` factory
- * per lifecycle with clientName "JellyPlay"; session restore (restore call →
+ * per lifecycle with clientName "JellyPlay+"; session restore (restore call →
  * authenticated-mirror wait → bounded timeout → splash release) is the
  * shared [SessionRestore], with this class exposing its flows verbatim.
  *
@@ -117,7 +117,7 @@ class SessionCoordinator(
             isAuthenticated = authRepository.isAuthenticated,
             currentServer = authRepository.currentServer,
             currentUser = authRepository.currentUser,
-            clientName = "JellyPlay",
+            clientName = "JellyPlay+",
             realtimeConnection = realtimeConnection,
             remoteControlReceiver = remoteControlReceiver,
             serverIdentityStore = serverIdentityStore,

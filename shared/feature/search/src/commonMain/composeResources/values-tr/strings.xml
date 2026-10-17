@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_no_results_found">Sonuç bulunamadı</string>
+    <string name="search_try_adjusting_filters">Filtrelerinizi ayarlamayı deneyin</string>
+    <string name="search_did_you_mean">Bunu mu demek istediniz?</string>
+    <string name="search_failed">Arama başarısız oldu</string>
+    <string name="search_failed_to_load_more">Daha fazlası yüklenemedi</string>
+    <string name="search_title">Ara</string>
+    <string name="search_placeholder">Film, program, müzik arayın…</string>
+    <string name="search_voice_prompt">Film, program, müzik arayın…</string>
+    <string name="search_voice_search">Sesli arama</string>
+    <string name="search_clear_search">Aramayı temizle</string>
+    <string name="search_action_filters">Filtreler</string>
+    <string name="search_clear_all">Tümünü temizle</string>
+    <plurals name="search_result_count">
+        <item quantity="one">%1$d sonuç</item>
+        <item quantity="other">%1$d sonuçlar</item>
+    </plurals>
+    <string name="search_suggestions">Öneriler</string>
+    <string name="search_on_device">Cihaz üzerinde</string>
+    <string name="search_recent_searches">Son Aramalar</string>
+    <string name="search_remove">Kaldır</string>
+    <string name="search_search_your_library">Kitaplığınızda arama yapın</string>
+    <string name="search_search_your_library_desc">Filmler, şovlar, müzik ve daha fazlası</string>
+    <string name="search_request_via_seerr">Seerr aracılığıyla istek</string>
+    <string name="search_seerr_search_failed">Seerr arama başarısız oldu</string>
+    <string name="search_retry">Yeniden dene</string>
+    <string name="search_clear_search_history">Arama geçmişini temizle</string>
+    <string name="search_clear_history_confirm">Son aramaların tümü kaldırılsın mı? Bu geri alınamaz.</string>
+    <string name="search_action_clear">Temizle</string>
+    <string name="search_action_cancel">İptal</string>
+    <string name="search_filters_title">Filtreler</string>
+    <string name="search_filter_media_type">Medya Türü</string>
+    <string name="search_filter_genres">Türler</string>
+    <string name="search_filter_year_range">Yıl Aralığı</string>
+    <string name="search_filter_tags">Etiketler</string>
+    <string name="search_filter_minimum_rating">Minimum Derecelendirme</string>
+    <string name="search_filter_any">Herhangi biri</string>
+    <string name="search_filter_rating_plus">%1$s+</string>
+    <string name="search_apply_filters">Filtreleri Uygula</string>
+    <string name="search_sort">Sırala</string>
+    <string name="search_sort_by">Sıralama ölçütü</string>
+    <string name="search_filter_status">Durum</string>
+    <string name="search_filter_played_all">Tümü</string>
+    <string name="search_filter_played_played">Oynatıldı</string>
+    <string name="search_filter_played_unplayed">Oynatılmadı</string>
+</resources>

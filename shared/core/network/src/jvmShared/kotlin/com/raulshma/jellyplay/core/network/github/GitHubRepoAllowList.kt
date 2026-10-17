@@ -26,7 +26,7 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
  * ## Rules
  *
  *  - Release endpoints: https, host in [ALLOWED_RELEASE_HOSTS], and the
- *    path under `/repos/<ALLOWED_OWNER>/` (owner pin, matching the
+ *    path under `/repos/<ALLOWED_OWNER>/<ALLOWED_REPO>/` (matching the
  *    [GitHubReleasesApiImpl.LATEST_RELEASE_URL] /
  *    [GitHubReleasesApiImpl.RELEASES_LIST_URL] identities).
  *  - Asset/download URLs — and release PAGE urls, which share the
@@ -52,10 +52,10 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 object GitHubRepoAllowList {
 
     /** The compiled-in anti-takeover pin: the only owner we accept. */
-    const val ALLOWED_OWNER = "raulshma"
+    const val ALLOWED_OWNER = "Salih800"
 
     /** The only repo whose asset/page paths we accept (owner + repo). */
-    const val ALLOWED_REPO = "jellyplay"
+    const val ALLOWED_REPO = "jellyplay-plus"
 
     /**
      * The compiled-in pin for the repo's immutable GitHub ID. GitHub's
@@ -65,7 +65,7 @@ object GitHubRepoAllowList {
      * the name — survives owner renames AND transfers, so it is the
      * strongest owner check available on that host.
      */
-    const val ALLOWED_REPO_ID = 1227884704L
+    const val ALLOWED_REPO_ID = 1423313233L
 
     /** Hosts allowed to serve the release-API endpoint (post-redirect final host). */
     val ALLOWED_RELEASE_HOSTS = setOf("api.github.com", "github.com")
@@ -88,8 +88,8 @@ object GitHubRepoAllowList {
      */
     private const val RELEASE_ASSET_CDN_HOST = "release-assets.githubusercontent.com"
 
-    private const val API_PATH_PREFIX = "/repos/$ALLOWED_OWNER/"
-    private const val REPO_PATH_PREFIX = "/$ALLOWED_OWNER/$ALLOWED_REPO/"
+    private val API_PATH_PREFIX = "/repos/$ALLOWED_OWNER/$ALLOWED_REPO/".lowercase()
+    private val REPO_PATH_PREFIX = "/$ALLOWED_OWNER/$ALLOWED_REPO/".lowercase()
     private const val RELEASE_ASSET_CDN_PATH_PREFIX =
         "/github-production-release-asset/$ALLOWED_REPO_ID/"
 

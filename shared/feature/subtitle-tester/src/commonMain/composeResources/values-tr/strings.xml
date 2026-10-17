@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="subtitle_tester_title">Altyazı stilini dene</string>
+    <string name="subtitle_tester_apply">Uygula</string>
+    <string name="subtitle_tester_reset">Sıfırla</string>
+    <string name="subtitle_tester_discard_title">Değişiklikler silinsin mi?</string>
+    <string name="subtitle_tester_discard_message">Önizleme ayarlarınız uygulanmadı.</string>
+    <string name="subtitle_tester_discard_confirm">At</string>
+    <string name="subtitle_tester_discard_cancel">Düzenlemeye devam edin</string>
+    <string name="subtitle_tester_engine">Motor</string>
+    <string name="subtitle_tester_preset">Örnek</string>
+    <string name="subtitle_tester_reloading">Yeniden yükleniyor…</string>
+    <string name="subtitle_tester_hint_hot">Gerçekten sıcak · güncellemeleri anında önizleyin</string>
+    <string name="subtitle_tester_hint_libvlc">Stil değişiklikleri bu motoru kısa süreliğine yeniden yükler</string>
+    <string name="subtitle_tester_preset_dialogue">Diyalog</string>
+    <string name="subtitle_tester_preset_lyrics">Şarkı sözleri</string>
+    <string name="subtitle_tester_preset_signs">İşaretler / TL notları</string>
+    <string name="subtitle_tester_preset_action">Aksiyon patlamaları</string>
+    <string name="subtitle_tester_preview_title">Altyazı önizlemesi</string>
+    <string name="subtitle_tester_track_sample">Örnek</string>
+</resources>

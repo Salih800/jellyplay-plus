@@ -113,4 +113,9 @@
     <string name="next_up_hidden_unknown">Unknown series</string>
     <string name="a11y_mode_video">Video mode</string>
     <string name="a11y_mode_music">Music mode</string>
+    <string name="home_recently_added">Recently Added</string>
+    <string name="home_recommended_for_you">Recommended For You</string>
+    <string name="home_favorites">Favorites</string>
+    <string name="home_live_tv">Live TV</string>
+    <string name="home_latest_library">Latest %1$s</string>
 </resources>

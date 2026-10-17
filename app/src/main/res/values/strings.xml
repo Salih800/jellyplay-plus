@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">JellyPlay</string>
+    <string name="app_name" translatable="false">JellyPlay+</string>
     <string name="open_app_description">Open %1$s</string>
     <string name="tile_paused_label">Paused: %1$s</string>
     <string name="tile_playing_cd">Playing</string>
@@ -27,13 +27,13 @@
     <string name="widget_continue_watching_label">Continue Watching</string>
     <string name="widget_continue_watching_description">Jump back into the shows and movies you started but haven\'t finished.</string>
     <string name="widget_nothing_playing">Nothing playing</string>
-    <string name="widget_open_to_play">Tap to open JellyPlay</string>
+    <string name="widget_open_to_play">Tap to open JellyPlay+</string>
     <string name="widget_continue_watching_empty">Nothing to continue yet</string>
     <string name="widget_continue_watching_empty_subtitle">Start watching a show and it will appear here</string>
     <string name="widget_placeholder_title">Track title</string>
     <string name="widget_placeholder_subtitle">Artist name</string>
     <string name="widget_album_art">Album art</string>
-    <string name="widget_app_icon" translatable="false">JellyPlay</string>
+    <string name="widget_app_icon" translatable="false">JellyPlay+</string>
     <string name="widget_play_pause">Play or pause</string>
     <string name="widget_next">Next track</string>
     <string name="widget_previous">Previous track</string>
@@ -52,7 +52,7 @@
     <string name="widget_library_recommendations_subtitle">Because you watched</string>
     <string name="widget_library_recommendations_description">Personalized picks from your Jellyfin library — based on what you have been watching.</string>
     <string name="widget_library_recommendations_empty">No recommendations yet</string>
-    <string name="widget_library_recommendations_empty_subtitle">Open JellyPlay to start exploring your library</string>
+    <string name="widget_library_recommendations_empty_subtitle">Open JellyPlay+ to start exploring your library</string>
 
     <!-- Seerr Recommendations widget -->
     <string name="widget_seerr_recommendations_label">Seerr Picks</string>
@@ -60,7 +60,7 @@
     <string name="widget_seerr_recommendations_subtitle">Trending this week</string>
     <string name="widget_seerr_recommendations_description">Trending and upcoming movies and TV from your Seerr (Jellyseerr / Overseerr) server.</string>
     <string name="widget_seerr_recommendations_empty">Seerr is not connected</string>
-    <string name="widget_seerr_recommendations_empty_subtitle">Configure Seerr in JellyPlay settings to see picks</string>
+    <string name="widget_seerr_recommendations_empty_subtitle">Configure Seerr in JellyPlay+ settings to see picks</string>
     <string name="widget_seerr_no_recommendations">No recommendations yet</string>
     <string name="widget_seerr_no_recommendations_subtitle">Tap refresh or check back later</string>
 
@@ -96,7 +96,7 @@
     <!-- In-app self-update sheet -->
     <string name="update_checking">Checking for updates\u2026</string>
     <string name="update_up_to_date_title">You\'re up to date</string>
-    <string name="update_up_to_date_body">JellyPlay is already the latest version.</string>
+    <string name="update_up_to_date_body">JellyPlay+ is already the latest version.</string>
     <string name="snackbar_now_playing">Now playing: %1$s</string>
     <string name="snackbar_context_menu_unavailable">Context menu not available here</string>
     <string name="update_view_notes">View release notes</string>
@@ -141,13 +141,13 @@
     <!-- Floating player foreground notification -->
     <string name="floating_player_channel_name">Floating Player</string>
     <string name="floating_player_channel_desc">Floating media player overlay</string>
-    <string name="floating_player_notification_title">JellyPlay Floating Player</string>
+    <string name="floating_player_notification_title">JellyPlay+ Floating Player</string>
     <string name="floating_player_notification_text">Media controls are floating on screen</string>
 
     <!-- Lock screen authentication -->
     <string name="auth_title_biometric">Authenticate</string>
     <string name="auth_title_pin">Enter PIN</string>
-    <string name="auth_subtitle">Unlock JellyPlay</string>
+    <string name="auth_subtitle">Unlock JellyPlay+</string>
     <string name="pin_incorrect">Incorrect PIN</string>
     <string name="pin_lockout_now">Too many attempts. Try again.</string>
     <string name="pin_lockout_seconds">Too many attempts. Try again in %1$ds.</string>
@@ -181,7 +181,7 @@
 
     <!-- Play On device sheet -->
     <string name="play_on_title">Play On</string>
-    <string name="play_on_no_clients">No Jellyfin clients found. Open JellyPlay or Jellyfin on another device and it will appear here.</string>
+    <string name="play_on_no_clients">No Jellyfin clients found. Open JellyPlay+ or Jellyfin on another device and it will appear here.</string>
     <string name="play_on_jellyfin_session">Jellyfin session</string>
 
     <!-- Player speed-picker custom-value labels (§2.3). Shared by video/audio SpeedPickerSheet. -->

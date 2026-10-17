@@ -5,14 +5,14 @@
     <string name="onboarding_skip">スキップ</string>
     <string name="onboarding_next">次へ</string>
     <string name="onboarding_completion_title">設定完了！</string>
-    <string name="onboarding_completion_subtitle">JellyPlayの設定が完了し、利用できる状態になりました。これらの設定は後からいつでも変更できます。</string>
+    <string name="onboarding_completion_subtitle">JellyPlay+の設定が完了し、利用できる状態になりました。これらの設定は後からいつでも変更できます。</string>
     <string name="onboarding_completion_start_watching">視聴を開始</string>
     <string name="onboarding_seerr_connection">接続</string>
     <string name="onboarding_seerr_connected">接続済み</string>
     <string name="onboarding_seerr_features">機能</string>
     <string name="onboarding_seerr_regions">地域</string>
 
-    <string name="onboarding_welcome_title">JellyPlay\nへようこそ</string>
+    <string name="onboarding_welcome_title">JellyPlay+\nへようこそ</string>
     <string name="onboarding_welcome_subtitle">あなた専用のJellyfinクライアント。初期設定を済ませて使い始めましょう。</string>
     <string name="onboarding_feature_stream">映画やテレビ番組をストリーミング</string>
     <string name="onboarding_feature_music">高度な音声エフェクトを備えた音楽プレーヤー</string>
@@ -80,7 +80,7 @@
 
     <!-- AppearanceStep -->
     <string name="onboarding_appearance_title">外観</string>
-    <string name="onboarding_appearance_subtitle">JellyPlayの見た目を選択</string>
+    <string name="onboarding_appearance_subtitle">JellyPlay+の見た目を選択</string>
     <string name="onboarding_appearance_theme">テーマ</string>
     <string name="onboarding_appearance_theme_system">システム</string>
     <string name="onboarding_appearance_theme_light">ライト</string>

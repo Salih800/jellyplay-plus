@@ -59,6 +59,7 @@ import com.composables.icons.tabler.outline.*
 import com.raulshma.jellyplay.R
 import com.raulshma.jellyplay.core.model.LibraryFolder
 import com.raulshma.jellyplay.core.ui.navigation.Route
+import com.raulshma.jellyplay.core.ui.navigation.localizedNavLabel
 import com.raulshma.jellyplay.core.ui.navigation.applyNavCustomization
 import com.raulshma.jellyplay.core.ui.navigation.navKey
 import com.raulshma.jellyplay.core.ui.tv.LocalTvDrawerOpener
@@ -345,7 +346,7 @@ fun TvNavigationDrawer(
                 items(primaryCount, key = { idx -> "primary_$idx" }) { index ->
                     val item = primaryItems[index]
                     TvDrawerRow(
-                        label = item.label,
+                        label = (item.route as? Route)?.localizedNavLabel() ?: item.label,
                         icon = item.icon,
                         showLabel = showLabels,
                         selected = selectedIndex == index,

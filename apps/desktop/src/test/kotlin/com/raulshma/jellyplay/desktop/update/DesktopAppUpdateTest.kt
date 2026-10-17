@@ -121,7 +121,7 @@ class DesktopAppUpdateTest {
     private fun info(
         version: String = "0.11.0",
         available: Boolean = true,
-        htmlUrl: String = "https://github.com/raulshma/jellyplay/releases/tag/v0.11.0",
+        htmlUrl: String = "https://github.com/Salih800/jellyplay-plus/releases/tag/v0.11.0",
         assetName: String? = null,
         assetUrl: String? = null,
     ) = AppUpdateInfo(
@@ -184,12 +184,12 @@ class DesktopAppUpdateTest {
     fun releasePageUrl_winsOverAssets() {
         val link = DesktopUpdateLinks.pick(
             info(
-                htmlUrl = "https://github.com/raulshma/jellyplay/releases/tag/v0.11.0",
+                htmlUrl = "https://github.com/Salih800/jellyplay-plus/releases/tag/v0.11.0",
                 assetName = "jellyplay-desktop-windows-v0.11.0.msi",
                 assetUrl = "https://example.com/jellyplay-desktop-windows-v0.11.0.msi",
             ),
         )
-        assertEquals("https://github.com/raulshma/jellyplay/releases/tag/v0.11.0", link)
+        assertEquals("https://github.com/Salih800/jellyplay-plus/releases/tag/v0.11.0", link)
     }
 
     @Test
@@ -198,11 +198,11 @@ class DesktopAppUpdateTest {
             info(
                 htmlUrl = "",
                 assetName = "jellyplay-desktop-macos-v0.11.0.dmg",
-                assetUrl = "https://github.com/raulshma/jellyplay/releases/download/v0.11.0/jellyplay-desktop-macos-v0.11.0.dmg",
+                assetUrl = "https://github.com/Salih800/jellyplay-plus/releases/download/v0.11.0/jellyplay-desktop-macos-v0.11.0.dmg",
             ),
         )
         assertEquals(
-            "https://github.com/raulshma/jellyplay/releases/download/v0.11.0/jellyplay-desktop-macos-v0.11.0.dmg",
+            "https://github.com/Salih800/jellyplay-plus/releases/download/v0.11.0/jellyplay-desktop-macos-v0.11.0.dmg",
             link,
         )
     }
@@ -219,7 +219,7 @@ class DesktopAppUpdateTest {
                 info(
                     htmlUrl = "",
                     assetName = "jellyplay-v0.11.0-phone-universal$ext",
-                    assetUrl = "https://github.com/raulshma/jellyplay/releases/download/v0.11.0/jellyplay-v0.11.0-phone-universal$ext",
+                    assetUrl = "https://github.com/Salih800/jellyplay-plus/releases/download/v0.11.0/jellyplay-v0.11.0-phone-universal$ext",
                 ),
             )
             assertNull(link, "APK asset ($ext) must not become a desktop download link")
@@ -237,7 +237,7 @@ class DesktopAppUpdateTest {
             info(
                 htmlUrl = "https://github.com/attacker/jellyplay/releases/tag/v0.11.0",
                 assetName = "jellyplay-desktop-windows-v0.11.0.msi",
-                assetUrl = "https://github.com/raulshma/jellyplay/releases/download/v0.11.0/jellyplay-desktop-windows-v0.11.0.msi",
+                assetUrl = "https://github.com/Salih800/jellyplay-plus/releases/download/v0.11.0/jellyplay-desktop-windows-v0.11.0.msi",
             ),
         )
         assertNull(link, "a hostile release page must never become a desktop link")

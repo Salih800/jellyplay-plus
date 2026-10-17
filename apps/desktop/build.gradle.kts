@@ -181,9 +181,9 @@ compose.desktop {
         }
         nativeDistributions {
             targetFormats(TargetFormat.Msi, TargetFormat.Deb, TargetFormat.Rpm, TargetFormat.Dmg)
-            packageName = "JellyPlay"
+            packageName = "JellyPlay+"
             packageVersion = packaging.packageVersion.get()
-            description = "JellyPlay — Jellyfin client for desktop"
+            description = "JellyPlay+ — Jellyfin client for desktop"
             vendor = "JellyPlay"
 
             // Explicit module enumeration instead of includeAllModules:

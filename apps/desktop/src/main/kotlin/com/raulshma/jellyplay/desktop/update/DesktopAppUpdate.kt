@@ -34,7 +34,7 @@ import org.koin.dsl.module
  *    through an unbeatable version number.
  *  - The feed is the GitHub Releases API the shared seam already targets —
  *    `GitHubReleasesApiImpl.LATEST_RELEASE_URL`
- *    (`https://api.github.com/repos/raulshma/jellyplay/releases/latest`).
+ *    (`https://api.github.com/repos/Salih800/jellyplay-plus/releases/latest`).
  *    **Server-side contract** (what a published release must satisfy for the
  *    desktop check to work): the tag must strip to a semver-comparable
  *    version (`vX.Y.Z`, optional `-pre.N` suffix — `compareVersions` orders
@@ -140,7 +140,8 @@ sealed interface DesktopInstalledVersion {
  */
 object DesktopUpdateLinks {
     /** Browser-fallback surface when no direct link can be chosen. */
-    const val RELEASES_PAGE_URL = "https://github.com/raulshma/jellyplay/releases"
+    const val RELEASES_PAGE_URL =
+        "https://github.com/${GitHubRepoAllowList.ALLOWED_OWNER}/${GitHubRepoAllowList.ALLOWED_REPO}/releases"
 
     private val INSTALLER_EXTENSIONS = listOf(".msi", ".deb", ".rpm", ".dmg")
 

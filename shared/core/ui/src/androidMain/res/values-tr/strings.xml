@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="core_retry">Yeniden dene</string>
+    <string name="msg_no_video_player_found">Video oynatıcı bulunamadı</string>
+    <string name="msg_smart_download_deleted">Yer açmak için izlenen indirme kaldırıldı</string>
+    <string name="core_ui_auth_title">Kimlik Doğrula</string>
+    <string name="core_ui_auth_subtitle">Kimliğinizi doğrulayın</string>
+    <string name="core_ui_auth_use_pin">PIN\'i kullan</string>
+    <string name="core_ui_auth_use_biometric">Biyometrik Kullan</string>
+    <string name="core_ui_auth_biometric_prompt">Kimlik doğrulamak için biyometrik kullan</string>
+    <string name="core_ui_auth_use_screen_lock">Ekran kilidini kullan</string>
+    <string name="core_ui_auth_unlock_screen_lock">Ekran kilidiyle kilidi açma</string>
+    <string name="core_ui_auth_device_credential_prompt">Kilidi açmak için cihazınızın ekran kilidini kullanın</string>
+    <string name="core_ui_auth_no_unlock_method">Kilit açma kullanılamıyor: Bu cihazda hiçbir biyometri veya ekran kilidi kullanılamaz. Kilidi sıfırlamak için uygulama verilerini temizleyin.</string>
+    <string name="core_ui_seerr_season">Sezon %1$d</string>
+    <string name="detail_episodes_selected">%1$d / %2$d bölüm seçildi</string>
+    <string name="ui_text_test_server_reported">Sunucu şunu söyledi: %1$s</string>
+</resources>

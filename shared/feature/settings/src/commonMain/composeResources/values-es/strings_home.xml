@@ -10,7 +10,7 @@
     <string name="settings_preset_saved">Guardado "%1$s"</string>
     <string name="settings_preset_applied_named">Aplicado "%1$s"</string>
     <string name="settings_preset_deleted">Eliminado "%1$s"</string>
-    <string name="settings_home_layout_subject">Diseño de inicio de JellyPlay: %1$s</string>
+    <string name="settings_home_layout_subject">Diseño de inicio de JellyPlay+: %1$s</string>
     <string name="settings_browse_favorites">Explorar favoritos</string>
     <string name="settings_browse_favorites_subtitle">Ver tu contenido favorito</string>
     <string name="settings_watch_history_heatmap">Mapa de historial de visualización</string>
@@ -52,7 +52,7 @@
     <string name="settings_save_current_layout_subtitle">Guarda tu diseño de inicio actual como un preset con nombre</string>
     <string name="settings_share_current_layout">Compartir diseño actual</string>
     <string name="settings_share_current_layout_subtitle">Exporta tu diseño actual como JSON compartible</string>
-    <string name="settings_home_layout_subject_plain">Diseño de inicio de JellyPlay</string>
+    <string name="settings_home_layout_subject_plain">Diseño de inicio de JellyPlay+</string>
     <string name="settings_share_home_layout">Compartir diseño de inicio</string>
     <string name="settings_saved_presets">Presets guardados</string>
     <string name="settings_saved_presets_summary">Toca un preset para cargarlo, compartirlo o eliminarlo</string>

@@ -22,6 +22,9 @@ import androidx.compose.material3.Text
 import com.raulshma.jellyplay.core.designsystem.theme.ShapeCache
 import com.raulshma.jellyplay.core.model.SubtitleStyle
 import com.raulshma.jellyplay.core.model.resolveAgainst
+import com.raulshma.jellyplay.feature.settings.generated.resources.Res
+import com.raulshma.jellyplay.feature.settings.generated.resources.settings_subtitle_preview_text
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Live preview of how [style] renders over a sample video frame. Lifted from
@@ -38,7 +41,7 @@ import com.raulshma.jellyplay.core.model.resolveAgainst
 fun SubtitleStylePreview(
     style: SubtitleStyle,
     modifier: Modifier = Modifier,
-    sampleText: String = "The quick brown fox\njumps over the lazy dog.",
+    sampleText: String = stringResource(Res.string.settings_subtitle_preview_text),
 ) {
     // Resolve through the shared entry point so the preview matches what the
     // player overlay renders for the same input. Previously this hand-rolled its

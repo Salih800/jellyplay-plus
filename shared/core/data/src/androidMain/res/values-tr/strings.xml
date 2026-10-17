@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="data_sync_title">İzleme ilerlemesi senkronize ediliyor</string>
+    <string name="data_sync_finishing">Bitiriliyor\u2026</string>
+    <plurals name="data_sync_items_queued">
+        <item quantity="one">%1$d öğe sıraya alındı</item>
+        <item quantity="other">%1$d öğe sıraya alındı</item>
+    </plurals>
+    <string name="data_sync_channel_name">İlerleme senkronizasyonunu izle</string>
+    <string name="data_sync_channel_desc">Çevrimdışı izleme ilerlemesi sunucuyla senkronize ediliyor</string>
+    <string name="data_channel_now_playing">Şimdi oynatılıyor</string>
+    <string name="data_channel_now_playing_desc">Medya oynatma kontrolleri</string>
+    <string name="data_channel_downloads">İndirilenler</string>
+    <string name="data_channel_downloads_desc">İlerleme bildirimlerini indir</string>
+    <string name="data_download_action_pause">Duraklat</string>
+    <string name="data_download_action_resume">Sürdür</string>
+    <string name="data_download_action_cancel">İptal</string>
+    <string name="data_download_paused">İndirme duraklatıldı</string>
+    <string name="data_download_queued">Sıraya alındı\u2026</string>
+    <plurals name="data_download_summary_active">
+        <item quantity="one">%1$d indirme işlemi devam ediyor</item>
+        <item quantity="other">%1$d indirme işlemi devam ediyor</item>
+    </plurals>
+    <string name="data_label_movies">Filmler</string>
+    <string name="data_label_episodes">Bölümler</string>
+    <string name="data_label_songs">Şarkılar</string>
+    <string name="data_added_today">Bugün eklendi</string>
+    <string name="data_added_one_day_ago">1 gün önce eklendi</string>
+    <string name="data_added_days_ago">%1$d gün önce eklendi</string>
+    <string name="data_added_months_ago">%1$day önce eklendi</string>
+    <string name="data_added_years_ago">%1$dy önce eklendi</string>
+    <string name="data_never_played">Hiç oynanmadı</string>
+    <string name="data_days_since_play">Oynatıldığından beri %1$dd</string>
+    <string name="data_plays_count">%1$d oynatılıyor</string>
+    <string name="data_added_date">%1$s eklendi</string>
+    <string name="data_added_unknown">Bilinmeyen eklendi</string>
+    <string name="data_played_date">%1$s oynatıldı</string>
+    <string name="data_no_media_source_download">İndirilebilecek medya kaynağı yok</string>
+    <string name="data_download_started">İndirme başladı</string>
+    <string name="data_download_start_failed">İndirme işlemi\u2019başlatılamadı</string>
+    <string name="data_series_download_queued">Bölümler indirilmek üzere sıraya alındı</string>
+</resources>

@@ -39,7 +39,7 @@ class AppUpdateRepositoryImplTest {
     companion object {
         /** The allow-listed production download shape (github.com + owner/repo path). */
         private val DOWNLOAD_URL =
-            "https://github.com/raulshma/jellyplay/releases/download/v2.0/jellyplay-v2.0-phone-arm64-v8a.apk"
+            "https://github.com/Salih800/jellyplay-plus/releases/download/v2.0/jellyplay-v2.0-phone-arm64-v8a.apk"
     }
 
     private lateinit var interceptor: CannedDownload
@@ -79,7 +79,7 @@ class AppUpdateRepositoryImplTest {
 
     private fun updateInfo(version: String, url: String? = DOWNLOAD_URL) = AppUpdateInfo(
         latestVersion = version,
-        htmlUrl = "https://github.com/raulshma/jellyplay/releases/tag/v$version",
+        htmlUrl = "https://github.com/Salih800/jellyplay-plus/releases/tag/v$version",
         releaseNotes = "notes",
         isUpdateAvailable = true,
         downloadAssetUrl = url,

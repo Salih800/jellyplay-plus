@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="syncplay_leave_group">Gruptan ayrıl</string>
+    <string name="syncplay_leave_group_confirm_title">Gruptan ayrılmak istiyor musunuz?</string>
+    <string name="syncplay_leave_group_confirm_message">İzleme partisinden çıkarılacaksınız.</string>
+    <string name="syncplay_retry">Yeniden dene</string>
+    <string name="syncplay_no_active_groups">Etkin SyncPlay grup yok</string>
+    <string name="syncplay_create_group_together">Birlikte izlemek için bir grup oluşturun</string>
+    <string name="syncplay_create_group">Grup oluştur</string>
+    <string name="syncplay_join_group_question">Gruba katılmak ister misiniz?</string>
+    <string name="syncplay_join_group_confirm">"%1$s"ye katılmak ister misiniz?</string>
+    <string name="syncplay_join">Katıl</string>
+    <string name="syncplay_cancel">İptal</string>
+    <string name="syncplay_playing_item">Oynatılıyor: %1$s</string>
+    <string name="syncplay_playing">Oynatılıyor</string>
+    <string name="syncplay_paused">Duraklatıldı</string>
+    <string name="syncplay_pause">Duraklat</string>
+    <string name="syncplay_play">Oynat</string>
+    <string name="syncplay_stop">Durdur</string>
+    <string name="syncplay_leave">Ayrıl</string>
+    <string name="syncplay_group_settings">Grup Ayarları</string>
+    <string name="syncplay_participants">Katılımcılar</string>
+    <string name="syncplay_connected">Bağlandı</string>
+    <string name="syncplay_disconnected">Bağlantı Kesildi</string>
+    <string name="syncplay_create_group_title">SyncPlay Grubu Oluştur</string>
+    <string name="syncplay_group_name">Grup adı</string>
+    <string name="syncplay_create">Oluştur</string>
+    <string name="syncplay_error_load_groups">Gruplar yüklenemedi</string>
+    <string name="syncplay_join_disabled">SyncPlay gruplarına katılma ayarlarda devre dışı bırakıldı</string>
+    <string name="syncplay_error_join_group">Gruba katılma başarısız oldu</string>
+    <string name="syncplay_error_leave_group">Gruptan çıkılamadı</string>
+    <string name="syncplay_error_create_group">Grup oluşturulamadı</string>
+    <plurals name="syncplay_participants_count">
+        <item quantity="one">%1$d katılımcı</item>
+        <item quantity="other">%1$d katılımcı</item>
+    </plurals>
+</resources>

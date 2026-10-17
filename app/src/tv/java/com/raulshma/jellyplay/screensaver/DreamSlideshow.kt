@@ -216,7 +216,7 @@ private fun DreamEmptyState() {
                 modifier = Modifier.padding(bottom = 8.dp),
             )
             Text(
-                text = "JellyPlay",
+                text = "JellyPlay+",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 color = Color.White.copy(alpha = 0.85f),

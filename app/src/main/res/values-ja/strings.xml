@@ -132,7 +132,7 @@
     <!-- Lock screen authentication -->
     <string name="auth_title_biometric">認証</string>
     <string name="auth_title_pin">PINを入力</string>
-    <string name="auth_subtitle">JellyPlayのロックを解除</string>
+    <string name="auth_subtitle">JellyPlay+のロックを解除</string>
     <string name="pin_incorrect">PINが正しくありません</string>
     <string name="pin_lockout_now">試行回数が多すぎます。もう一度お試しください。</string>
     <string name="pin_lockout_seconds">試行回数が多すぎます。%1$ds後にもう一度お試しください。</string>
@@ -161,20 +161,20 @@
 
     <!-- Play On device sheet -->
     <string name="play_on_title">再生先</string>
-    <string name="play_on_no_clients">Jellyfin クライアントが見つかりません。別のデバイスで JellyPlay または Jellyfin を開くと、ここに表示されます。</string>
+    <string name="play_on_no_clients">Jellyfin クライアントが見つかりません。別のデバイスで JellyPlay+ または Jellyfin を開くと、ここに表示されます。</string>
     <string name="play_on_jellyfin_session">Jellyfin セッション</string>
 
     <!-- auto-localized: previously translatable="false" (10) -->
-    <string name="widget_open_to_play">タップして JellyPlay を開く</string>
+    <string name="widget_open_to_play">タップして JellyPlay+ を開く</string>
     <string name="widget_library_recommendations_description">視聴履歴に基づく、Jellyfin ライブラリからのパーソナライズされたおすすめ。</string>
-    <string name="widget_library_recommendations_empty_subtitle">JellyPlay を開いてライブラリの探索を始めましょう</string>
+    <string name="widget_library_recommendations_empty_subtitle">JellyPlay+ を開いてライブラリの探索を始めましょう</string>
     <string name="widget_seerr_recommendations_label">Seerr ピック</string>
     <string name="widget_seerr_recommendations_title">Seerr ピック</string>
     <string name="widget_seerr_recommendations_description">Seerr (Jellyseerr / Overseerr) サーバーからの話題作と予定の映画・TV。</string>
     <string name="widget_seerr_recommendations_empty">Seerr は接続されていません</string>
-    <string name="widget_seerr_recommendations_empty_subtitle">おすすめを表示するには JellyPlay の設定で Seerr を構成してください</string>
-    <string name="update_up_to_date_body">JellyPlay はすでに最新バージョンです。</string>
-    <string name="floating_player_notification_title">JellyPlay フローティングプレーヤー</string>
+    <string name="widget_seerr_recommendations_empty_subtitle">おすすめを表示するには JellyPlay+ の設定で Seerr を構成してください</string>
+    <string name="update_up_to_date_body">JellyPlay+ はすでに最新バージョンです。</string>
+    <string name="floating_player_notification_title">JellyPlay+ フローティングプレーヤー</string>
 
     <!-- Now-playing snackbar -->
     <string name="snackbar_now_playing">再生中: %1$s</string>

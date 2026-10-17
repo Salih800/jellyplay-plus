@@ -29,7 +29,7 @@ android {
 
     // AGP 9 replacement for the legacy defaultConfig.resourceConfigurations.
     androidResources {
-        localeFilters += listOf("en", "de", "es", "fr", "it", "pt", "ja", "ko", "zh")
+        localeFilters += listOf("en", "de", "es", "fr", "it", "pt", "ja", "ko", "zh", "tr")
     }
 
     flavorDimensions += "platform"
@@ -96,7 +96,7 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix = ".dev"
-            resValue("string", "app_name", "JellyPlay Dev")
+            resValue("string", "app_name", "JellyPlay+ Dev")
         }
         release {
             isMinifyEnabled = true

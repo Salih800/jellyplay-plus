@@ -1,5 +1,10 @@
 package com.raulshma.jellyplay.feature.player.video.components
 
+import com.raulshma.jellyplay.feature.player.video.generated.resources.Res
+import org.jetbrains.compose.resources.stringResource
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_option_decoder_next
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_video_decoder_mode
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -35,13 +40,13 @@ fun DecoderPickerSheet(
     onDismiss: () -> Unit,
 ) {
     PickerSheetScaffold(
-        title = "Decoder Mode",
+        title = stringResource(Res.string.player_video_decoder_mode),
         icon = Tabler.Outline.Cpu,
         onDismiss = onDismiss,
         preContent = {
             Spacer(Modifier.height(4.dp))
             Text(
-                "Changes take effect on next video playback.",
+                stringResource(Res.string.player_option_decoder_next),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 24.dp),
@@ -59,7 +64,7 @@ fun DecoderPickerSheet(
                         focusRequesterModifier = Modifier.ifElse(isFirstOrSelected, Modifier.focusRequester(focusRequester)),
                         trailingCheck = true,
                     ) {
-                        TvOptionRowLabel(text = mode.displayName, selected = isSelected)
+                        TvOptionRowLabel(text = mode.localizedPlayerLabel(), selected = isSelected)
                     }
                 }
             }
@@ -80,7 +85,7 @@ fun DecoderPickerSheet(
                         },
                         label = {
                             Text(
-                                mode.displayName,
+                                mode.localizedPlayerLabel(),
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                             )
                         },

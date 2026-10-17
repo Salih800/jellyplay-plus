@@ -216,7 +216,7 @@ fun AboutScreen(
                     title = stringResource(Res.string.settings_changelog),
                     subtitle = "",
                     onClick = {
-                        platformIntents.openUrl("https://github.com/raulshma/jellyplay/releases")
+                        platformIntents.openUrl("https://github.com/Salih800/jellyplay-plus/releases")
                     },
                 )
                 SettingListItem(
@@ -232,7 +232,7 @@ fun AboutScreen(
                     title = stringResource(Res.string.settings_github),
                     subtitle = "",
                     onClick = {
-                        platformIntents.openUrl("https://github.com/raulshma/jellyplay")
+                        platformIntents.openUrl("https://github.com/Salih800/jellyplay-plus")
                     },
                 )
                 SettingListItem(

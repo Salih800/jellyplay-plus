@@ -1,5 +1,9 @@
 package com.raulshma.jellyplay.feature.player.video.components
 
+import com.raulshma.jellyplay.feature.player.video.generated.resources.Res
+import org.jetbrains.compose.resources.stringResource
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_option_playback_speed
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -41,7 +45,7 @@ internal fun SpeedPickerSheet(
     onDismiss: () -> Unit,
 ) {
     PickerSheetScaffold(
-        title = "Playback Speed",
+        title = stringResource(Res.string.player_option_playback_speed),
         icon = Tabler.Outline.Gauge,
         onDismiss = onDismiss,
     ) { isTv, focusRequester ->

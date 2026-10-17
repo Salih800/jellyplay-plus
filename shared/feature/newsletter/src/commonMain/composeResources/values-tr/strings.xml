@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="newsletter_could_not_load">Haber bülteni yüklenemedi</string>
+    <string name="newsletter_preparing_digest">Özetiniz hazırlanıyor\u2026</string>
+    <string name="newsletter_send_now">Şimdi gönder</string>
+    <string name="newsletter_send_test">Testi gönder</string>
+    <string name="newsletter_send_confirm_title">Bülten gönderilsin mi?</string>
+    <string name="newsletter_send_confirm_body">Bu, haber bültenini tüm abonelere gönderecektir.</string>
+    <string name="newsletter_send_success">Bülten gönderildi</string>
+    <string name="newsletter_send_failed">Haber bülteni gönderilemedi</string>
+    <string name="newsletter_test_sent">Test bülteni gönderildi</string>
+    <string name="newsletter_send_admin_only">Yalnızca yönetici</string>
+    <string name="newsletter_title">Bülten</string>
+    <string name="newsletter_activity_digest">Etkinlik Özeti</string>
+    <string name="newsletter_continue_watching">İzlemeye devam et</string>
+    <string name="newsletter_fresh_picks">Taze Seçimler</string>
+    <string name="newsletter_recently_added">Yeni eklenenler</string>
+    <string name="newsletter_next_up">Sıradaki bölümler</string>
+    <string name="newsletter_view_all">Tümünü Görüntüle</string>
+    <string name="newsletter_no_items_available">Mevcut öğe yok</string>
+    <string name="newsletter_stat_total_items">Toplam Öğeler</string>
+    <string name="newsletter_stat_movies">Filmler</string>
+    <string name="newsletter_stat_series">Dizi</string>
+    <string name="newsletter_stat_episodes">Bölümler</string>
+    <string name="newsletter_stat_albums">Albümler</string>
+    <string name="newsletter_stat_songs">Şarkılar</string>
+    <string name="newsletter_stat_new_this_week">Bu Hafta Yenilikler</string>
+    <string name="newsletter_stat_in_progress">Devam ediyor</string>
+    <string name="newsletter_stat_activity">Etkinlik</string>
+</resources>

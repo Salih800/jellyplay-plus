@@ -97,7 +97,7 @@
     <string name="settings_diagnostics">Diagnostica</string>
     <string name="settings_collecting_logs">Raccolta log\u2026</string>
     <string name="settings_send_app_logs">Invia log app</string>
-    <string name="settings_logs_subject">Log JellyPlay v%1$s</string>
+    <string name="settings_logs_subject">Log JellyPlay+ v%1$s</string>
     <string name="settings_send_logs_chooser">Invia log</string>
     <string name="settings_check_updates_automatically">Controlla aggiornamenti automaticamente</string>
     <string name="settings_check_updates_subtitle">Controlla periodicamente su GitHub le nuove versioni</string>
@@ -337,7 +337,7 @@
     <string name="settings_reset_to_default">Reimposta al valore predefinito</string>
     <string name="settings_reset_to_default_subtitle">Ripristina il layout home di fabbrica</string>
     <string name="settings_save">Salva</string>
-    <string name="settings_import_paste_description">Incolla qui sotto un JSON di layout home JellyPlay condiviso, quindi applicalo.</string>
+    <string name="settings_import_paste_description">Incolla qui sotto un JSON di layout home JellyPlay+ condiviso, quindi applicalo.</string>
     <string name="settings_apply">Applica</string>
 
     <!-- PinnedHomeSectionsScreen.kt -->
@@ -373,7 +373,7 @@
 
     <!-- ArrSettingsScreen.kt -->
     <string name="settings_arr_direct_integration">Integrazione *arr diretta</string>
-    <string name="settings_arr_direct_integration_body">JellyPlay contatta direttamente le tue istanze Radarr e Sonarr per mostrare l'avanzamento della coda di download in Richieste e un calendario in arrivo in Home. I server sono individuati automaticamente da Seerr; aggiungi voci manuali sotto per sovrascriverli.</string>
+    <string name="settings_arr_direct_integration_body">JellyPlay+ contatta direttamente le tue istanze Radarr e Sonarr per mostrare l'avanzamento della coda di download in Richieste e un calendario in arrivo in Home. I server sono individuati automaticamente da Seerr; aggiungi voci manuali sotto per sovrascriverli.</string>
     <string name="settings_arr_auto_discover">Auto-individuazione via Seerr</string>
     <string name="settings_arr_auto_discover_subtitle">Leggi i server Radarr/Sonarr configurati dalla tua connessione Seerr</string>
     <string name="settings_arr_servers">Server</string>
@@ -475,9 +475,9 @@
     <string name="settings_arr_no_servers_hint">Nessun server rilevato. Abilita l'individuazione automatica tramite Seerr (e assicurati che Seerr sia connesso) oppure aggiungi un server manuale qui sotto.</string>
     <string name="settings_arr_no_admin_hint">L'individuazione automatica richiede un account Seerr con autorizzazione di amministratore (l'elenco dei server proviene dalle impostazioni solo-amministratore di Seerr). Usa una chiave API di un utente amministratore, poi riprova — oppure aggiungi un server manuale qui sotto.</string>
     <string name="settings_enable_seerr_integration">Abilita integrazione Seerr</string>
-    <string name="settings_enable_seerr_subtitle">Collega il tuo server Seerr a JellyPlay</string>
+    <string name="settings_enable_seerr_subtitle">Collega il tuo server Seerr a JellyPlay+</string>
     <string name="settings_seerr_request_hub">Centro richieste Seerr</string>
-    <string name="settings_seerr_header_description">Collega Jellyseerr o Overseerr per cercare, scoprire e richiedere contenuti direttamente da JellyPlay.</string>
+    <string name="settings_seerr_header_description">Collega Jellyseerr o Overseerr per cercare, scoprire e richiedere contenuti direttamente da JellyPlay+.</string>
     <string name="settings_jellyfin_username_placeholder">Nome utente Jellyfin</string>
     <string name="settings_jellyfin_password_placeholder">Password Jellyfin</string>
     <string name="settings_seerr_email_placeholder">Email dell'account Seerr</string>

@@ -16,9 +16,21 @@ import kotlin.test.assertTrue
 
 class GitHubReleasesApiImplTest {
 
+    @Test
+    fun `production release feeds point to the fork`() {
+        assertEquals(
+            "https://api.github.com/repos/Salih800/jellyplay-plus/releases/latest",
+            GitHubReleasesApiImpl.LATEST_RELEASE_URL,
+        )
+        assertEquals(
+            "https://api.github.com/repos/Salih800/jellyplay-plus/releases?per_page=30",
+            GitHubReleasesApiImpl.RELEASES_LIST_URL,
+        )
+    }
+
     // ---- selectAsset ----
 
-    private fun asset(name: String, url: String = "https://github.com/raulshma/jellyplay/releases/download/v1.2.3/$name", size: Long = 1L) =
+    private fun asset(name: String, url: String = "https://github.com/Salih800/jellyplay-plus/releases/download/v1.2.3/$name", size: Long = 1L) =
         GitHubReleaseAsset(name = name, browserDownloadUrl = url, size = size)
 
     @Test
@@ -89,17 +101,17 @@ class GitHubReleasesApiImplTest {
     private val sampleGithubReleaseJson = """
         {
           "tag_name": "v1.2.3",
-          "html_url": "https://github.com/raulshma/jellyplay/releases/tag/v1.2.3",
+          "html_url": "https://github.com/Salih800/jellyplay-plus/releases/tag/v1.2.3",
           "body": "Release notes here",
           "assets": [
             {
               "name": "jellyplay-v1.2.3-phone-arm64-v8a.apk",
-              "browser_download_url": "https://github.com/raulshma/jellyplay/releases/download/v1.2.3/jellyplay-v1.2.3-phone-arm64-v8a.apk",
+              "browser_download_url": "https://github.com/Salih800/jellyplay-plus/releases/download/v1.2.3/jellyplay-v1.2.3-phone-arm64-v8a.apk",
               "size": 5242880
             },
             {
               "name": "jellyplay-v1.2.3-phone-universal.apk",
-              "browser_download_url": "https://github.com/raulshma/jellyplay/releases/download/v1.2.3/jellyplay-v1.2.3-phone-universal.apk",
+              "browser_download_url": "https://github.com/Salih800/jellyplay-plus/releases/download/v1.2.3/jellyplay-v1.2.3-phone-universal.apk",
               "size": 10485760
             }
           ]
@@ -154,7 +166,7 @@ class GitHubReleasesApiImplTest {
         assertTrue(info.htmlUrl.contains("releases/tag/v1.2.3"))
         assertTrue(info.isUpdateAvailable, "expected an update to be flagged for 1.0.0 vs 1.2.3")
         assertEquals(
-            "https://github.com/raulshma/jellyplay/releases/download/v1.2.3/jellyplay-v1.2.3-phone-arm64-v8a.apk",
+            "https://github.com/Salih800/jellyplay-plus/releases/download/v1.2.3/jellyplay-v1.2.3-phone-arm64-v8a.apk",
             info.downloadAssetUrl,
         )
         assertEquals("jellyplay-v1.2.3-phone-arm64-v8a.apk", info.downloadAssetName)
@@ -180,7 +192,7 @@ class GitHubReleasesApiImplTest {
     @Test
     fun `fetchLatestUpdate fails closed when an asset download url leaves the pinned repo`() = runBlocking {
         val tampered = sampleGithubReleaseJson.replace(
-            "https://github.com/raulshma/jellyplay/releases/download/v1.2.3/jellyplay-v1.2.3-phone-arm64-v8a.apk",
+            "https://github.com/Salih800/jellyplay-plus/releases/download/v1.2.3/jellyplay-v1.2.3-phone-arm64-v8a.apk",
             "https://evil.example.com/jellyplay-v1.2.3-phone-arm64-v8a.apk",
         )
         val fixture = canned(tampered)
@@ -197,7 +209,7 @@ class GitHubReleasesApiImplTest {
     @Test
     fun `fetchLatestUpdate fails closed when html_url leaves the pinned repo`() = runBlocking {
         val tampered = sampleGithubReleaseJson.replace(
-            "https://github.com/raulshma/jellyplay/releases/tag/v1.2.3",
+            "https://github.com/Salih800/jellyplay-plus/releases/tag/v1.2.3",
             "https://github.com/attacker/jellyplay/releases/tag/v1.2.3",
         )
         val fixture = canned(tampered)
@@ -212,7 +224,7 @@ class GitHubReleasesApiImplTest {
     fun `fetchLatestUpdate fails closed when the repo moved and the final URL lands on another org`() = runBlocking {
         // Simulates OkHttp having followed the moved-repo 301: the response is
         // served from the attacker-org final URL. Even a perfectly-formed
-        // body must be rejected — only the pinned /repos/raulshma/ path is
+        // body must be rejected — only the pinned fork repository path is
         // allowed to describe the latest release.
         val movedFinalUrl = "https://api.github.com/repos/attacker/jellyplay/releases/latest"
         val fixture = canned(

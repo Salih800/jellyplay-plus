@@ -10,7 +10,7 @@
     <string name="settings_preset_saved">Guardada "%1$s"</string>
     <string name="settings_preset_applied_named">Aplicada "%1$s"</string>
     <string name="settings_preset_deleted">Eliminada "%1$s"</string>
-    <string name="settings_home_layout_subject">Esquema do início do JellyPlay: %1$s</string>
+    <string name="settings_home_layout_subject">Esquema do início do JellyPlay+: %1$s</string>
     <string name="settings_browse_favorites">Ver favoritos</string>
     <string name="settings_browse_favorites_subtitle">Ver a multimédia que marcou como favorita</string>
     <string name="settings_watch_history_heatmap">Mapa de calor do histórico</string>
@@ -52,7 +52,7 @@
     <string name="settings_save_current_layout_subtitle">Capturar o esquema de início atual como predefinição nomeada</string>
     <string name="settings_share_current_layout">Partilhar esquema atual</string>
     <string name="settings_share_current_layout_subtitle">Exportar o esquema atual como JSON partilhável</string>
-    <string name="settings_home_layout_subject_plain">Esquema do início do JellyPlay</string>
+    <string name="settings_home_layout_subject_plain">Esquema do início do JellyPlay+</string>
     <string name="settings_share_home_layout">Partilhar esquema do início</string>
     <string name="settings_saved_presets">Predefinições guardadas</string>
     <string name="settings_saved_presets_summary">Toque numa predefinição para carregar, partilhar ou eliminá-la</string>

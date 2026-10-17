@@ -123,7 +123,7 @@
     <string name="settings_diagnostics">Diagnostics</string>
     <string name="settings_collecting_logs">Collecting logs\u2026</string>
     <string name="settings_send_app_logs">Send App Logs</string>
-    <string name="settings_logs_subject">JellyPlay Logs v%1$s</string>
+    <string name="settings_logs_subject">JellyPlay+ Logs v%1$s</string>
     <string name="settings_send_logs_chooser">Send Logs</string>
     <string name="settings_check_updates_automatically">Check for Updates Automatically</string>
     <string name="settings_check_updates_subtitle">Periodically check GitHub for new releases</string>
@@ -375,14 +375,14 @@
     <string name="settings_integration_features">Integration Features</string>
     <string name="settings_features_active">%1$d of 4 features active</string>
     <string name="settings_enable_seerr_integration">Enable Seerr Integration</string>
-    <string name="settings_enable_seerr_subtitle">Connect your Seerr server with JellyPlay</string>
+    <string name="settings_enable_seerr_subtitle">Connect your Seerr server with JellyPlay+</string>
     <string name="settings_search_integration">Search Integration</string>
     <string name="settings_search_integration_subtitle">Request media directly from app search</string>
     <string name="settings_advanced_discover">Advanced Discover</string>
     <string name="settings_advanced_discover_subtitle">Show Trending, Popular &amp; Upcoming content on the home screen</string>
     <string name="settings_trending">Trending</string>
     <string name="settings_seerr_request_hub">Seerr Request Hub</string>
-    <string name="settings_seerr_header_description">Connect Jellyseerr or Overseerr to search, discover, and request content directly from within JellyPlay.</string>
+    <string name="settings_seerr_header_description">Connect Jellyseerr or Overseerr to search, discover, and request content directly from within JellyPlay+.</string>
     <string name="settings_jellyfin_username_placeholder">Jellyfin username</string>
     <string name="settings_password_label">Password</string>
     <string name="settings_jellyfin_password_placeholder">Jellyfin password</string>
@@ -508,7 +508,7 @@
     <string name="settings_reset_to_default">Reset to Default</string>
     <string name="settings_reset_to_default_subtitle">Restore the factory home layout</string>
     <string name="settings_save">Save</string>
-    <string name="settings_import_paste_description">Paste a shared JellyPlay home layout JSON below, then apply it.</string>
+    <string name="settings_import_paste_description">Paste a shared JellyPlay+ home layout JSON below, then apply it.</string>
     <string name="settings_apply">Apply</string>
 
     <!-- PinnedHomeSectionsScreen.kt -->
@@ -524,7 +524,7 @@
     <string name="settings_choose_x">Choose %1$s</string>
 
     <!-- AboutScreen.kt additional -->
-    <string name="settings_jellyplay" translatable="false">JellyPlay</string>
+    <string name="settings_jellyplay" translatable="false">JellyPlay+</string>
 
     <!-- Shared tokens (audio/appearance/playback/storage) -->
     <string name="settings_off">Off</string>
@@ -585,7 +585,7 @@
 
     <!-- ArrSettingsScreen.kt -->
     <string name="settings_arr_direct_integration">Direct *arr Integration</string>
-    <string name="settings_arr_direct_integration_body">JellyPlay contacts your Radarr and Sonarr instances directly to show download-queue progress on Requests and a coming-soon calendar on Home. Servers are auto-discovered from Seerr; add manual entries below to override.</string>
+    <string name="settings_arr_direct_integration_body">JellyPlay+ contacts your Radarr and Sonarr instances directly to show download-queue progress on Requests and a coming-soon calendar on Home. Servers are auto-discovered from Seerr; add manual entries below to override.</string>
     <string name="settings_arr_auto_discover">Auto-discover via Seerr</string>
     <string name="settings_arr_auto_discover_subtitle">Read configured Radarr/Sonarr servers from your Seerr connection</string>
     <string name="settings_arr_servers">Servers</string>
@@ -953,4 +953,5 @@
     <string name="settings_jellyplay_push_state_server_off">Server push disabled</string>
     <string name="settings_jellyplay_feature_analytics">Analytics</string>
     <string name="ss_jellyplay_feature_analytics_subtitle">The play-history dashboard in the admin area (admin only)</string>
+    <string name="settings_integrations_intro">Connect JellyPlay+ to your media services to enable requests, discover, and download-queue tracking.</string>
 </resources>

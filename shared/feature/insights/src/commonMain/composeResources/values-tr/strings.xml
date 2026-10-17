@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="insights_title_watch_progress">İlerlemeyi İzle</string>
+    <string name="insights_cd_share">Paylaş</string>
+    <string name="insights_cd_configure_heatmap">Isı Haritasını Yapılandır</string>
+    <string name="insights_filter_type">Filtre Tipi</string>
+    <string name="insights_select_year">Yıl Seçin</string>
+    <string name="insights_loading">Yükleniyor…</string>
+    <string name="insights_plugin_missing_message">Ayrıntılı ısı haritası verileri için Jellyfin sunucunuza Oynatma Raporlaması eklentisini yükleyin. İzleme geçmişindeki temel etkinlikler gösteriliyor.</string>
+    <string name="insights_no_activity_for_year">%1$d için kayıtlı izleme etkinliği yok. Yılınızı doldurmaya başlamak için bir şeyler çalın.</string>
+    <string name="insights_activity_grid">Etkinlik Tablosu</string>
+    <string name="insights_cd_previous_year">Önceki yıl</string>
+    <string name="insights_cd_next_year">Gelecek yıl</string>
+    <string name="insights_stat_current_streak">Güncel Çizgi</string>
+    <string name="insights_stat_longest_streak">En Uzun Seri</string>
+    <string name="insights_stat_active_days">Aktif Günler</string>
+    <string name="insights_days_format">%1$d gün</string>
+    <string name="insights_day_sun">Güneş</string>
+    <string name="insights_day_tue">Salı</string>
+    <string name="insights_day_thu">Per</string>
+    <string name="insights_day_sat">Cumartesi</string>
+    <string name="insights_legend_less">Daha Az</string>
+    <string name="insights_legend_more">Diğer</string>
+    <string name="insights_duration_hm">%1$dh %2$dm</string>
+    <string name="insights_duration_m">%1$dm</string>
+    <string name="insights_duration_under_minute">&lt; 1m</string>
+    <string name="insights_no_activity">Etkinlik yok</string>
+    <string name="insights_minutes_watched">%1$dm izlendi</string>
+    <string name="insights_played">Oynatıldı</string>
+    <string name="insights_share_chooser_title">Paylaş İlerlemeyi İzle</string>
+    <plurals name="insights_heatmap_summary">
+        <item quantity="one">%1$d için etkinlik ısı haritasını izleyin. %2$d aktif gün.</item>
+        <item quantity="other">%1$d için etkinlik ısı haritasını izleyin. %2$d aktif gün.</item>
+    </plurals>
+    <plurals name="insights_sessions_watched">
+        <item quantity="one">%1$d oturum · %2$s izlendi</item>
+        <item quantity="other">%1$d oturum · %2$s izlendi</item>
+    </plurals>
+</resources>

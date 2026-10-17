@@ -210,7 +210,7 @@ internal fun DesktopAppRoot(
             isAuthenticated = authRepository.isAuthenticated,
             currentServer = authRepository.currentServer,
             currentUser = authRepository.currentUser,
-            clientName = "JellyPlay Desktop",
+            clientName = "JellyPlay+ Desktop",
             realtimeConnection = realtimeConnection,
             remoteControlReceiver = remoteControlReceiver,
             serverIdentityStore = serverIdentityStore,
@@ -281,7 +281,7 @@ internal fun DesktopAppRoot(
         AlertDialog(
             onDismissRequest = onDismissAbout,
             confirmButton = { TextButton(onClick = onDismissAbout) { Text("Close") } },
-            title = { Text("JellyPlay") },
+            title = { Text("JellyPlay+") },
             text = {
                 Column {
                     Text("KMP desktop shell. Android app unaffected.")

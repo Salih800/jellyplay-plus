@@ -1,5 +1,13 @@
 package com.raulshma.jellyplay.feature.player.video.components
 
+import com.raulshma.jellyplay.feature.player.video.generated.resources.Res
+import org.jetbrains.compose.resources.stringResource
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_option_auto_description
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_option_delivery_help
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_option_direct_description
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_option_transcode_description
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_video_playback_mode
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -38,13 +46,13 @@ fun PlaybackModeSheet(
     onDismiss: () -> Unit,
 ) {
     PickerSheetScaffold(
-        title = "Playback Mode",
+        title = stringResource(Res.string.player_video_playback_mode),
         icon = Tabler.Outline.Server,
         onDismiss = onDismiss,
         preContent = {
             Spacer(Modifier.height(4.dp))
             Text(
-                "Controls how the server delivers the stream. Switching re-resolves the current item and may briefly re-buffer.",
+                stringResource(Res.string.player_option_delivery_help),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(horizontal = 24.dp),
@@ -64,7 +72,7 @@ fun PlaybackModeSheet(
                         trailingCheck = true,
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
-                            TvOptionRowLabel(text = mode.displayName, selected = isSelected)
+                            TvOptionRowLabel(text = mode.localizedPlayerLabel(), selected = isSelected)
                             Text(
                                 text = mode.description(),
                                 style = MaterialTheme.typography.bodySmall,
@@ -92,7 +100,7 @@ fun PlaybackModeSheet(
                         },
                         label = {
                             Text(
-                                mode.displayName,
+                                mode.localizedPlayerLabel(),
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                             )
                         },
@@ -114,8 +122,9 @@ fun PlaybackModeSheet(
     }
 }
 
-private fun PlaybackMode.description(): String = when (this) {
-    PlaybackMode.AUTO -> "Let the server pick (direct play when possible)"
-    PlaybackMode.FORCE_DIRECT_PLAY -> "Stream the file verbatim, no transcoding"
-    PlaybackMode.FORCE_TRANSCODE -> "Always transcode via the server"
-}
+@Composable
+private fun PlaybackMode.description(): String = stringResource(when (this) {
+    PlaybackMode.AUTO -> Res.string.player_option_auto_description
+    PlaybackMode.FORCE_DIRECT_PLAY -> Res.string.player_option_direct_description
+    PlaybackMode.FORCE_TRANSCODE -> Res.string.player_option_transcode_description
+})

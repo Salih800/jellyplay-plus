@@ -43,7 +43,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalDensity
 import org.jetbrains.compose.resources.stringResource
 import com.raulshma.jellyplay.feature.home.generated.resources.Res
-import com.raulshma.jellyplay.feature.home.generated.resources.home_because_you_watched
 import com.raulshma.jellyplay.feature.home.generated.resources.home_coming_soon
 import com.raulshma.jellyplay.feature.home.generated.resources.home_details
 import com.raulshma.jellyplay.feature.home.generated.resources.home_discover
@@ -500,12 +499,7 @@ internal fun HomeContentList(
                         translationY = (1f - sectionAnimation) * 16.dp.toPx()
                     }
 
-                val seedItem = section.seedItem
-                val sectionTitle = if (section.type == HomeSectionType.RECOMMENDATIONS && seedItem != null) {
-                    stringResource(Res.string.home_because_you_watched, seedItem.name)
-                } else {
-                    section.title
-                }
+                val sectionTitle = section.localizedTitle()
 
                 // Long-press affordance only for user-configurable section
                 // types; non-configurable rows (FAVORITES, PINNED, …) are

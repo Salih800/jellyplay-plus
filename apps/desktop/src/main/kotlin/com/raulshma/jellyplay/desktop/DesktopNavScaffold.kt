@@ -52,6 +52,7 @@ import com.raulshma.jellyplay.core.ui.components.PullToRefreshRegistry
 import com.raulshma.jellyplay.core.ui.message.LocalUserMessageBus
 import com.raulshma.jellyplay.core.ui.navigation.Navigator
 import com.raulshma.jellyplay.core.ui.navigation.Route
+import com.raulshma.jellyplay.core.ui.navigation.localizedNavLabel
 import com.raulshma.jellyplay.core.ui.navigation.navKey
 import com.raulshma.jellyplay.core.ui.navigation.rememberNavigationState
 import com.raulshma.jellyplay.core.ui.navigation.visibleTopLevelRoutes
@@ -527,7 +528,7 @@ internal fun DesktopNavScaffold(
                     }
                     DesktopRailItem(
                         descriptor.route,
-                        descriptor.railLabel,
+                        descriptor.route.localizedNavLabel(rail = true),
                         descriptor.icon,
                         currentTopLevel,
                         guardedNavigator,

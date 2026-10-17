@@ -11,7 +11,7 @@
 
     <!-- CompletionStep -->
     <string name="onboarding_completion_title">All Set!</string>
-    <string name="onboarding_completion_subtitle">Your JellyPlay is configured and ready to go. You can always change these settings later.</string>
+    <string name="onboarding_completion_subtitle">Your JellyPlay+ is configured and ready to go. You can always change these settings later.</string>
     <string name="onboarding_completion_start_watching">Start Watching</string>
 
     <!-- SeerrStep status/section labels -->
@@ -20,7 +20,7 @@
     <string name="onboarding_seerr_features">Features</string>
     <string name="onboarding_seerr_regions">Regions</string>
 
-    <string name="onboarding_welcome_title">Welcome to\nJellyPlay</string>
+    <string name="onboarding_welcome_title">Welcome to\nJellyPlay+</string>
     <string name="onboarding_welcome_subtitle">Your personal Jellyfin client. Let's set up a few things to get you started.</string>
     <string name="onboarding_feature_stream">Stream movies &amp; TV shows</string>
     <string name="onboarding_feature_music">Music player with advanced audio effects</string>
@@ -91,7 +91,7 @@
 
     <!-- AppearanceStep -->
     <string name="onboarding_appearance_title">Appearance</string>
-    <string name="onboarding_appearance_subtitle">Choose how JellyPlay looks for you</string>
+    <string name="onboarding_appearance_subtitle">Choose how JellyPlay+ looks for you</string>
     <string name="onboarding_appearance_theme">Theme</string>
     <string name="onboarding_appearance_theme_system">System</string>
     <string name="onboarding_appearance_theme_light">Light</string>

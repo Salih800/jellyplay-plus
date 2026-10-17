@@ -5,14 +5,14 @@
     <string name="onboarding_skip">Passer</string>
     <string name="onboarding_next">Suivant</string>
     <string name="onboarding_completion_title">Tout est prêt !</string>
-    <string name="onboarding_completion_subtitle">Votre JellyPlay est configuré et prêt à l'emploi. Vous pouvez toujours modifier ces paramètres ultérieurement.</string>
+    <string name="onboarding_completion_subtitle">Votre JellyPlay+ est configuré et prêt à l'emploi. Vous pouvez toujours modifier ces paramètres ultérieurement.</string>
     <string name="onboarding_completion_start_watching">Commencer à regarder</string>
     <string name="onboarding_seerr_connection">Connexion</string>
     <string name="onboarding_seerr_connected">Connecté</string>
     <string name="onboarding_seerr_features">Fonctionnalités</string>
     <string name="onboarding_seerr_regions">Régions</string>
 
-    <string name="onboarding_welcome_title">Bienvenue sur\nJellyPlay</string>
+    <string name="onboarding_welcome_title">Bienvenue sur\nJellyPlay+</string>
     <string name="onboarding_welcome_subtitle">Votre client Jellyfin personnel. Configurez quelques éléments pour démarrer.</string>
     <string name="onboarding_feature_stream">Films en streaming &amp; séries TV</string>
     <string name="onboarding_feature_music">Lecteur de musique avec effets audio avancés</string>
@@ -80,7 +80,7 @@
 
     <!-- AppearanceStep -->
     <string name="onboarding_appearance_title">Apparence</string>
-    <string name="onboarding_appearance_subtitle">Choisissez l'apparence de JellyPlay</string>
+    <string name="onboarding_appearance_subtitle">Choisissez l'apparence de JellyPlay+</string>
     <string name="onboarding_appearance_theme">Thème</string>
     <string name="onboarding_appearance_theme_system">Système</string>
     <string name="onboarding_appearance_theme_light">Clair</string>

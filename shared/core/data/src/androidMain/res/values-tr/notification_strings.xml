@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="notification_new_in_library_count">%1$d %2$s\'de yeni</string>
+    <string name="notification_more_count">+%1$d daha</string>
+    <string name="notification_new_items_added">%1$d yeni öğe eklendi</string>
+    <string name="notification_across_libraries">%1$d kitaplıklarda</string>
+    <string name="notification_action_mark_seen">Görüldüğü gibi işaretle</string>
+    <string name="notification_action_open">Aç</string>
+    <string name="notification_action_mark_all_seen">Tümünü görüldüğü gibi işaretle</string>
+    <string name="notification_channel_new_in_library">%1$s\'da yeni</string>
+    <string name="notification_channel_new_in_library_desc">%1$s bölgesindeki yeni medyaya ilişkin bildirimler</string>
+    <string name="notification_channel_summary">Yeni Medya</string>
+    <string name="notification_channel_summary_desc">Yeni medya bildirimlerinin özeti</string>
+    <string name="notification_channel_new_episodes">Yeni Bölümler</string>
+    <string name="notification_channel_new_episodes_desc">Yeni eklenen bölümler için bildirimler</string>
+    <string name="notification_plugin_new_media_subtitle">Sunucunuza yeni medya eklendi</string>
+    <string name="notification_plugin_new_episodes_count">%1$d yeni bölüm</string>
+    <string name="notification_plugin_push_title">JellyPlay sunucu</string>
+</resources>

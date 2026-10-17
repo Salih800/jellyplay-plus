@@ -1,5 +1,7 @@
 package com.raulshma.jellyplay.feature.settings
 
+import com.raulshma.jellyplay.feature.settings.generated.resources.settings_integrations_intro
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -101,8 +103,7 @@ fun IntegrationsScreen(
         ) {
             item(key = "integrations_intro") {
                 Text(
-                    "Connect JellyPlay to your media services to enable requests, " +
-                        "discover, and download-queue tracking.",
+                    stringResource(Res.string.settings_integrations_intro),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 4.dp, vertical = 8.dp),

@@ -240,11 +240,11 @@ class GitHubReleasesApiImpl(
         private const val TAG = "GitHubReleases"
 
         const val LATEST_RELEASE_URL =
-            "https://api.github.com/repos/raulshma/jellyplay/releases/latest"
+            "https://api.github.com/repos/${GitHubRepoAllowList.ALLOWED_OWNER}/${GitHubRepoAllowList.ALLOWED_REPO}/releases/latest"
 
         /** The What's New feed's remote source: the recent-releases list. */
         const val RELEASES_LIST_URL =
-            "https://api.github.com/repos/raulshma/jellyplay/releases?per_page=30"
+            "https://api.github.com/repos/${GitHubRepoAllowList.ALLOWED_OWNER}/${GitHubRepoAllowList.ALLOWED_REPO}/releases?per_page=30"
 
         /**
          * Picks the APK asset whose name matches the running [flavor] and the

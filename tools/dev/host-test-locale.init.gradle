@@ -1,0 +1,10 @@
+// Optional host-test locale for native libraries whose OS detection uses
+// locale-sensitive lowercasing (for example Conscrypt on Turkish Windows).
+// Apply with --init-script tools/dev/host-test-locale.init.gradle.
+// This changes only forked Gradle test JVMs, not the system or the app.
+allprojects {
+    tasks.withType(org.gradle.api.tasks.testing.Test).configureEach {
+        systemProperty 'user.language', 'en'
+        systemProperty 'user.country', 'US'
+    }
+}

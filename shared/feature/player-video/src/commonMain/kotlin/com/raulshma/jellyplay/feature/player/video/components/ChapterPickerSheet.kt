@@ -1,5 +1,9 @@
 package com.raulshma.jellyplay.feature.player.video.components
 
+import com.raulshma.jellyplay.feature.player.video.generated.resources.Res
+import org.jetbrains.compose.resources.stringResource
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_video_chapters
+
 import androidx.compose.foundation.background
 import com.raulshma.jellyplay.core.ui.tv.ifElse
 import com.raulshma.jellyplay.core.ui.tv.verticalWrapAround
@@ -37,7 +41,7 @@ internal fun ChapterPickerSheet(
     onDismiss: () -> Unit,
 ) {
     PickerSheetScaffold(
-        title = "Chapters",
+        title = stringResource(Res.string.player_video_chapters),
         icon = Tabler.Outline.List,
         onDismiss = onDismiss,
         // Chapters load asynchronously — re-arm the focus grab once they land,

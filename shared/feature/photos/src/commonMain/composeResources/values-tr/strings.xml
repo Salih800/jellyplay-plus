@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="photos_photo_saved_to_gallery">Galeriye kaydedildi</string>
+    <string name="photos_photos">Fotoğraflar</string>
+    <string name="photos_sort_options">Sıralama seçenekleri</string>
+    <string name="photos_failed_to_load_photos">Fotoğraflar yüklenemedi</string>
+    <string name="photos_no_photos_found">Fotoğraf bulunamadı</string>
+    <string name="photos_photo_adjustments">Ayarlamalar</string>
+    <string name="photos_photo_slideshow">Slayt gösterisi</string>
+    <string name="photos_photo_start_slideshow">Slayt gösterisini başlat</string>
+    <string name="photos_photo_stop_slideshow">Slayt gösterisini durdur</string>
+    <string name="photos_photo_brightness">Parlaklık %1$d%</string>
+    <string name="photos_photo_contrast">Karşıtlık %1$d%</string>
+    <string name="photos_photo_saturation">Doygunluk %1$d%</string>
+    <string name="photos_photo_failed_to_load">Fotoğraf yüklenemedi</string>
+    <string name="photos_cd_close">Kapat</string>
+    <string name="photos_cd_share">Paylaş</string>
+    <string name="photos_cd_save">Kaydet</string>
+    <string name="photos_cd_info">Bilgi</string>
+    <string name="photos_cd_adjust">Ayarla</string>
+    <string name="photos_cd_previous">Önceki</string>
+    <string name="photos_cd_next">İleri</string>
+    <string name="photos_reset">Sıfırla</string>
+    <string name="photos_failed_to_load_more">Daha fazlası yüklenemedi</string>
+</resources>
