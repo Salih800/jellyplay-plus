@@ -16,6 +16,7 @@ import com.raulshma.jellyplay.core.data.cast.CastManager
 import com.raulshma.jellyplay.core.data.repository.PlaybackRepository
 import com.raulshma.jellyplay.core.datastore.syncplaycast.SyncPlayCastStore
 import com.raulshma.jellyplay.core.model.PlaybackMode
+import com.raulshma.jellyplay.core.model.PlayerType
 import com.raulshma.jellyplay.feature.player.video.engine.MediaEngine
 import com.raulshma.jellyplay.feature.player.video.engine.ContainerMimeMapper
 import com.raulshma.jellyplay.feature.player.video.trickplay.TrickplayController
@@ -38,6 +39,7 @@ internal class AndroidVideoPlayerPlatform(
     override val playbackFocus: PlaybackFocus,
     override val videoFocusSurface: VideoPlaybackSurface?,
 ) : VideoPlayerPlatform {
+    override val availablePlayerTypes = listOf(PlayerType.EXO_PLAYER, PlayerType.MPV)
 
     override fun isLowRamDevice(): Boolean {
         val am = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager

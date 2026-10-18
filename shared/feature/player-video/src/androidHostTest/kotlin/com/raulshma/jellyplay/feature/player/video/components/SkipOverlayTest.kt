@@ -1,11 +1,15 @@
 package com.raulshma.jellyplay.feature.player.video.components
 
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import com.raulshma.jellyplay.core.model.MediaSegmentType
+import com.raulshma.jellyplay.core.model.MediaSegment
+import com.raulshma.jellyplay.core.model.SegmentBehavior
+import com.raulshma.jellyplay.feature.player.video.isSkipSegmentButtonVisible
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -17,6 +21,36 @@ class SkipOverlayTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
+
+    @Test
+    fun activeSegment_buttonHidesAndReturnsWithControls() {
+        val controlsVisible = mutableStateOf(true)
+        val segment = MediaSegment(
+            id = "intro", itemId = "episode", type = MediaSegmentType.INTRO,
+            startTicks = 0L, endTicks = 900_000_000L,
+        )
+        composeTestRule.setContent {
+            MaterialTheme {
+                SegmentSkipOverlay(
+                    isVisible = isSkipSegmentButtonVisible(
+                        activeSegment = segment,
+                        segmentBehavior = SegmentBehavior.SHOW_BUTTON,
+                        isInPipMode = false,
+                        isCinemaIntroVisible = false,
+                        shouldShowUpNext = false,
+                        areControlsVisible = controlsVisible.value,
+                    ),
+                    segmentType = segment.type,
+                    onSkip = {},
+                )
+            }
+        }
+        composeTestRule.onNodeWithText("Skip Intro").assertIsDisplayed()
+        composeTestRule.runOnIdle { controlsVisible.value = false }
+        composeTestRule.onNodeWithText("Skip Intro").assertDoesNotExist()
+        composeTestRule.runOnIdle { controlsVisible.value = true }
+        composeTestRule.onNodeWithText("Skip Intro").assertIsDisplayed()
+    }
 
     @Test
     fun segmentSkipOverlay_intro_visible_showsText() {

@@ -34,6 +34,59 @@ class GitHubReleasesApiImplTest {
         GitHubReleaseAsset(name = name, browserDownloadUrl = url, size = size)
 
     @Test
+    fun `selectAsset maps phone flavor to branded Android asset`() {
+        val name = "jellyplay-plus-v1.2.3-android-arm64-v8a.apk"
+        val chosen = GitHubReleasesApiImpl.selectAsset(listOf(asset(name)), "1.2.3", "phone", arrayOf("arm64-v8a"))
+        assertEquals(name, chosen?.name)
+    }
+
+    @Test
+    fun `selectAsset maps TV flavor to branded Android TV asset`() {
+        val name = "jellyplay-plus-v1.2.3-android-tv-arm64-v8a.apk"
+        val assets = listOf(asset("jellyplay-plus-v1.2.3-android-arm64-v8a.apk"), asset(name))
+        val chosen = GitHubReleasesApiImpl.selectAsset(assets, "1.2.3", "tv", arrayOf("arm64-v8a"))
+        assertEquals(name, chosen?.name)
+    }
+
+    @Test
+    fun `selectAsset prefers branded Android asset over compatibility alias`() {
+        val assets = listOf(
+            asset("jellyplay-v1.2.3-phone-arm64-v8a.apk"),
+            asset("jellyplay-plus-v1.2.3-android-arm64-v8a.apk"),
+        )
+        val chosen = GitHubReleasesApiImpl.selectAsset(assets, "1.2.3", "phone", arrayOf("arm64-v8a"))
+        assertEquals("jellyplay-plus-v1.2.3-android-arm64-v8a.apk", chosen?.name)
+    }
+
+    @Test
+    fun `selectAsset preserves ABI priority across naming formats`() {
+        val assets = listOf(
+            asset("jellyplay-plus-v1.2.3-android-x86_64.apk"),
+            asset("jellyplay-v1.2.3-phone-arm64-v8a.apk"),
+        )
+        val chosen = GitHubReleasesApiImpl.selectAsset(assets, "1.2.3", "phone", arrayOf("arm64-v8a", "x86_64"))
+        assertEquals("jellyplay-v1.2.3-phone-arm64-v8a.apk", chosen?.name)
+    }
+
+    @Test
+    fun `selectAsset uses branded same platform universal fallback`() {
+        val assets = listOf(
+            asset("jellyplay-v1.2.3-phone-universal.apk"),
+            asset("jellyplay-plus-v1.2.3-android-tv-universal.apk"),
+            asset("jellyplay-plus-v1.2.3-android-universal.apk"),
+        )
+        val chosen = GitHubReleasesApiImpl.selectAsset(assets, "1.2.3", "phone", arrayOf("arm64-v8a"))
+        assertEquals("jellyplay-plus-v1.2.3-android-universal.apk", chosen?.name)
+    }
+
+    @Test
+    fun `selectAsset matches branded names case insensitively`() {
+        val name = "JELLYPLAY-PLUS-v1.2.3-ANDROID-ARM64-V8A.apk"
+        val chosen = GitHubReleasesApiImpl.selectAsset(listOf(asset(name)), "1.2.3", "phone", arrayOf("arm64-v8a"))
+        assertEquals(name, chosen?.name)
+    }
+
+    @Test
     fun `selectAsset prefers exact flavor and ABI match`() {
         val assets = listOf(
             asset("jellyplay-v1.2.3-phone-arm64-v8a.apk"),
@@ -154,6 +207,19 @@ class GitHubReleasesApiImplTest {
             flavor = "phone",
             supportedAbis = arrayOf("arm64-v8a"),
         )
+
+    @Test
+    fun `fetchLatestUpdate exposes branded Android download name and url`() = runBlocking {
+        val brandedJson = sampleGithubReleaseJson.replace("jellyplay-v1.2.3-phone-", "jellyplay-plus-v1.2.3-android-")
+        val info = fetchFrom(canned(brandedJson).api).getOrThrow()
+        assertEquals("jellyplay-plus-v1.2.3-android-arm64-v8a.apk", info.downloadAssetName)
+        assertEquals(
+            "https://github.com/Salih800/jellyplay-plus/releases/download/v1.2.3/jellyplay-plus-v1.2.3-android-arm64-v8a.apk",
+            info.downloadAssetUrl,
+        )
+        assertEquals(5242880L, info.releaseSize)
+        assertTrue(info.isUpdateAvailable)
+    }
 
     @Test
     fun `fetchLatestUpdate parses snake_case GitHub fields and flags an available update`() = runBlocking {

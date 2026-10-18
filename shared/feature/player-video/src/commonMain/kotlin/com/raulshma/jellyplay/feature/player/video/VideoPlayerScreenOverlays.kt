@@ -9,15 +9,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,11 +32,9 @@ import com.raulshma.jellyplay.core.designsystem.theme.playerOnScrim
 import com.raulshma.jellyplay.core.designsystem.theme.playerScrimColor
 import com.raulshma.jellyplay.core.model.MediaItem
 import com.raulshma.jellyplay.core.model.MediaSegment
-import com.raulshma.jellyplay.core.model.SegmentBehavior
 import com.raulshma.jellyplay.core.model.TrickplayInfo
 import com.raulshma.jellyplay.core.ui.components.JellyPlayLoadingIndicator
 import com.raulshma.jellyplay.core.ui.model.localizedDisplayName
-import com.raulshma.jellyplay.feature.player.video.components.HdrBadge
 import com.raulshma.jellyplay.feature.player.video.components.IntroSkipOverlay
 import com.raulshma.jellyplay.feature.player.video.components.NextEpisodeOverlay
 import com.raulshma.jellyplay.feature.player.video.components.PinLockOverlay
@@ -52,7 +48,7 @@ import com.raulshma.jellyplay.feature.player.video.generated.resources.player_vi
 
 // ── Section host: overlay tiers over the video surface ───────────────────
 // Owns the center overlays (gesture trickplay, intro/segment skip, skipped
-// notice, up-next, HDR badge, buffering spinner), the full-screen lock
+// notice, up-next, buffering spinner), the full-screen lock
 // overlays (PIN pad / slide-to-unlock), the seek-scrub trickplay thumbnail,
 // the transparent VLC-style subtitle-delay overlay, and the shared trickplay
 // thumbnail collector feeding both trickplay surfaces. Moved verbatim from
@@ -65,7 +61,7 @@ private const val TRICKPLAY_THUMB_BOTTOM_CLEARANCE_DP = 120
 
 /**
  * Input bundle for [PlayerCenterOverlayTier] (the [com.raulshma.jellyplay.feature.player.video.components.PlayerEffectsControls]
- * idiom): the 22 values the center overlays read — the gesture-trickplay and
+ * idiom): the values the center overlays read — the gesture-trickplay and
  * seek feeds, the intro/segment-skip/up-next family with their TV focus
  * anchors, and the playback-context flags — riding one `@Immutable` carrier.
  * The call wall remembers it on exactly these fields, so the bundle instance
@@ -83,9 +79,9 @@ internal data class CenterOverlayInputs(
     val isCinemaIntroVisible: Boolean,
     val tvCinemaIntroFocusRequester: FocusRequester,
     val activeSegment: MediaSegment?,
-    val activeSegmentBehavior: SegmentBehavior?,
+    val isSkipSegmentVisible: Boolean,
+    val skipPromptProgress: State<Float>?,
     val shouldShowUpNext: Boolean,
-    val isInPipMode: Boolean,
     val tvSkipSegmentFocusRequester: FocusRequester,
     val nextEpisode: MediaItem?,
     val nextEpisodeImageUrl: String?,
@@ -99,7 +95,7 @@ internal data class CenterOverlayInputs(
     val stillWatchingPrompt: StillWatchingPromptState?,
 )
 
-/** Center/anchored overlays: gesture trickplay, intro/segment skip, skipped notice, up-next, HDR badge, buffering spinner. */
+/** Center/anchored overlays: gesture trickplay, intro/segment skip, skipped notice, up-next, buffering spinner. */
 @Composable
 internal fun BoxScope.PlayerCenterOverlayTier(
     viewModel: VideoPlayerViewModel,
@@ -122,36 +118,33 @@ internal fun BoxScope.PlayerCenterOverlayTier(
         )
     }
 
-    if (inputs.isCinemaIntroVisible) {
-        IntroSkipOverlay(
-            isVisible = true,
+    IntroSkipOverlay(
+        isVisible = inputs.isCinemaIntroVisible,
+        initialPromptProgress = inputs.skipPromptProgress,
+        onSkip = {
+            viewModel.onEvent(VideoPlayerUiEvent.SkipIntro)
+            performConfirmHaptic()
+        },
+        focusRequester = inputs.tvCinemaIntroFocusRequester,
+        modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .padding(bottom = 100.dp, end = 40.dp),
+    )
+
+    if (inputs.activeSegment != null) {
+        SegmentSkipOverlay(
+            isVisible = inputs.isSkipSegmentVisible,
+            initialPromptProgress = inputs.skipPromptProgress,
+            segmentType = inputs.activeSegment.type,
             onSkip = {
-                viewModel.onEvent(VideoPlayerUiEvent.SkipIntro)
+                viewModel.onEvent(VideoPlayerUiEvent.SkipSegment(inputs.activeSegment))
                 performConfirmHaptic()
             },
-            focusRequester = inputs.tvCinemaIntroFocusRequester,
+            focusRequester = inputs.tvSkipSegmentFocusRequester,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(bottom = 100.dp, end = 40.dp),
         )
-    }
-
-    if (inputs.activeSegment != null && inputs.activeSegmentBehavior == SegmentBehavior.SHOW_BUTTON && !inputs.isInPipMode) {
-        val hideForUpNext = inputs.activeSegment.type == com.raulshma.jellyplay.core.model.MediaSegmentType.OUTRO && inputs.shouldShowUpNext
-        if (!hideForUpNext) {
-            SegmentSkipOverlay(
-                isVisible = true,
-                segmentType = inputs.activeSegment.type,
-                onSkip = {
-                    viewModel.onEvent(VideoPlayerUiEvent.SkipSegment(inputs.activeSegment))
-                    performConfirmHaptic()
-                },
-                focusRequester = inputs.tvSkipSegmentFocusRequester,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(bottom = 100.dp, end = 40.dp),
-            )
-        }
     }
 
     // "Skipped …" confirmation: raised by the VM when an
@@ -220,14 +213,6 @@ internal fun BoxScope.PlayerCenterOverlayTier(
         onTick = { viewModel.onEvent(VideoPlayerUiEvent.StillWatchingTick) },
         pauseCountdown = inputs.isSheetOpen || inputs.isScreenLocked,
         modifier = Modifier.align(Alignment.Center),
-    )
-
-    HdrBadge(
-        hdrType = uiState.hdrType,
-        modifier = Modifier
-            .align(Alignment.TopEnd)
-            .windowInsetsPadding(WindowInsets.statusBars)
-            .padding(top = 16.dp, end = 16.dp),
     )
 
     // Buffering spinner fades/scales in and out — an abrupt pop mid-playback

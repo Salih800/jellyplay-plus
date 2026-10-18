@@ -85,6 +85,7 @@ import com.raulshma.jellyplay.feature.player.video.components.TransportControls
 import com.raulshma.jellyplay.feature.player.video.components.GestureControls
 import com.raulshma.jellyplay.feature.player.video.components.SheetControls
 import com.raulshma.jellyplay.feature.player.video.components.SubtitleHubTab
+import com.raulshma.jellyplay.feature.player.video.components.rememberTimedSkipPrompt
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -104,7 +105,7 @@ import com.raulshma.jellyplay.core.designsystem.theme.playerOnScrim
 //     modifier, the gesture indicator tier and the hold-speed pill.
 //   - VideoPlayerScreenOverlays.kt: overlay tiers over the surface — center
 //     overlays (gesture trickplay, intro/segment skip, skipped notice,
-//     up-next, HDR badge, buffering), lock overlays (PIN/slide-to-unlock),
+//     up-next, buffering), lock overlays (PIN/slide-to-unlock),
 //     seek-scrub trickplay, subtitle-delay overlay, shared trickplay collector.
 //   - VideoPlayerScreenInfo.kt: status tier — Stats-for-Nerds, the transient
 //     badge family, cast indicator, both snackbar hosts.
@@ -248,10 +249,6 @@ fun VideoPlayerScreen(
     var keyboardLayerHoldsFocus by remember { mutableStateOf(false) }
     var userInteractionCount by rememberSaveable { mutableIntStateOf(0) }
 
-    LaunchedEffect(showControls) {
-        viewModel.onEvent(VideoPlayerUiEvent.SetControlsVisible(showControls))
-    }
-
     val isScreenLocked = uiState.isScreenLocked
 
     // Mirror the screen-lock state to PipController so the host Activity can gate
@@ -376,6 +373,12 @@ fun VideoPlayerScreen(
     }
 
     val engine by viewModel.playerEngineFlow.collectAsStateWithLifecycle()
+    val arePlaybackControlsVisible = showControls && !isInPipMode && !isScreenLocked
+    // Reapply after initial engine creation and engine switches, even when
+    // controls never changed visibility. Metadata also needs engine stats.
+    LaunchedEffect(engine, arePlaybackControlsVisible, uiState.uiPrefs.showPlaybackMetadata, uiState.uiPrefs.showVideoStats) {
+        viewModel.onEvent(VideoPlayerUiEvent.SetControlsVisible(arePlaybackControlsVisible))
+    }
     val title = uiState.title
     val subtitle = uiState.subtitle
     val isCastConnected by viewModel.playbackSession.cast.isConnectedFlow.collectAsStateWithLifecycle(initialValue = false)
@@ -462,14 +465,24 @@ fun VideoPlayerScreen(
     val isInSyncPlaySession = uiState.isInSyncPlaySession
 
     val isNextEpisodeVisible = nextEpisode != null && shouldShowUpNext
-    val isCinemaIntroVisible = cinemaIntroState != null && !isInPipMode
-    val isSkipSegmentVisible = isSkipSegmentButtonVisible(
+    val isSkipSegmentAvailable = isSkipSegmentButtonVisible(
         activeSegment = activeSegment,
         segmentBehavior = activeSegmentBehavior,
-        isInPipMode = isInPipMode,
-        isCinemaIntroVisible = isCinemaIntroVisible,
+        isInPipMode = false,
+        isCinemaIntroVisible = cinemaIntroState != null,
         shouldShowUpNext = shouldShowUpNext,
+        areControlsVisible = true,
     )
+    val canShowSkipPrompt = !isInPipMode && !isScreenLocked && currentSheet == PlayerSheet.None
+    val skipPrompt = rememberTimedSkipPrompt(
+        promptKey = cinemaIntroState ?: activeSegment?.takeIf { isSkipSegmentAvailable },
+        canShow = canShowSkipPrompt,
+        userInteractionCount = userInteractionCount,
+    )
+    val showSkipButtons = canShowSkipPrompt && skipPrompt.isVisible(arePlaybackControlsVisible, userInteractionCount)
+    val isCinemaIntroVisible = cinemaIntroState != null && showSkipButtons
+    val isSkipSegmentVisible = isSkipSegmentAvailable && showSkipButtons
+    val skipPromptProgress = skipPrompt.progress.takeIf { skipPrompt.isInitialPromptActive }
 
     LaunchedEffect(showControls, isTv, isNextEpisodeVisible, isSkipSegmentVisible, isCinemaIntroVisible) {
         if (isTv && !showControls) {
@@ -897,7 +910,7 @@ fun VideoPlayerScreen(
                         resolveAction = { currentResolvePatternAction(it) },
                         executePlayerAction = { currentExecutePlayerAction(it) },
                         holdRepeatScope = scope,
-                        onUserInteraction = { viewModel.onEvent(VideoPlayerUiEvent.UserInteraction) },
+                        onUserInteraction = onKeyUserInteraction,
                         isHoldSpeedActive = { uiState.gestures.isHoldSpeedActive },
                         holdSpeedEnabled = { uiState.gestures.holdSpeedEnabled },
                         stopHoldSpeed = { viewModel.onEvent(VideoPlayerUiEvent.StopHoldSpeed) },
@@ -1099,9 +1112,9 @@ fun VideoPlayerScreen(
                 isCinemaIntroVisible,
                 tvCinemaIntroFocusRequester,
                 activeSegment,
-                activeSegmentBehavior,
+                isSkipSegmentVisible,
+                skipPromptProgress,
                 shouldShowUpNext,
-                isInPipMode,
                 tvSkipSegmentFocusRequester,
                 nextEpisode,
                 nextEpisodeImageUrl,
@@ -1123,9 +1136,9 @@ fun VideoPlayerScreen(
                     isCinemaIntroVisible = isCinemaIntroVisible,
                     tvCinemaIntroFocusRequester = tvCinemaIntroFocusRequester,
                     activeSegment = activeSegment,
-                    activeSegmentBehavior = activeSegmentBehavior,
+                    isSkipSegmentVisible = isSkipSegmentVisible,
+                    skipPromptProgress = skipPromptProgress,
                     shouldShowUpNext = shouldShowUpNext,
-                    isInPipMode = isInPipMode,
                     tvSkipSegmentFocusRequester = tvSkipSegmentFocusRequester,
                     nextEpisode = nextEpisode,
                     nextEpisodeImageUrl = nextEpisodeImageUrl,
@@ -1427,6 +1440,7 @@ fun VideoPlayerScreen(
                     onVersionClick = { openSheet(PlayerSheet.Version) },
                 ),
                 tracks = TrackControls(
+                    engineName = if (isCastConnected) null else engine?.displayName,
                     streamingQuality = uiState.uiPrefs.streamingQuality,
                     playbackMode = uiState.uiPrefs.playbackMode,
                     playMethod = uiState.media.playMethod,
@@ -1442,7 +1456,7 @@ fun VideoPlayerScreen(
                 ),
                 currentAspectRatio = aspectRatio,
                 detectedAspectRatio = detectedAspectRatio,
-                isVisible = showControls && !isInPipMode && !isScreenLocked,
+                isVisible = arePlaybackControlsVisible,
                 capabilities = uiState.engineCapabilities,
                 syncPlay = SyncPlayIndicator(
                     inSession = isInSyncPlaySession,

@@ -450,6 +450,42 @@ class PlaybackSessionLifecycleTest {
     // ── 3. Retry / reload paths ──────────────────────────────────────────────
 
     @Test
+    fun replacementEngine_clearsPreviousStreamMetadataBeforeNewSamplesArrive() = runTest {
+        buildSession(currentItemId = "item-1")
+        session.arm()
+        graph.handles.videoStats.value = com.raulshma.jellyplay.feature.player.video.engine.EngineVideoStats(
+            videoCodec = "hevc", videoHdrType = "Dolby Vision", audioCodec = "truehd",
+        )
+        graph.engineFlow.value = FakeMediaEngine()
+        testScheduler.runCurrent()
+        assertEquals(com.raulshma.jellyplay.feature.player.video.engine.EngineVideoStats(), graph.handles.videoStats.value)
+    }
+
+    @Test
+    fun sessionEngineSwitch_keepsPositionSpeedPauseAndSavedDefault() = runTest {
+        buildSession(currentItemId = "item-1", playSessionId = "server-1")
+        engine.advanceTo(42_000L)
+        engine.pause()
+        coEvery { playerSessionManager.reloadWithEngine(any(), any(), any(), any()) } answers { engine.play() }
+
+        session.retryWithEngine(PlayerType.MPV, 1.25f, StreamingQuality.AUTO, sessionOnly = true)
+
+        coVerify(exactly = 0) { playbackStore.setPreferredPlayer(any()) }
+        coVerify { playerSessionManager.reloadWithEngine(PlayerType.MPV, 42_000L, 1.25f, 8_000_000) }
+        assertFalse(engine.isPlaying.value)
+        verify { progressReporter.startPositionTracking() }
+    }
+
+    @Test
+    fun sessionEngineSwitch_doesNotPauseAnAlreadyPlayingSession() = runTest {
+        buildSession(currentItemId = "item-1")
+        engine.play()
+        session.retryWithEngine(PlayerType.EXO_PLAYER, 1f, StreamingQuality.AUTO, sessionOnly = true)
+        assertTrue(engine.isPlaying.value)
+        coVerify(exactly = 0) { playbackStore.setPreferredPlayer(any()) }
+    }
+
+    @Test
     fun retryWithEngine_resolvesTheBitrate_swapsTheEngine_andPersistsTheChoice() = runTest {
         buildSession(currentItemId = "item-1", playSessionId = "server-1")
         engine.advanceTo(12_000L)

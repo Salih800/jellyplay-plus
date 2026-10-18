@@ -19,6 +19,24 @@ import kotlin.test.assertTrue
  * (`PlayerChromePolicies`) — their pins moved with them to
  * `PlayerChromePoliciesTest` at that home.
  */
+class PlaybackStatsCollectionTest {
+    @Test
+    fun metadataRow_collectsStatsWithoutOpeningDetailedPanel() {
+        assertTrue(shouldCollectPlaybackStats(true, true, false))
+        assertFalse(shouldCollectPlaybackStats(false, true, false))
+        assertFalse(shouldCollectPlaybackStats(true, false, false))
+    }
+
+    @Test
+    fun detailedPanel_keepsStatsEnabledWithHiddenControlsOrMetadata() {
+        for (controlsVisible in listOf(false, true)) {
+            for (metadataVisible in listOf(false, true)) {
+                assertTrue(shouldCollectPlaybackStats(controlsVisible, metadataVisible, true))
+            }
+        }
+    }
+}
+
 class ResumeSkipTargetTest {
 
     @Test
@@ -133,10 +151,32 @@ class SkipSegmentButtonVisibilityTest {
     )
 
     @Test
+    fun activeSegments_hideAndReturnWithControls() {
+        for (type in MediaSegmentType.entries) {
+            val active = segment(type)
+            for (controlsVisible in listOf(true, false, true)) {
+                assertEquals(
+                    controlsVisible,
+                    isSkipSegmentButtonVisible(
+                        activeSegment = active,
+                        segmentBehavior = SegmentBehavior.SHOW_BUTTON,
+                        isInPipMode = false,
+                        isCinemaIntroVisible = false,
+                        shouldShowUpNext = false,
+                        areControlsVisible = controlsVisible,
+                    ),
+                    "$type follows controls visibility",
+                )
+            }
+        }
+    }
+
+    @Test
     fun showButtonSegment_withNoOverlays_isVisible() {
         assertTrue(
             isSkipSegmentButtonVisible(
                 activeSegment = segment(MediaSegmentType.INTRO),
+                areControlsVisible = true,
                 segmentBehavior = SegmentBehavior.SHOW_BUTTON,
                 isInPipMode = false,
                 isCinemaIntroVisible = false,
@@ -150,6 +190,7 @@ class SkipSegmentButtonVisibilityTest {
         assertFalse(
             isSkipSegmentButtonVisible(
                 activeSegment = null,
+                areControlsVisible = true,
                 segmentBehavior = SegmentBehavior.SHOW_BUTTON,
                 isInPipMode = false,
                 isCinemaIntroVisible = false,
@@ -164,6 +205,7 @@ class SkipSegmentButtonVisibilityTest {
             assertFalse(
                 isSkipSegmentButtonVisible(
                     activeSegment = segment(MediaSegmentType.INTRO),
+                    areControlsVisible = true,
                     segmentBehavior = behavior,
                     isInPipMode = false,
                     isCinemaIntroVisible = false,
@@ -180,6 +222,7 @@ class SkipSegmentButtonVisibilityTest {
             assertFalse(
                 isSkipSegmentButtonVisible(
                     activeSegment = segment(type),
+                    areControlsVisible = true,
                     segmentBehavior = SegmentBehavior.SHOW_BUTTON,
                     isInPipMode = true,
                     isCinemaIntroVisible = false,
@@ -190,6 +233,7 @@ class SkipSegmentButtonVisibilityTest {
             assertFalse(
                 isSkipSegmentButtonVisible(
                     activeSegment = segment(type),
+                    areControlsVisible = true,
                     segmentBehavior = SegmentBehavior.SHOW_BUTTON,
                     isInPipMode = false,
                     isCinemaIntroVisible = true,
@@ -205,6 +249,7 @@ class SkipSegmentButtonVisibilityTest {
         assertFalse(
             isSkipSegmentButtonVisible(
                 activeSegment = segment(MediaSegmentType.OUTRO),
+                areControlsVisible = true,
                 segmentBehavior = SegmentBehavior.SHOW_BUTTON,
                 isInPipMode = false,
                 isCinemaIntroVisible = false,
@@ -214,6 +259,7 @@ class SkipSegmentButtonVisibilityTest {
         assertTrue(
             isSkipSegmentButtonVisible(
                 activeSegment = segment(MediaSegmentType.INTRO),
+                areControlsVisible = true,
                 segmentBehavior = SegmentBehavior.SHOW_BUTTON,
                 isInPipMode = false,
                 isCinemaIntroVisible = false,

@@ -7,6 +7,7 @@ import com.raulshma.jellyplay.core.data.playback.focus.VideoPlaybackSurface
 import com.raulshma.jellyplay.core.data.repository.PlaybackRepository
 import com.raulshma.jellyplay.core.datastore.syncplaycast.SyncPlayCastStore
 import com.raulshma.jellyplay.core.model.PlaybackMode
+import com.raulshma.jellyplay.core.model.PlayerType
 import com.raulshma.jellyplay.feature.player.video.engine.MediaEngine
 import com.raulshma.jellyplay.feature.player.video.trickplay.TrickplayController
 
@@ -26,6 +27,8 @@ import com.raulshma.jellyplay.feature.player.video.trickplay.TrickplayController
  * host is live; the media-only seams stay queued).
  */
 interface VideoPlayerPlatform : SubtitleContentGateway {
+    /** Embedded engines that can replace the active local player on this platform. */
+    val availablePlayerTypes: List<PlayerType> get() = emptyList()
 
     /**
      * `true` on low-RAM devices (ActivityManager `isLowRamDevice` or

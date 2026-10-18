@@ -427,10 +427,15 @@ internal fun PlayerSheetRouter(
             )
         }
         is PlayerSheet.PlaybackMode -> {
+            val engine by viewModel.playerEngineFlow.collectAsStateWithLifecycle()
+            val castConnected by viewModel.playbackSession.cast.isConnectedFlow.collectAsStateWithLifecycle()
             PlaybackModeSheet(
                 currentMode = uiState.uiPrefs.playbackMode,
                 onSelect = { viewModel.onEvent(VideoPlayerUiEvent.SetPlaybackMode(it)) },
                 onDismiss = inputs.dismissSheet,
+                currentEngineName = engine?.displayName,
+                availablePlayers = if (castConnected || uiState.isInSyncPlaySession) emptyList() else viewModel.availablePlayerTypes,
+                onPlayerSelect = { viewModel.onEvent(VideoPlayerUiEvent.SwitchPlayerEngine(it)) },
             )
         }
         is PlayerSheet.SleepTimer -> {

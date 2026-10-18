@@ -75,6 +75,7 @@ internal fun PlaybackMetadataRow(
     mediaStreams: List<MediaStream>,
     videoStats: PlaybackMetadataSnapshot,
     audioTracks: List<TrackOption>,
+    engineName: String? = null,
     isConnectionMetered: Boolean = false,
     subtitleDelayMs: Long = 0L,
     onSubtitleDelayClick: () -> Unit = {},
@@ -83,36 +84,36 @@ internal fun PlaybackMetadataRow(
     onMpvConfigNoticeClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
-    val videoStream = mediaStreams.firstOrNull { it.type == StreamType.VIDEO }
+    // Server streams describe the original file. They cannot describe the
+    // codecs, resolution or HDR of a newly transcoded stream.
+    val isTranscoding = playMethod.contains("transcod", ignoreCase = true)
+    val sourceStreams = if (isTranscoding) emptyList() else mediaStreams
+    val videoStream = sourceStreams.firstOrNull { it.type == StreamType.VIDEO }
     val resolutionLabel = deriveResolutionLabel(videoStream, videoStats.videoResolution)
-    val videoCodec = formatVideoCodec(videoStream?.codec ?: videoStats.videoCodec)
+    val videoCodec = formatVideoCodec(videoStats.videoCodec ?: videoStream?.codec)
 
-    val isDolbyVision = hdrType?.lowercase() in listOf("dolbyvision", "dolby_vision", "dovi") ||
-        (videoStream?.videoDoViTitle?.isNotBlank() == true) ||
-        (videoStream?.videoRangeType?.lowercase()?.contains("dovi") == true) ||
-        (videoStream?.videoRange?.lowercase()?.contains("dovi") == true) ||
-        (videoStats.videoHdrType?.lowercase()?.contains("dolby") == true) ||
-        (videoStats.videoHdrType?.lowercase()?.contains("dovi") == true)
-
-    val hdrLabel = when {
-        isDolbyVision -> "Dolby Vision"
-        hdrType != null -> when (hdrType.lowercase()) {
-            "hdr10" -> "HDR10"
-            "hdr10plus", "hdr10_plus" -> "HDR10+"
-            "hlg" -> "HLG"
-            "hdr" -> "HDR"
-            else -> hdrType.uppercase()
-        }
-        videoStats.videoHdrType != null -> videoStats.videoHdrType
-        else -> null
+    // Some engines do not expose HDR classification. Source HDR remains a
+    // valid fallback for direct playback, but never for a transcoded stream.
+    val sourceHdr = if (isTranscoding) null else when {
+        !videoStream?.videoDoViTitle.isNullOrBlank() -> "Dolby Vision"
+        else -> videoStream?.videoRangeType ?: hdrType ?: videoStream?.videoRange
     }
+    val hdrLabel = formatPlaybackHdr(videoStats.videoHdrType ?: sourceHdr)
+    val isDolbyVision = hdrLabel == "Dolby Vision"
 
     val activeAudioTrack = audioTracks.find { it.isSelected }
     val audioCodecFromStats = videoStats.audioCodec
-    val audioStream = mediaStreams.firstOrNull { it.type == StreamType.AUDIO }
+    val audioStream = sourceStreams.firstOrNull { it.type == StreamType.AUDIO }
     val rawAudioCodec = formatAudioCodec(audioCodecFromStats ?: audioStream?.codec)
 
-    val matchText = ((activeAudioTrack?.label ?: "") + " " + (audioStream?.title ?: "") + " " + (audioStream?.displayTitle ?: "") + " " + (audioCodecFromStats ?: "")).lowercase()
+    val canUseSourceAudio = !isTranscoding && (audioCodecFromStats == null ||
+        formatAudioCodec(audioCodecFromStats) == formatAudioCodec(audioStream?.codec))
+    val matchText = buildString {
+        append(audioCodecFromStats.orEmpty())
+        if (canUseSourceAudio) {
+            append(" ${activeAudioTrack?.label.orEmpty()} ${audioStream?.title.orEmpty()} ${audioStream?.displayTitle.orEmpty()}")
+        }
+    }.lowercase()
     val isAtmos = matchText.contains("atmos")
     val isDtsX = matchText.contains("dts:x") || matchText.contains("dtsx")
 
@@ -170,7 +171,9 @@ internal fun PlaybackMetadataRow(
             false,
         )
     }
-    val playMethodLabel = if (isDirectPlayForced) "Direct Play \u26A0" else playMethod
+    val methodLabel = if (isDirectPlayForced) "Direct Play \u26A0" else playMethod
+    val playMethodLabel = listOfNotNull(compactPlaybackEngineName(engineName), methodLabel.takeIf { it.isNotBlank() })
+        .joinToString(" · ")
 
     val mpvConfigChipLabel = stringResource(Res.string.player_video_mpv_config_chip)
 
@@ -383,11 +386,6 @@ private fun deriveResolutionLabel(
     videoStream: MediaStream?,
     videoResolutionFromStats: String?,
 ): String? {
-    val height = videoStream?.height
-    val width = videoStream?.width
-    if (height != null || width != null) {
-        return resolutionLabelFor(width, height)
-    }
     if (!videoResolutionFromStats.isNullOrBlank()) {
         val parts = videoResolutionFromStats.lowercase().split("x")
         if (parts.size == 2) {
@@ -398,7 +396,7 @@ private fun deriveResolutionLabel(
             }
         }
     }
-    return null
+    return resolutionLabelFor(videoStream?.width, videoStream?.height)
 }
 
 private fun resolutionLabelFor(width: Int?, height: Int?): String? = when {
@@ -411,13 +409,13 @@ private fun resolutionLabelFor(width: Int?, height: Int?): String? = when {
     else -> null
 }
 
-private fun formatVideoCodec(raw: String?): String? {
+internal fun formatVideoCodec(raw: String?): String? {
     if (raw.isNullOrBlank()) return null
-    val upper = raw.trim().uppercase()
+    val upper = raw.substringBefore('(').trim().removePrefix("video/").uppercase()
     return when {
-        upper == "H264" || upper == "AVC" -> "H.264"
-        upper == "H265" || upper == "HEVC" -> "HEVC"
-        upper == "AV1" -> "AV1"
+        upper == "H264" || upper == "H.264" || upper == "AVC" -> "H.264"
+        upper == "H265" || upper == "H.265" || upper == "HEVC" -> "HEVC"
+        upper == "AV1" || upper == "AV01" -> "AV1"
         upper == "VP9" -> "VP9"
         upper == "VP8" -> "VP8"
         upper.contains("MPEG4") || upper.contains("MP4V") -> "MPEG-4"
@@ -426,9 +424,9 @@ private fun formatVideoCodec(raw: String?): String? {
     }
 }
 
-private fun formatAudioCodec(raw: String?): String? {
+internal fun formatAudioCodec(raw: String?): String? {
     if (raw.isNullOrBlank()) return null
-    val upper = raw.trim().uppercase()
+    val upper = raw.substringBefore('(').trim().removePrefix("audio/").uppercase()
     return when {
         upper == "EAC3" || upper == "E-AC3" || upper == "EC-3" -> "E-AC-3"
         upper == "AC3" || upper == "AC-3" -> "AC-3"
@@ -437,7 +435,7 @@ private fun formatAudioCodec(raw: String?): String? {
         upper == "DTSHD_MA" || upper == "DTS-HD MA" -> "DTS-HD MA"
         upper == "DCA" || upper == "DTS" -> "DTS"
         upper == "FLAC" -> "FLAC"
-        upper == "AAC" -> "AAC"
+        upper == "AAC" || upper == "MP4A-LATM" -> "AAC"
         upper == "OPUS" -> "Opus"
         upper == "VORBIS" -> "Vorbis"
         upper == "MP3" -> "MP3"
@@ -445,6 +443,27 @@ private fun formatAudioCodec(raw: String?): String? {
         upper == "PCM" || upper.contains("PCM") -> "PCM"
         else -> upper
     }
+}
+
+internal fun formatPlaybackHdr(raw: String?): String? {
+    val normalized = raw?.lowercase()?.replace(" ", "")?.replace("_", "") ?: return null
+    return when {
+        normalized.isBlank() || normalized == "sdr" -> null
+        normalized.contains("dolbyvision") || normalized.contains("dovi") -> "Dolby Vision"
+        normalized in listOf("hdr10plus", "hdr10+") -> "HDR10+"
+        normalized == "hdr10" -> "HDR10"
+        normalized == "hlg" -> "HLG"
+        normalized == "hdr" -> "HDR"
+        else -> raw.uppercase()
+    }
+}
+
+internal fun compactPlaybackEngineName(name: String?): String? = when (name?.lowercase()) {
+    null, "" -> null
+    "exoplayer" -> "Exo"
+    "mpv" -> "MPV"
+    "libvlc" -> "VLC"
+    else -> name
 }
 
 private data class Quadruple<A, B, C, D>(

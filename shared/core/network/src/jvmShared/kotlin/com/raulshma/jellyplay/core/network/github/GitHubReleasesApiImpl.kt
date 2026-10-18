@@ -248,9 +248,10 @@ class GitHubReleasesApiImpl(
 
         /**
          * Picks the APK asset whose name matches the running [flavor] and the
-         * device's most-preferred ABI. Asset names follow the CI convention
-         * `jellyplay-v<version>-<flavor>-<abi>.apk` (e.g.
-         * `jellyplay-v1.2.3-phone-arm64-v8a.apk`). Falls back to the
+         * device's most-preferred ABI. Public platform names are `android`
+         * for the phone flavor and `android-tv` for TV. Prefer branded assets
+         * such as `jellyplay-plus-v1.2.3-android-arm64-v8a.apk`, accepting the
+         * legacy `jellyplay-v1.2.3-phone-arm64-v8a.apk` name too. Falls back to the
          * `-universal.apk` of the same flavor when no ABI-specific build is
          * published, and finally to any universal asset.
          *
@@ -263,17 +264,26 @@ class GitHubReleasesApiImpl(
             flavor: String,
             supportedAbis: Array<String>,
         ): GitHubReleaseAsset? {
-            val prefix = "jellyplay-v$version-$flavor"
+            val platform = when (flavor) {
+                "phone" -> "android"
+                "tv" -> "android-tv"
+                else -> flavor
+            }
+            val prefixes = listOf("jellyplay-plus-v$version-$platform", "jellyplay-v$version-$flavor")
             // Prefer the device's most-preferred ABI, in declaration order.
             for (abi in supportedAbis) {
-                val wanted = "$prefix-$abi.apk"
-                assets.firstOrNull { it.name.equals(wanted, ignoreCase = true) }
-                    ?.let { return it }
+                for (prefix in prefixes) {
+                    val wanted = "$prefix-$abi.apk"
+                    assets.firstOrNull { it.name.equals(wanted, ignoreCase = true) }
+                        ?.let { return it }
+                }
             }
             // Fall back to the universal build for this flavor.
-            assets.firstOrNull {
-                it.name.equals("$prefix-universal.apk", ignoreCase = true)
-            }?.let { return it }
+            for (prefix in prefixes) {
+                assets.firstOrNull {
+                    it.name.equals("$prefix-universal.apk", ignoreCase = true)
+                }?.let { return it }
+            }
             // Last resort: any universal asset (covers a flavorless publish).
             return assets.firstOrNull {
                 it.name?.lowercase()?.endsWith("-universal.apk") == true

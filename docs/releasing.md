@@ -1,4 +1,4 @@
-# Android phone releases
+# Android releases
 
 JellyPlay+ Android phone releases are built locally and uploaded to GitHub Releases.
 The inherited `release.yml` workflow also builds TV and desktop packages and
@@ -19,17 +19,20 @@ these signing files as release assets.
 
 ## Build
 
-Choose a new version name and a strictly increasing version code. Version 0.1.3
-uses code 103. From PowerShell at the repository root:
+Choose a new version name and a strictly increasing version code. Published
+version 0.1.4 uses code 104. The next-version example below uses 0.1.5/code 105;
+check the latest release before choosing values. From PowerShell at the repository root:
 
 ```powershell
+$releaseVersion = '0.1.5'
+$releaseVersionCode = 105
 $credential = Import-Clixml "$env:USERPROFILE\.android\jellyplay-plus-release-signing.clixml"
 $env:KEYSTORE_PASSWORD = $credential.GetNetworkCredential().Password
 $env:KEY_PASSWORD = $env:KEYSTORE_PASSWORD
 $env:KEY_ALIAS = $credential.UserName
 $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 try {
-    .\gradlew.bat :app:assemblePhoneRelease '-PversionName=0.1.3' '-PversionCode=103'
+    .\gradlew.bat :app:assemblePhoneRelease "-PversionName=$releaseVersion" "-PversionCode=$releaseVersionCode"
     if ($LASTEXITCODE -ne 0) { throw 'Release build failed.' }
 } finally {
     Remove-Item Env:KEYSTORE_PASSWORD, Env:KEY_PASSWORD, Env:KEY_ALIAS -ErrorAction SilentlyContinue
@@ -43,6 +46,44 @@ signing certificate before uploading it. The phone release package must be
 Confirm launcher shortcuts and provider authorities resolve to the final package.
 Keep R8 mappings locally for crash
 diagnosis. Create SHA-256 checksums for the public APK assets.
+
+## Asset names and update compatibility
+
+Starting with 0.1.4, use these public asset names:
+
+- Phones and tablets: `jellyplay-plus-v<version>-android-<abi>.apk`.
+- Android TV / Fire TV: `jellyplay-plus-v<version>-android-tv-<abi>.apk`.
+- Release title: `JellyPlay+ <version>`; Git tag: `v<version>`.
+
+The Gradle flavors remain `phone` and `tv`; these are build identifiers, not the
+public platform names. The updated client prefers the branded filenames and
+still accepts older `jellyplay-v<version>-phone-<abi>.apk` / `-tv-<abi>.apk` assets.
+ABI preference takes precedence over filename branding.
+
+Installed clients through 0.1.3 only recognize the older exact names. Include
+an identical compatibility copy under the old name in each future release so
+those clients can discover the update. Do not remove compatibility copies until
+support for those clients is deliberately retired. List both names in
+`SHA256SUMS.txt`; do not rebuild or re-sign the copy. Published releases through
+0.1.3 keep their existing filenames and tags.
+
+For a local ARM64 Android cut, after verifying the APK from the build above:
+
+```powershell
+$releaseDirectory = "build/releases/v$releaseVersion"
+New-Item -ItemType Directory -Path $releaseDirectory -Force | Out-Null
+$primaryName = "jellyplay-plus-v$releaseVersion-android-arm64-v8a.apk"
+$legacyName = "jellyplay-v$releaseVersion-phone-arm64-v8a.apk"
+$sourceApk = 'app/build/outputs/apk/phone/release/app-phone-arm64-v8a-release.apk'
+Copy-Item -LiteralPath $sourceApk -Destination "$releaseDirectory/$primaryName"
+Copy-Item -LiteralPath $sourceApk -Destination "$releaseDirectory/$legacyName"
+$apkHash = (Get-FileHash -LiteralPath "$releaseDirectory/$primaryName" -Algorithm SHA256).Hash.ToLowerInvariant()
+"$apkHash  $primaryName", "$apkHash  $legacyName" |
+    Set-Content -Encoding ascii "$releaseDirectory/SHA256SUMS.txt"
+```
+
+Upload both APK names and the checksum file. The inherited Android release
+workflow follows the same naming, compatibility-copy, and checksum rules.
 
 The launcher shortcut template is `app/src/main/shortcuts.xml`.
 `GenerateLauncherShortcutsTask` writes a resource XML for each variant using its

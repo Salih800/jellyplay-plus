@@ -280,6 +280,7 @@ internal data class SheetControls(
  */
 @Immutable
 internal data class TrackControls(
+    val engineName: String? = null,
     val streamingQuality: StreamingQuality = StreamingQuality.AUTO,
     val playbackMode: PlaybackMode = PlaybackMode.AUTO,
     val playMethod: String = "Direct Play",
@@ -644,6 +645,7 @@ internal fun PlayerControls(
             ) {
                 if (tracks.showPlaybackMetadata) {
                     PlaybackMetadataRow(
+                        engineName = tracks.engineName,
                         playMethod = tracks.playMethod,
                         isDirectPlayForced = tracks.isDirectPlayForced,
                         hdrType = tracks.hdrType,

@@ -86,12 +86,20 @@ internal fun isSkipSegmentButtonVisible(
     isInPipMode: Boolean,
     isCinemaIntroVisible: Boolean,
     shouldShowUpNext: Boolean,
+    areControlsVisible: Boolean,
 ): Boolean =
-    activeSegment != null &&
+    areControlsVisible && activeSegment != null &&
         segmentBehavior == SegmentBehavior.SHOW_BUTTON &&
         !isInPipMode &&
         !isCinemaIntroVisible &&
         !(activeSegment.type == MediaSegmentType.OUTRO && shouldShowUpNext)
+
+/** Collect codec metadata while its row is visible, or detailed stats while that panel is open. */
+internal fun shouldCollectPlaybackStats(
+    areControlsVisible: Boolean,
+    showPlaybackMetadata: Boolean,
+    showVideoStats: Boolean,
+): Boolean = showVideoStats || (areControlsVisible && showPlaybackMetadata)
 
 // The player-chrome policies shared with the live player's screen moved to
 // the shared player-contract home

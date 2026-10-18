@@ -197,6 +197,7 @@ class VideoPlayerViewModel(
 
     private val _uiState = stateFlow(VideoPlayerUiState())
     val uiState: StateFlow<VideoPlayerUiState> = _uiState.flow
+    val availablePlayerTypes: List<PlayerType> get() = platform.availablePlayerTypes
 
     /**
      * Remote "TakeScreenshot" requests: the receiver emits through the
@@ -474,6 +475,13 @@ class VideoPlayerViewModel(
             is VideoPlayerUiEvent.RestartPlayback -> restartPlayback()
             is VideoPlayerUiEvent.RetryPlayback -> retryPlayback()
             is VideoPlayerUiEvent.RetryWithEngine -> retryWithEngine(event.playerType)
+            is VideoPlayerUiEvent.SwitchPlayerEngine -> {
+                val currentEngine = playbackSession.playerSessionManager.engine
+                if (currentEngine != null && event.playerType in availablePlayerTypes &&
+                    !playbackSession.cast.isConnectedFlow.value && !_uiState.value.isInSyncPlaySession &&
+                    currentEngine.displayName != event.playerType.displayName
+                ) retryWithEngine(event.playerType, sessionOnly = true)
+            }
             is VideoPlayerUiEvent.DismissPlaybackError -> dismissPlaybackError()
             is VideoPlayerUiEvent.SetControlsVisible -> setControlsVisible(event.visible)
             is VideoPlayerUiEvent.InstallUserFont -> playbackSession.subtitleStyleController.installUserFont(event.uri)
@@ -1202,7 +1210,7 @@ class VideoPlayerViewModel(
      * tracking/media-session rebuild is session-owned
      * ([PlaybackSession.retryWithEngine]).
      */
-    private fun retryWithEngine(playerType: PlayerType) {
+    private fun retryWithEngine(playerType: PlayerType, sessionOnly: Boolean = false) {
         clearPlaybackErrorState()
         _uiState.update {
             it.copy(preferredPlayerType = playerType)
@@ -1211,6 +1219,7 @@ class VideoPlayerViewModel(
             playerType = playerType,
             playbackSpeed = _uiState.value.playbackSpeed,
             streamingQuality = _uiState.value.uiPrefs.streamingQuality,
+            sessionOnly = sessionOnly,
         )
     }
 
@@ -1444,7 +1453,6 @@ class VideoPlayerViewModel(
     private fun toggleVideoStats() {
         val newValue = !_uiState.value.uiPrefs.showVideoStats
         _uiState.update { it.copy(uiPrefs = it.uiPrefs.copy(showVideoStats = newValue)) }
-        playbackSession.playerSessionManager.engine?.setVideoStatsEnabled(newValue)
     }
 
     private fun toggleAudioOnly() {
@@ -1463,7 +1471,12 @@ class VideoPlayerViewModel(
     }
 
     private fun setControlsVisible(visible: Boolean) {
-        playbackSession.playerSessionManager.engine?.setPollingIntervalMs(if (visible) 250L else 1000L)
+        val engine = playbackSession.playerSessionManager.engine ?: return
+        val prefs = _uiState.value.uiPrefs
+        engine.setPollingIntervalMs(if (visible) 250L else 1000L)
+        // Offline sessions have no server streams: the metadata chips need
+        // the engine's codec/HDR snapshot even when the stats panel is closed.
+        engine.setVideoStatsEnabled(shouldCollectPlaybackStats(visible, prefs.showPlaybackMetadata, prefs.showVideoStats))
     }
 
     /** Toggle the autoplay-next-episode preference from the in-player Up Next card. */

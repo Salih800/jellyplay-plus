@@ -18,6 +18,8 @@ provide the foundation; this fork adds the changes listed below and retains the
 | Episode counts | Completed downloads / server-available episode totals for series and seasons, with cached totals available offline. |
 | Selection and deletion | Select entire series or seasons, including collapsed groups; show partial selection; confirm offline-library deletion and retain records when file deletion fails. |
 | Player gestures | Opening notifications or the system control panel from the top edge no longer adjusts playback volume or brightness. Normal player swipes remain available. |
+| Playback information | Online and offline codec information, concise audio names, HDR format in the controls, and refreshed metadata when switching between direct play and transcoding. |
+| Player controls | Timed skip prompts with a countdown bar; live ExoPlayer/mpv switching with position, speed, and pause preserved. The active engine shares the playback-method chip. |
 | Branding and updates | JellyPlay+ branding and in-app updates from this fork's GitHub releases. |
 | Android app identity | Release package `com.salih800.jellyplay.plus`, separate from upstream JellyPlay and the Dev app. Updates from 0.1.2 onward use this same package and signing certificate. |
 
@@ -25,6 +27,7 @@ provide the foundation; this fork adds the changes listed below and retains the
 
 | Version | Changes |
 | --- | --- |
+| [0.1.4](docs/releases/v0.1.4.md) | Refresh playback metadata, simplify codec labels, time skip prompts, add live engine switching, and support branded APK names with backward-compatible updates. |
 | [0.1.3](docs/releases/v0.1.3.md) | Fix notification/control-panel swipes changing volume or brightness; add gesture regression tests and this fork overview. |
 | [0.1.2](docs/releases/v0.1.2.md) | Adopt the final Android package `com.salih800.jellyplay.plus` and update shortcuts and provider identities. |
 | [0.1.1](docs/releases/v0.1.1.md) | Give the fork a separate Android app identity and generate variant-specific launcher shortcuts. |

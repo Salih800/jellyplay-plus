@@ -1752,7 +1752,8 @@ internal class PlaybackSession(
     }
 
     /**
-     * Retry playback on a different engine after a fatal error.
+     * Retry playback on a different engine, or switch the live session when
+     * [sessionOnly] is true (preserving pause state and the saved default).
      * [playbackSpeed] and [streamingQuality] are supplied by the caller
      * wrapper from its ui-state mirror; the error-dialog clear that used to
      * precede the engine swap stays caller-side (a synchronous ui-state write).
@@ -1761,14 +1762,17 @@ internal class PlaybackSession(
         playerType: PlayerType,
         playbackSpeed: Float,
         streamingQuality: StreamingQuality,
+        sessionOnly: Boolean = false,
     ) {
+        val wasPaused = playerSessionManager.engine?.isPlaying?.value == false
         val currentPos = playerSessionManager.engine?.currentPositionMs ?: 0L
         val maxBitrate = adaptiveBitrateManager.resolveMaxBitrate(streamingQuality)?.toInt()
         progressReporter.cancelJobs()
         mediaSessionController.release()
         scope.launch {
-            playbackStore.setPreferredPlayer(playerType)
+            if (!sessionOnly) playbackStore.setPreferredPlayer(playerType)
             playerSessionManager.reloadWithEngine(playerType, currentPos, playbackSpeed, maxBitrate)
+            if (sessionOnly && wasPaused) playerSessionManager.engine?.pause()
             rebindSessionTracking(playerSessionManager.sessionState.value.currentItemId ?: "")
         }
     }
@@ -2558,6 +2562,8 @@ internal class PlaybackSession(
 
         scope.launch {
             playerSessionManager.engineFlow.collect { engine ->
+                // Never retain the previous stream's metadata during a reload.
+                videoStats.value = engine?.videoStats?.value ?: EngineVideoStats()
                 // The whole ordered engine-attach choreography (previous-
                 // collectors cancel → bind → style seed → capability mirror
                 // → effects seed → cast strategy → delay heads-up → PiP

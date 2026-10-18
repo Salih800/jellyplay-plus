@@ -33,6 +33,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.raulshma.jellyplay.core.designsystem.theme.ShapeCache
 import com.raulshma.jellyplay.core.model.PlaybackMode
+import com.raulshma.jellyplay.core.model.PlayerType
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_video_player_engine
 import com.raulshma.jellyplay.core.ui.tv.ifElse
 import com.raulshma.jellyplay.core.ui.tv.verticalWrapAround
 import com.composables.icons.tabler.Tabler
@@ -44,12 +46,39 @@ fun PlaybackModeSheet(
     currentMode: PlaybackMode,
     onSelect: (PlaybackMode) -> Unit,
     onDismiss: () -> Unit,
+    currentEngineName: String? = null,
+    availablePlayers: List<PlayerType> = emptyList(),
+    onPlayerSelect: (PlayerType) -> Unit = {},
 ) {
     PickerSheetScaffold(
         title = stringResource(Res.string.player_video_playback_mode),
         icon = Tabler.Outline.Server,
         onDismiss = onDismiss,
         preContent = {
+            if (availablePlayers.size > 1) {
+                Text(
+                    text = stringResource(Res.string.player_video_player_engine),
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(horizontal = 24.dp),
+                )
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    availablePlayers.forEach { player ->
+                        FilterChip(
+                            selected = player.displayName == currentEngineName,
+                            onClick = {
+                                if (player.displayName != currentEngineName) onPlayerSelect(player)
+                                onDismiss()
+                            },
+                            label = { Text(player.displayName) },
+                            shape = ShapeCache.smoothPill,
+                        )
+                    }
+                }
+                Spacer(Modifier.height(12.dp))
+            }
             Spacer(Modifier.height(4.dp))
             Text(
                 stringResource(Res.string.player_option_delivery_help),
