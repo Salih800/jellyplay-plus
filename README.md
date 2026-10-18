@@ -1,3 +1,45 @@
+# JellyPlay+
+
+JellyPlay+ is a fork of [JellyPlay by raulshma](https://github.com/raulshma/jellyplay),
+based on upstream JellyPlay **0.11.4**. The original project and its contributors
+provide the foundation; this fork adds the changes listed below and retains the
+[GPL-3.0 license](LICENSE).
+
+[Download the latest Android release](https://github.com/Salih800/jellyplay-plus/releases/latest)
+· [All fork releases](https://github.com/Salih800/jellyplay-plus/releases)
+· [Fork development notes](docs/fork-development.md)
+
+## What changed in this fork?
+
+| Area | Added or changed |
+| --- | --- |
+| Turkish interface | Turkish translations for app screens, navigation, settings, player sheets, and subtitle previews, with an in-app language option. |
+| Download browsing | Separate Movies and Series filters; expandable series and season groups; episodes ordered by season and episode number. |
+| Episode counts | Completed downloads / server-available episode totals for series and seasons, with cached totals available offline. |
+| Selection and deletion | Select entire series or seasons, including collapsed groups; show partial selection; confirm offline-library deletion and retain records when file deletion fails. |
+| Player gestures | Opening notifications or the system control panel from the top edge no longer adjusts playback volume or brightness. Normal player swipes remain available. |
+| Branding and updates | JellyPlay+ branding and in-app updates from this fork's GitHub releases. |
+| Android app identity | Release package `com.salih800.jellyplay.plus`, separate from upstream JellyPlay and the Dev app. Updates from 0.1.2 onward use this same package and signing certificate. |
+
+## Fork change history
+
+| Version | Changes |
+| --- | --- |
+| [0.1.3](docs/releases/v0.1.3.md) | Fix notification/control-panel swipes changing volume or brightness; add gesture regression tests and this fork overview. |
+| [0.1.2](docs/releases/v0.1.2.md) | Adopt the final Android package `com.salih800.jellyplay.plus` and update shortcuts and provider identities. |
+| [0.1.1](docs/releases/v0.1.1.md) | Give the fork a separate Android app identity and generate variant-specific launcher shortcuts. |
+| [0.1.0](docs/releases/v0.1.0.md) | First fork release: Turkish localization, JellyPlay+ branding, fork update feed, and the download browsing/counts/selection improvements above. |
+
+Phone releases currently provide an **ARM64 APK for Android 9 or newer**.
+See each version's notes for its validation and package details.
+
+---
+
+## Upstream project overview
+
+The original JellyPlay overview follows; the table above describes this fork's
+additional changes.
+
 <div align="center">
 
 # JellyPlay

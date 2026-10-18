@@ -19,8 +19,8 @@ these signing files as release assets.
 
 ## Build
 
-Choose a new version name and a strictly increasing version code. Version 0.1.2
-uses code 102. From PowerShell at the repository root:
+Choose a new version name and a strictly increasing version code. Version 0.1.3
+uses code 103. From PowerShell at the repository root:
 
 ```powershell
 $credential = Import-Clixml "$env:USERPROFILE\.android\jellyplay-plus-release-signing.clixml"
@@ -29,7 +29,7 @@ $env:KEY_PASSWORD = $env:KEYSTORE_PASSWORD
 $env:KEY_ALIAS = $credential.UserName
 $env:ANDROID_HOME = "$env:LOCALAPPDATA\Android\Sdk"
 try {
-    .\gradlew.bat :app:assemblePhoneRelease '-PversionName=0.1.2' '-PversionCode=102'
+    .\gradlew.bat :app:assemblePhoneRelease '-PversionName=0.1.3' '-PversionCode=103'
     if ($LASTEXITCODE -ne 0) { throw 'Release build failed.' }
 } finally {
     Remove-Item Env:KEYSTORE_PASSWORD, Env:KEY_PASSWORD, Env:KEY_ALIAS -ErrorAction SilentlyContinue
