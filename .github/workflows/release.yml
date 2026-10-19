@@ -234,10 +234,8 @@ jobs:
                 esac
                 if [ -n "$flavor" ]; then
                   new_filename="jellyplay-plus-v${VERSION}-${platform}-${abi}.apk"
-                  legacy_filename="jellyplay-v${VERSION}-${flavor}-${abi}.apk"
                 else
                   new_filename="jellyplay-plus-v${VERSION}-${abi}.apk"
-                  legacy_filename="jellyplay-v${VERSION}-${abi}.apk"
                 fi
                 matched=true
                 break
@@ -247,8 +245,6 @@ jobs:
               echo "Unknown APK naming format: $filename"
               continue
             fi
-            # Installed clients through 0.1.3 require the old exact filename.
-            cp "$apk" "$legacy_filename"
             mv "$apk" "$new_filename"
           done
 

@@ -80,9 +80,9 @@ an installed version is current.
 For a real update test, publish a newer release with a higher version code,
 the same application ID, and the same signing key as the installed release.
 Future Android assets use `jellyplay-plus-v<version>-android-<abi>.apk`; Android
-TV assets use `jellyplay-plus-v<version>-android-tv-<abi>.apk`. Keep identical
-copies with the legacy `jellyplay-v<version>-phone-<abi>.apk` / `-tv-<abi>.apk`
-names so installed clients through 0.1.3 can still find updates. See
+TV assets use `jellyplay-plus-v<version>-android-tv-<abi>.apk`. Starting with 0.1.5,
+publish one branded APK per supported platform/ABI without legacy copies.
+Clients through 0.1.3 require a manual update. See
 [release naming and compatibility](releasing.md#asset-names-and-update-compatibility).
 Android debug builds have the `.dev`
 application-ID suffix and a debug signing key; a normal release APK does not
