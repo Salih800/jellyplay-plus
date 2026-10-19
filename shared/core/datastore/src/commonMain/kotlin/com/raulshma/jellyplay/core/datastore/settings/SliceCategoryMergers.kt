@@ -167,6 +167,7 @@ internal fun SubtitleSlice.mergeWith(
     return copy(
         preferredSubtitleLanguage = if (importSubs) incoming.preferredSubtitleLanguage else preferredSubtitleLanguage,
         subtitlesForcedOnly = if (importSubs) incoming.subtitlesForcedOnly else subtitlesForcedOnly,
+        showOnlyPreferredSubtitles = if (importSubs) incoming.showOnlyPreferredSubtitles else showOnlyPreferredSubtitles,
         preferredAudioLanguage = if (importSubs) incoming.preferredAudioLanguage else preferredAudioLanguage,
         subtitleDelayByItem = if (importSubs) incoming.subtitleDelayByItem else subtitleDelayByItem,
         subtitleStyle = if (importSubs) incoming.subtitleStyle else subtitleStyle,

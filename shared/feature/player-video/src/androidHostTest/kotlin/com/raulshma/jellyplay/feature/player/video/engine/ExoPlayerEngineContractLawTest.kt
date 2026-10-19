@@ -3,6 +3,10 @@ package com.raulshma.jellyplay.feature.player.video.engine
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.raulshma.jellyplay.feature.player.video.subtitle.AndroidFontProvider
 import okhttp3.OkHttpClient
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.DecoderCounters
+import androidx.media3.common.Format
+import java.lang.reflect.Proxy
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertSame
@@ -32,6 +36,46 @@ class ExoPlayerEngineContractLawTest {
             androidx.test.core.app.ApplicationProvider.getApplicationContext(),
         ),
     )
+
+    @Test
+    fun stats_reportAllDroppedFramesAndTheActualDecoderComponent() {
+        val engine = engine()
+        val format = Format.Builder()
+            .setSampleMimeType("video/avc").setCodecs("avc1.640028").setWidth(1280).setHeight(720).build()
+        val player = Proxy.newProxyInstance(
+            ExoPlayer::class.java.classLoader, arrayOf(ExoPlayer::class.java),
+        ) { _, method, _ ->
+            when (method.name) {
+                "getBufferedPosition" -> 1000L
+                "getCurrentPosition" -> 100L
+                "getVideoFormat" -> format
+                else -> when (method.returnType) {
+                    java.lang.Boolean.TYPE -> false
+                    java.lang.Integer.TYPE -> 0
+                    java.lang.Long.TYPE -> 0L
+                    else -> null
+                }
+            }
+        } as ExoPlayer
+        val counters = DecoderCounters().apply {
+            droppedBufferCount = 17
+            droppedInputBufferCount = 2
+            droppedToKeyframeCount = 1
+            renderedOutputBufferCount = 83
+        }
+        fun set(name: String, value: Any) {
+            ExoPlayerEngine::class.java.getDeclaredField(name).apply { isAccessible = true }.set(engine, value)
+        }
+        set("player", player)
+        set("videoDecoderCounters", counters)
+        set("videoDecoderName", "c2.android.avc.decoder")
+        ExoPlayerEngine::class.java.getDeclaredMethod("updateVideoStats").apply { isAccessible = true }.invoke(engine)
+        assertEquals(17L, engine.videoStats.value.droppedFrames)
+        assertEquals(83L, engine.videoStats.value.totalVideoFrames)
+        assertEquals("c2.android.avc.decoder", engine.videoStats.value.videoDecoder)
+        assertEquals("1280x720", engine.videoStats.value.videoResolution)
+        engine.release()
+    }
 
     @Test
     fun freshEngine_publishesTheIdleSurface() {

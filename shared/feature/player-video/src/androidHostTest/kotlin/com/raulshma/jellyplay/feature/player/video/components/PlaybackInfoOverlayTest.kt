@@ -4,7 +4,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.runtime.mutableStateOf
+import kotlinx.coroutines.flow.MutableStateFlow
+import com.raulshma.jellyplay.feature.player.video.engine.EngineVideoStats
 import com.raulshma.jellyplay.core.model.MediaSource
 import com.raulshma.jellyplay.core.model.MediaStream
 import com.raulshma.jellyplay.core.model.StreamType
@@ -56,6 +60,46 @@ class PlaybackInfoOverlayTest {
     )
 
     @Test
+    fun activeStream_updatesWithoutFallingBackToOriginalFile() {
+        val stats = MutableStateFlow(EngineVideoStats(videoCodec = "h264", videoResolution = "1280x720", audioCodec = "eac3"))
+        val method = mutableStateOf("Transcode")
+        composeTestRule.setContent {
+            MaterialTheme {
+                PlaybackInfoOverlay(mediaSource, stats, mediaStreams, method.value, playerType = "mpv")
+            }
+        }
+        composeTestRule.onNodeWithText("H.264").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText("1280x720").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText("E-AC-3").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText("HEVC").assertDoesNotExist()
+        composeTestRule.onNodeWithText("3840x2160").assertDoesNotExist()
+        composeTestRule.runOnIdle { stats.value = EngineVideoStats() }
+        composeTestRule.onNodeWithText("Waiting for stream information…").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText("1280x720").assertDoesNotExist()
+        composeTestRule.onNodeWithText("HEVC").assertDoesNotExist()
+        composeTestRule.runOnIdle {
+            method.value = "Direct Play"
+            stats.value = EngineVideoStats(videoCodec = "hevc", videoResolution = "3840x2160")
+        }
+        composeTestRule.onNodeWithText("HEVC").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText("3840x2160").performScrollTo().assertIsDisplayed()
+    }
+
+    @Test
+    fun originalFile_isExplicitAndCollapsedUntilRequested() {
+        val stats = MutableStateFlow(EngineVideoStats(videoCodec = "h264", videoResolution = "1280x720"))
+        composeTestRule.setContent {
+            MaterialTheme {
+                PlaybackInfoOverlay(mediaSource, stats, mediaStreams, "Transcode")
+            }
+        }
+        composeTestRule.onNodeWithText("HEVC").assertDoesNotExist()
+        composeTestRule.onNodeWithText("Original file").performScrollTo().performClick()
+        composeTestRule.onNodeWithText("HEVC").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText("3840x2160").performScrollTo().assertIsDisplayed()
+    }
+
+    @Test
     fun playbackInfoOverlay_displaysTitle() {
         composeTestRule.setContent {
             MaterialTheme {
@@ -80,9 +124,10 @@ class PlaybackInfoOverlayTest {
                 )
             }
         }
-        composeTestRule.onNodeWithText("Media Source").assertIsDisplayed()
-        composeTestRule.onNodeWithText("mkv").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Direct Play").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Original file").performScrollTo().performClick()
+        composeTestRule.onNodeWithText("Media Source").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText("mkv").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText("Direct Play").performScrollTo().assertIsDisplayed()
     }
 
     @Test
@@ -96,9 +141,10 @@ class PlaybackInfoOverlayTest {
                 )
             }
         }
-        composeTestRule.onNodeWithText("Video").assertIsDisplayed()
-        composeTestRule.onNodeWithText("HEVC").assertIsDisplayed()
-        composeTestRule.onNodeWithText("3840x2160").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Original file").performScrollTo().performClick()
+        composeTestRule.onNodeWithText("Video").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText("HEVC").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText("3840x2160").performScrollTo().assertIsDisplayed()
     }
 
     @Test
@@ -112,7 +158,8 @@ class PlaybackInfoOverlayTest {
                 )
             }
         }
-        composeTestRule.onNodeWithText("23.98 fps").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Original file").performScrollTo().performClick()
+        composeTestRule.onNodeWithText("23.98 fps").performScrollTo().assertIsDisplayed()
     }
 
     @Test
@@ -127,7 +174,8 @@ class PlaybackInfoOverlayTest {
                 )
             }
         }
-        composeTestRule.onNodeWithText("HDR10").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Original file").performScrollTo().performClick()
+        composeTestRule.onNodeWithText("HDR10").performScrollTo().assertIsDisplayed()
     }
 
     @Test
@@ -141,9 +189,10 @@ class PlaybackInfoOverlayTest {
                 )
             }
         }
-        composeTestRule.onNodeWithText("Audio").assertIsDisplayed()
-        composeTestRule.onNodeWithText("DTS").assertIsDisplayed()
-        composeTestRule.onNodeWithText("6ch").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Original file").performScrollTo().performClick()
+        composeTestRule.onNodeWithText("Audio").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText("DTS").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText("6ch").performScrollTo().assertIsDisplayed()
     }
 
     @Test
@@ -157,8 +206,9 @@ class PlaybackInfoOverlayTest {
                 )
             }
         }
-        composeTestRule.onNodeWithText("Subtitles").assertIsDisplayed()
-        composeTestRule.onNodeWithText("Default").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Original file").performScrollTo().performClick()
+        composeTestRule.onNodeWithText("Subtitles").performScrollTo().assertIsDisplayed()
+        composeTestRule.onNodeWithText("Default").performScrollTo().assertIsDisplayed()
     }
 
     @Test
@@ -172,7 +222,8 @@ class PlaybackInfoOverlayTest {
                 )
             }
         }
-        composeTestRule.onNodeWithText("Media Source").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Original file").performScrollTo().performClick()
+        composeTestRule.onNodeWithText("Media Source").performScrollTo().assertIsDisplayed()
     }
 
     @Test
@@ -202,7 +253,8 @@ class PlaybackInfoOverlayTest {
                 )
             }
         }
-        composeTestRule.onNodeWithText("1.00 GB").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Original file").performScrollTo().performClick()
+        composeTestRule.onNodeWithText("1.00 GB").performScrollTo().assertIsDisplayed()
     }
 
     @Test
@@ -224,6 +276,7 @@ class PlaybackInfoOverlayTest {
                 )
             }
         }
+        composeTestRule.onNodeWithText("Original file").performScrollTo().performClick()
         composeTestRule.onNodeWithText("HDR10").assertDoesNotExist()
         composeTestRule.onNodeWithText("HDR Format").assertDoesNotExist()
     }

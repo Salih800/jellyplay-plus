@@ -6,6 +6,7 @@ import com.raulshma.jellyplay.feature.player.video.generated.resources.player_op
 import com.raulshma.jellyplay.feature.player.video.generated.resources.player_option_delivery_help
 import com.raulshma.jellyplay.feature.player.video.generated.resources.player_option_direct_description
 import com.raulshma.jellyplay.feature.player.video.generated.resources.player_option_transcode_description
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_video_play_method
 import com.raulshma.jellyplay.feature.player.video.generated.resources.player_video_playback_mode
 
 import androidx.compose.foundation.layout.Arrangement
@@ -17,8 +18,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -34,6 +33,10 @@ import androidx.compose.ui.unit.dp
 import com.raulshma.jellyplay.core.designsystem.theme.ShapeCache
 import com.raulshma.jellyplay.core.model.PlaybackMode
 import com.raulshma.jellyplay.core.model.PlayerType
+import com.raulshma.jellyplay.core.model.StreamingQuality
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_video_quality_title
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_video_quality_description
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_video_quality_direct_help
 import com.raulshma.jellyplay.feature.player.video.generated.resources.player_video_player_engine
 import com.raulshma.jellyplay.core.ui.tv.ifElse
 import com.raulshma.jellyplay.core.ui.tv.verticalWrapAround
@@ -49,11 +52,19 @@ fun PlaybackModeSheet(
     currentEngineName: String? = null,
     availablePlayers: List<PlayerType> = emptyList(),
     onPlayerSelect: (PlayerType) -> Unit = {},
+    currentQuality: StreamingQuality = StreamingQuality.AUTO,
+    adaptiveBitrateEnabled: Boolean = false,
+    onQualitySelect: (StreamingQuality) -> Unit = {},
+    onToggleAdaptiveBitrate: (Boolean) -> Unit = {},
+    qualityAvailable: Boolean = true,
+    currentPlayMethod: String? = null,
 ) {
     PickerSheetScaffold(
         title = stringResource(Res.string.player_video_playback_mode),
         icon = Tabler.Outline.Server,
+        subtitle = currentPlayMethod?.let { "${stringResource(Res.string.player_video_play_method)}: $it" },
         onDismiss = onDismiss,
+        scrollable = true,
         preContent = {
             if (availablePlayers.size > 1) {
                 Text(
@@ -70,7 +81,6 @@ fun PlaybackModeSheet(
                             selected = player.displayName == currentEngineName,
                             onClick = {
                                 if (player.displayName != currentEngineName) onPlayerSelect(player)
-                                onDismiss()
                             },
                             label = { Text(player.displayName) },
                             shape = ShapeCache.smoothPill,
@@ -89,14 +99,14 @@ fun PlaybackModeSheet(
         },
     ) { isTv, focusRequester ->
         if (isTv) {
-            LazyColumn(modifier = Modifier.verticalWrapAround()) {
-                items(PlaybackMode.entries, key = { it.name }) { mode ->
+            Column(modifier = Modifier.verticalWrapAround()) {
+                PlaybackMode.entries.forEach { mode ->
                     val isSelected = mode == currentMode
                     val isFirstOrSelected = isSelected ||
                         (currentMode !in PlaybackMode.entries && mode == PlaybackMode.AUTO)
                     TvFocusableOptionRow(
                         selected = isSelected,
-                        onClick = { onSelect(mode); onDismiss() },
+                        onClick = { onSelect(mode) },
                         focusRequesterModifier = Modifier.ifElse(isFirstOrSelected, Modifier.focusRequester(focusRequester)),
                         trailingCheck = true,
                     ) {
@@ -125,7 +135,6 @@ fun PlaybackModeSheet(
                         selected = isSelected,
                         onClick = {
                             onSelect(mode)
-                            onDismiss()
                         },
                         label = {
                             Text(
@@ -148,6 +157,23 @@ fun PlaybackModeSheet(
                 }
             }
         }
+        Spacer(Modifier.height(16.dp))
+        Text(
+            stringResource(Res.string.player_video_quality_title),
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.padding(horizontal = 24.dp),
+        )
+        val qualityEnabled = qualityAvailable && currentMode != PlaybackMode.FORCE_DIRECT_PLAY
+        Text(
+            stringResource(if (qualityEnabled) Res.string.player_video_quality_description else Res.string.player_video_quality_direct_help),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp),
+        )
+        QualityPickerOptions(
+            currentQuality, adaptiveBitrateEnabled, onToggleAdaptiveBitrate, onQualitySelect,
+            isTv, enabled = qualityEnabled,
+        )
     }
 }
 

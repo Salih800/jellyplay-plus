@@ -53,6 +53,7 @@ class SubtitleLanguageStoreTest {
         assertNull(slice.preferredAudioLanguage)
         assertNull(slice.appLanguage)
         assertFalse(slice.subtitlesForcedOnly)
+        assertFalse(slice.showOnlyPreferredSubtitles)
         assertFalse(slice.hdrSubtitleStyleEnabled)
         assertFalse(slice.preferAudioDescription)
         assertFalse(slice.highContrastSubtitles)
@@ -64,6 +65,20 @@ class SubtitleLanguageStoreTest {
             SubtitleStyle(fontSize = 28, backgroundOpacity = 0.5f, edgeType = SubtitleEdgeType.OUTLINE),
             slice.hdrSubtitleStyle,
         )
+    }
+
+    @Test
+    fun `preferred subtitle filter persists restores and resets with subtitle category`() = runTest {
+        store.setShowOnlyPreferredSubtitles(true)
+        assertTrue(store.subtitle.first { it.showOnlyPreferredSubtitles }.showOnlyPreferredSubtitles)
+        val restoredStore = SubtitleLanguageStore(dataStore, scope)
+        assertTrue(restoredStore.subtitle.first { it.showOnlyPreferredSubtitles }.showOnlyPreferredSubtitles)
+        store.restore(store.subtitle.value.copy(showOnlyPreferredSubtitles = false))
+        assertFalse(store.subtitle.first { !it.showOnlyPreferredSubtitles }.showOnlyPreferredSubtitles)
+        assertTrue(SubtitleLanguageStore.Keys.SHOW_ONLY_PREFERRED_SUBTITLES in
+            store.resetKeysFor(com.raulshma.jellyplay.core.model.PreferenceResetCategory.SUBTITLES_LANGUAGE))
+        val legacy = com.raulshma.jellyplay.core.datastore.PreferenceCodec.json.decodeFromString<SubtitleSlice>("{}")
+        assertFalse(legacy.showOnlyPreferredSubtitles)
     }
 
     @Test

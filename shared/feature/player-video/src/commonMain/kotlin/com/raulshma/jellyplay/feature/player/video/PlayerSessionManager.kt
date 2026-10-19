@@ -556,6 +556,7 @@ internal class PlayerSessionManager(
         // request falls through to the static direct URL with the
         // DIRECT_PLAY default (preserving the historical behaviour for
         // non-conforming sources).
+        val quality = if (adaptiveBitrateManager.isUnmeteredConnection()) agg.playback.streamingQuality else agg.playback.cellularStreamingQuality
         val maxBitrate = adaptiveBitrateManager.resolveEffectiveMaxBitrate()
         val resolution = playbackRepository.resolvePlayable(
             PlaybackResolveRequest(
@@ -563,6 +564,7 @@ internal class PlayerSessionManager(
                 mediaSourceId = sourceId,
                 startTimeTicks = startPositionTicks,
                 maxStreamingBitrateBits = maxBitrate,
+                maxVideoHeight = quality.maxHeight,
                 mode = agg.playback.playbackMode,
                 playerType = playerType,
                 staticFallbackLiveStreamId = source?.liveStreamId,
@@ -837,6 +839,7 @@ internal class PlayerSessionManager(
         return reresolveAndSwap(
             mode = mode,
             maxBitrate = adaptiveBitrateManager.resolveMaxBitrate(quality),
+            quality = quality,
             selection = selection,
             startPositionMs = currentPositionMs,
             // The mode/quality reload owns the forced-direct-play badge: it is
@@ -933,6 +936,7 @@ internal class PlayerSessionManager(
         selection: MediaStreamSelection?,
         startPositionMs: Long,
         markForced: Boolean,
+        quality: com.raulshma.jellyplay.core.model.StreamingQuality = if (adaptiveBitrateManager.isUnmeteredConnection()) aggregateStore.aggregate.value.playback.streamingQuality else aggregateStore.aggregate.value.playback.cellularStreamingQuality,
     ): ResolvedPlayback? {
         val itemId = _sessionState.value.currentItemId ?: return null
         val sourceId = _sessionState.value.currentMediaSource?.id ?: ""
@@ -950,15 +954,26 @@ internal class PlayerSessionManager(
                 audioStreamIndex = selection?.audioStreamIndex,
                 subtitleStreamIndex = selection?.subtitleStreamIndex,
                 maxStreamingBitrateBits = maxBitrate,
+                maxVideoHeight = quality.maxHeight,
                 mode = mode,
                 playerType = playerType,
             ),
         )
-        val resolved = (resolution as? PlaybackResolution.Resolved)?.playback
-        val url = resolved?.streamUrl
-            ?: (resolution as? PlaybackResolution.StaticFallback)?.streamUrl
-            ?: ""
-        val playMethod = resolved?.playMethod ?: PlayMethod.DIRECT_PLAY
+        // A static direct URL is a successful swap too. Returning null after
+        // loading it prevents the caller from rebinding position/stats tracking.
+        val resolved = when (resolution) {
+            is PlaybackResolution.Resolved -> resolution.playback
+            is PlaybackResolution.StaticFallback -> ResolvedPlayback(
+                mediaSourceId = sourceId,
+                streamUrl = resolution.streamUrl,
+                playMethod = PlayMethod.DIRECT_PLAY,
+                playSessionId = null,
+                maxStreamingBitrate = maxBitrate,
+            )
+            PlaybackResolution.Unplayable -> return null
+        }
+        val url = resolved.streamUrl
+        val playMethod = resolved.playMethod
 
         _sessionState.update {
             it.copy(
@@ -966,7 +981,7 @@ internal class PlayerSessionManager(
                 playMethod = playMethod,
                 isDirectPlayForced =
                     if (markForced) mode == PlaybackMode.FORCE_DIRECT_PLAY else it.isDirectPlayForced,
-                playSessionId = resolved?.playSessionId,
+                playSessionId = resolved.playSessionId,
                 streamUrl = url,
             )
         }

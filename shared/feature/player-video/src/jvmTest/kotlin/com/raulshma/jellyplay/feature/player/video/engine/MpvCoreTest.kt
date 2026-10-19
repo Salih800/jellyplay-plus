@@ -591,6 +591,26 @@ class MpvCoreTest {
     }
 
     @Test
+    fun boundedSubtitleFlushPreservesRemainingTracksAndRegistry() {
+        val f = Fixture()
+        f.binding.nodeReads[MpvProperties.TRACK_LIST] = emptyList<Any?>()
+        f.core.beginLoad(
+            PlaybackRequest(
+                uri = "https://example.test/item.mkv",
+                title = "bounded batch",
+                externalSubtitles = listOf(source("s1"), source("s2")),
+            ),
+        )
+        f.core.flushPendingSubtitles(maxBatchSize = 1)
+        assertEquals(1, f.binding.commands.size)
+        assertEquals(listOf(source("s2")), f.core.pendingSubtitles)
+        f.core.flushPendingSubtitles(maxBatchSize = 1)
+        assertEquals(2, f.binding.commands.size)
+        assertTrue(f.core.pendingSubtitles.isEmpty())
+        assertEquals(setOf("s1", "s2"), f.core.sideLoadedSubtitleIds.keys)
+    }
+
+    @Test
     fun flushPendingSubtitlesDedupesAgainstTheLiveTrackList() {
         val f = Fixture()
         // A live "sub" row already titled s1 — the raw-title dedupe key.

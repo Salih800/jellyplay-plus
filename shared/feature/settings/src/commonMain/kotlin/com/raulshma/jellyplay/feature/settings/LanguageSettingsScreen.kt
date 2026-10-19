@@ -426,9 +426,9 @@ fun LanguageSettingsScreen(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                     )
                     // Derived by rowTotalFor from the subtitles group
-                    // declaration (every id's declared [RowAdmission]): 4
+                    // declaration (every id's declared [RowAdmission]): 5
                     // always (the tester/font-size/forced-only trio plus
-                    // high-contrast subtitles), the style rows behind their
+                    // high-contrast subtitles and preferred-language filter), the style rows behind their
                     // declared Advanced gate and the HDR font-size row behind
                     // the HDR-style toggle.
                     SettingsItemList(
@@ -472,6 +472,16 @@ fun LanguageSettingsScreen(
                         highlighted = highlightSettingId == LanguageRows.SubtitleForcedOnly.id,
                         onCheckedChange = { enabled ->
                             viewModel.edit { scope -> scope.subtitle.setSubtitlesForcedOnly(enabled) }
+                        },
+                    )
+                    SettingToggleItem(
+                        icon = Tabler.Outline.Subtitles,
+                        title = rowTitle(LanguageRows.ShowOnlyPreferredSubtitles),
+                        subtitle = rowSubtitle(LanguageRows.ShowOnlyPreferredSubtitles),
+                        checked = preferences.showOnlyPreferredSubtitles,
+                        highlighted = highlightSettingId == LanguageRows.ShowOnlyPreferredSubtitles.id,
+                        onCheckedChange = { enabled ->
+                            viewModel.edit { scope -> scope.subtitle.setShowOnlyPreferredSubtitles(enabled) }
                         },
                     )
                     SettingToggleItem(

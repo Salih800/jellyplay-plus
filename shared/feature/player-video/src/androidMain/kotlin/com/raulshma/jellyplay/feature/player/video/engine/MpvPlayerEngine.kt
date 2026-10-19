@@ -215,7 +215,6 @@ class MpvPlayerEngine(
             // so re-poll explicitly. (The two delayed slots moved ahead of
             // the fold application here; their bodies run >= 200 ms later
             // either way — the fold does not touch tracks.)
-            core.flushPendingSubtitles()
             core.refreshTracks("start-file", delayMs = 200)
             core.refreshTracks("start-file-late", delayMs = 800)
         }
@@ -226,8 +225,18 @@ class MpvPlayerEngine(
             // immediate read races ahead of that and yields an empty audio
             // picker. Re-poll after a short delay so late-arriving
             // audio/subtitle tracks are enumerated.
-            core.refreshTracks("file-loaded")
-            core.refreshTracks("file-loaded-late", delayMs = 500)
+            // sub-add loads remote subtitles synchronously. Large batches
+            // can stall input for seconds: wait for FILE_LOADED and yield to
+            // the main queue between individual tracks.
+            postMpvFileLoadedWork(mainHandler, isReleased = { core.released }) {
+                core.flushPendingSubtitles(maxBatchSize = 1)
+                val hasPending = core.pendingSubtitles.isNotEmpty()
+                if (!hasPending) {
+                    core.refreshTracks("file-loaded")
+                    core.refreshTracks("file-loaded-late", delayMs = 500)
+                }
+                hasPending
+            }
         }
 
         override fun onStyleApplied(style: SubtitleStyle) {
@@ -325,9 +334,8 @@ class MpvPlayerEngine(
             // observer (no write-through); its speed getter live-reads.
             eagerSeekPositionCache = false,
             cacheSpeedPropertyWrites = false,
-            // The START_FILE flush covers the load-time batch; runtime adds
-            // plan immediately (the shipped shape).
-            queueSubtitlesBeforeFileLoaded = false,
+            // Both load-time and early runtime subtitles wait for FILE_LOADED.
+            queueSubtitlesBeforeFileLoaded = true,
         )
     }
 
@@ -414,7 +422,7 @@ class MpvPlayerEngine(
                 if (core.released) return
                 when (eventId) {
                     MPV.mpvEvent.MPV_EVENT_START_FILE -> {
-                        Log.d(TAG, "MPV start file; adding ${core.pendingSubtitles.size} Jellyfin subtitle source(s)")
+                        Log.d(TAG, "MPV start file; ${core.pendingSubtitles.size} pending Jellyfin subtitle source(s)")
                         core.onStartFile()
                     }
                     MPV.mpvEvent.MPV_EVENT_FILE_LOADED -> {
@@ -1594,3 +1602,16 @@ class MpvPlayerEngine(
 // channelMixModeToAudioChannels, audioNormalizationModeToAfFilter) moved to
 // commonMain (MpvAudioMappings.kt) so the tables stay unit-testable from
 // jvmTest; same package, call-sites unchanged.
+
+/** Runs one load-completion batch per main-queue turn; true requests another batch. */
+internal fun postMpvFileLoadedWork(
+    handler: Handler,
+    isReleased: () -> Boolean,
+    work: () -> Boolean,
+) {
+    handler.post(object : Runnable {
+        override fun run() {
+            if (!isReleased() && work()) handler.post(this)
+        }
+    })
+}

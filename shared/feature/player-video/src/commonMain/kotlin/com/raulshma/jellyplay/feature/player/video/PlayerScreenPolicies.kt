@@ -99,7 +99,8 @@ internal fun shouldCollectPlaybackStats(
     areControlsVisible: Boolean,
     showPlaybackMetadata: Boolean,
     showVideoStats: Boolean,
-): Boolean = showVideoStats || (areControlsVisible && showPlaybackMetadata)
+    showPlaybackInfo: Boolean = false,
+): Boolean = showPlaybackInfo || showVideoStats || (areControlsVisible && showPlaybackMetadata)
 
 // The player-chrome policies shared with the live player's screen moved to
 // the shared player-contract home

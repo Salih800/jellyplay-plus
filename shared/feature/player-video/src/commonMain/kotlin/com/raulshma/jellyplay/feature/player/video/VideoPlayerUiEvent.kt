@@ -76,7 +76,7 @@ sealed interface VideoPlayerUiEvent {
     data object DismissPlaybackError : VideoPlayerUiEvent
 
     /** Arms/disarms the controls auto-hide clock (controls visibility changes). */
-    data class SetControlsVisible(val visible: Boolean) : VideoPlayerUiEvent
+    data class SetControlsVisible(val visible: Boolean, val showPlaybackInfo: Boolean = false) : VideoPlayerUiEvent
 
     /** Installs a user-picked font (SAF/document uri string) and applies it to the subtitle style. */
     data class InstallUserFont(val uri: String) : VideoPlayerUiEvent

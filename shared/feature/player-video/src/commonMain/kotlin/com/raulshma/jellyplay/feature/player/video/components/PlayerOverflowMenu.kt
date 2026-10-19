@@ -553,8 +553,7 @@ internal fun BoxScope.PlayerOverflowMenu(
             }
             OverflowMenuItem(
                 icon = Tabler.Outline.Bolt,
-                label = if (playbackMode == PlaybackMode.AUTO) stringResource(Res.string.player_video_playback_mode)
-                    else stringResource(Res.string.player_video_playback_mode_on, playbackMode.displayName),
+                label = stringResource(Res.string.player_video_playback_mode),
                 onClick = onPlaybackModeClick,
                 tint = if (playbackMode != PlaybackMode.AUTO) MaterialTheme.colorScheme.primary
                     else MaterialTheme.colorScheme.onSurface,

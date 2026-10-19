@@ -203,6 +203,18 @@ class VideoPlayerViewModelTest : VideoPlayerViewModelHarness() {
     }
 
     @Test
+    fun modeThenQuality_keepsPreferenceReloadsOrdered() {
+        val gate = CompletableDeferred<Unit>()
+        coEvery { playbackStore.setPlaybackMode(PlaybackMode.FORCE_TRANSCODE) } coAnswers { gate.await() }
+        viewModel.onEvent(VideoPlayerUiEvent.SetPlaybackMode(PlaybackMode.FORCE_TRANSCODE))
+        viewModel.onEvent(VideoPlayerUiEvent.SetStreamingQuality(com.raulshma.jellyplay.core.model.StreamingQuality.HD_720P))
+        coVerify(exactly = 0) { playbackStore.setStreamingQuality(any()) }
+        gate.complete(Unit)
+        testDispatcher.scheduler.runCurrent()
+        coVerify(exactly = 1) { playbackStore.setStreamingQuality(com.raulshma.jellyplay.core.model.StreamingQuality.HD_720P) }
+    }
+
+    @Test
     fun toggleVideoStats_flipsEnabled() {
         val before = viewModel.uiState.value.uiPrefs.showVideoStats
         viewModel.onEvent(VideoPlayerUiEvent.ToggleVideoStats)

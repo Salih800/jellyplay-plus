@@ -188,7 +188,7 @@
     <string name="player_video_gestures">Gestures</string>
     <string name="player_video_gestures_on">Gestures \u00B7 %1$d/%2$d</string>
     <string name="player_video_av_sync">A/V Sync</string>
-    <string name="player_video_playback_mode">Playback Mode</string>
+    <string name="player_video_playback_mode">Playback options</string>
     <string name="player_video_playback_mode_on">%1$s \u00B7 On</string>
     <string name="player_video_decoder">Decoder</string>
     <string name="player_video_rendering">Rendering</string>
@@ -335,7 +335,7 @@
     <string name="player_video_time_left">%1$s left</string>
     <string name="player_video_now_playing">Now Playing</string>
     <string name="player_video_quality_title">Quality</string>
-    <string name="player_video_quality_description">Changes apply immediately for adaptive streams. For direct play, this sets the maximum playback bitrate.</string>
+    <string name="player_video_quality_description">Limits resolution and bitrate in Auto or Transcode mode. Smaller sources are not upscaled.</string>
     <string name="player_video_adaptive_bitrate_cap">Adaptive Bitrate Cap</string>
     <string name="player_video_adaptive_bitrate_on">Caps quality on metered networks</string>
     <string name="player_video_adaptive_bitrate_off">Off - full quality (direct play)</string>
@@ -414,4 +414,9 @@
     <string name="player_option_tone_auto">Auto (mpv default)</string>
     <string name="player_option_quality_balanced">Balanced</string>
     <string name="player_option_quality_high">High Quality</string>
+    <string name="player_video_quality_direct_help">Quality limits require server transcoding; they do not apply to forced Direct Play or downloaded files.</string>
+    <string name="player_video_stats_close">Close playback statistics</string>
+    <string name="player_video_playing_stream">Playing stream</string>
+    <string name="player_video_original_file">Original file</string>
+    <string name="player_video_stream_info_pending">Waiting for stream information…</string>
 </resources>

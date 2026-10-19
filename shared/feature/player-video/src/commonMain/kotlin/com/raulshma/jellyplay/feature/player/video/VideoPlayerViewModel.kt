@@ -73,6 +73,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
 
 /**
@@ -196,6 +198,7 @@ class VideoPlayerViewModel(
 ) : JellyPlayViewModel() {
 
     private val _uiState = stateFlow(VideoPlayerUiState())
+    private val playbackPreferenceMutex = Mutex()
     val uiState: StateFlow<VideoPlayerUiState> = _uiState.flow
     val availablePlayerTypes: List<PlayerType> get() = platform.availablePlayerTypes
 
@@ -483,7 +486,7 @@ class VideoPlayerViewModel(
                 ) retryWithEngine(event.playerType, sessionOnly = true)
             }
             is VideoPlayerUiEvent.DismissPlaybackError -> dismissPlaybackError()
-            is VideoPlayerUiEvent.SetControlsVisible -> setControlsVisible(event.visible)
+            is VideoPlayerUiEvent.SetControlsVisible -> setControlsVisible(event.visible, event.showPlaybackInfo)
             is VideoPlayerUiEvent.InstallUserFont -> playbackSession.subtitleStyleController.installUserFont(event.uri)
             is VideoPlayerUiEvent.ReattachFromBackgroundCast -> reattachFromBackgroundCast()
             is VideoPlayerUiEvent.DetachForBackgroundCast -> detachForBackgroundCast()
@@ -840,6 +843,8 @@ class VideoPlayerViewModel(
     // commands: it keeps only real orchestration (load/session/lifecycle and
     // cross-controller flows like background-cast detach).
 
+    internal val subtitlePickerPreferences = stores.subtitleLanguage.subtitle
+
     val trackState: StateFlow<com.raulshma.jellyplay.feature.player.video.state.TrackState>
         get() = playbackSession.trackSelectionHelper.state
 
@@ -1159,8 +1164,12 @@ class VideoPlayerViewModel(
         persist: suspend () -> Unit,
     ) {
         launch {
-            persist()
-            reloadPlaybackForMode(mode = mode, quality = quality)
+            // The options sheet stays open across picks. Keep mode and quality
+            // reloads ordered so an older server response cannot win the race.
+            playbackPreferenceMutex.withLock {
+                persist()
+                reloadPlaybackForMode(mode = mode, quality = quality)
+            }
         }
     }
 
@@ -1470,13 +1479,13 @@ class VideoPlayerViewModel(
         }
     }
 
-    private fun setControlsVisible(visible: Boolean) {
+    private fun setControlsVisible(visible: Boolean, showPlaybackInfo: Boolean) {
         val engine = playbackSession.playerSessionManager.engine ?: return
         val prefs = _uiState.value.uiPrefs
         engine.setPollingIntervalMs(if (visible) 250L else 1000L)
         // Offline sessions have no server streams: the metadata chips need
         // the engine's codec/HDR snapshot even when the stats panel is closed.
-        engine.setVideoStatsEnabled(shouldCollectPlaybackStats(visible, prefs.showPlaybackMetadata, prefs.showVideoStats))
+        engine.setVideoStatsEnabled(shouldCollectPlaybackStats(visible, prefs.showPlaybackMetadata, prefs.showVideoStats, showPlaybackInfo))
     }
 
     /** Toggle the autoplay-next-episode preference from the in-player Up Next card. */

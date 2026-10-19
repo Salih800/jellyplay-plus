@@ -136,9 +136,9 @@ public class MpvCore(
      */
     private val cacheSpeedPropertyWrites: Boolean = false,
     /**
-     * Queue `addExternalSubtitle` sources until FILE_LOADED (the desktop's
-     * shipped gate); `false` plans the add immediately (Android — its
-     * START_FILE flush covers the load-time batch).
+     * Queue `addExternalSubtitle` sources until FILE_LOADED. Both native
+     * hosts enable this gate so subtitle commands cannot block demuxer startup.
+     * `false` plans runtime additions immediately.
      */
     private val queueSubtitlesBeforeFileLoaded: Boolean = false,
 ) {
@@ -185,7 +185,7 @@ public class MpvCore(
         /** A coalesced build failed (Android's JNI reads can throw; log only). */
         public open fun onTrackBuildFailed(reason: String, error: Throwable) {}
 
-        /** START_FILE host extras, run BEFORE the fold (Android: the pending-subtitle flush + delayed re-polls). */
+        /** START_FILE host extras, run BEFORE the fold (Android: delayed track re-polls). */
         public open fun onStartFile() {}
 
         /** FILE_LOADED host extras, run BEFORE the fold (desktop: per-item resets + pending flush + config apply). */
@@ -814,10 +814,12 @@ public class MpvCore(
      * against the live track-list, same-title uniquify, isDefault→select),
      * the registry store-back BEFORE any add executes, each planned add
      * through [Hosts.emitSubAdd], then the host's flush extras.
+     * [maxBatchSize] lets UI-thread hosts yield between remote track loads.
      */
-    public fun flushPendingSubtitles() {
-        val subtitles = pendingSubtitlesQueue
-        pendingSubtitlesQueue = emptyList()
+    public fun flushPendingSubtitles(maxBatchSize: Int = Int.MAX_VALUE) {
+        require(maxBatchSize > 0)
+        val subtitles = pendingSubtitlesQueue.take(maxBatchSize)
+        pendingSubtitlesQueue = pendingSubtitlesQueue.drop(subtitles.size)
         if (subtitles.isEmpty()) return
         MpvSubtitleSideLoadPlan.applyBatch(
             pending = subtitles,
@@ -827,12 +829,12 @@ public class MpvCore(
         ) { add ->
             hosts.emitSubAdd(add)
         }
-        hosts.onPendingSubtitlesFlushed()
+        if (pendingSubtitlesQueue.isEmpty()) hosts.onPendingSubtitlesFlushed()
     }
 
     /**
      * User-initiated external subtitle add. Hosts with the
-     * before-FILE_LOADED gate (desktop) queue the source until the latch
+     * before-FILE_LOADED gate queue the source until the latch
      * fires; the shared plan then skips true re-adds (double-tap,
      * re-attach after a config reload) and uniquifies same-label
      * different-source subs, storing the registry back before the transport

@@ -503,10 +503,11 @@ class SettingsCatalogScreenContractTest {
         assertFalse(hdrGate.admitted(base.copy(parentsOn = emptySet())))
         // Every id declares its gate — the count is strict like notifications.
         assertEquals(SettingsScreenGroups.languageSubtitles.itemIds.toSet(), admissions.keys.toSet())
-        // The trio plus high-contrast always show; the style rows ride Advanced.
+        // Basic subtitle rows always show; the style rows ride Advanced.
         for (id in listOf(
             LanguageRows.SubtitleFontSize.id,
             LanguageRows.SubtitleForcedOnly.id,
+            LanguageRows.ShowOnlyPreferredSubtitles.id,
             LanguageRows.SubtitleTester.id,
         )) {
             assertIs<RowAdmission.Always>(admissions[id])

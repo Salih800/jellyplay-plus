@@ -308,6 +308,30 @@ class PlayerSessionManagerTest {
     }
 
     @Test
+    fun reloadPlayback_staticDirectFallbackReturnsSuccessForTrackingRebind() = runTest(testDispatcher) {
+        loadOnlineSession()
+        coEvery { playbackRepository.resolvePlayable(any()) } returns
+            PlaybackResolution.StaticFallback("https://stream/static")
+
+        val result = sessionManager.reloadPlayback(PlaybackMode.FORCE_DIRECT_PLAY, StreamingQuality.AUTO, 5_000L)
+
+        assertEquals("https://stream/static", result?.streamUrl)
+        assertEquals(PlayMethod.DIRECT_PLAY, result?.playMethod)
+        assertEquals("ms-1", result?.mediaSourceId)
+        assertEquals(PlayMethod.DIRECT_PLAY, sessionManager.sessionState.value.playMethod)
+    }
+
+    @Test
+    fun reloadPlayback_passesTheExplicitResolutionLimit() = runTest(testDispatcher) {
+        loadOnlineSession()
+        stubResolve("https://stream/quality", "psid-quality")
+        sessionManager.reloadPlayback(PlaybackMode.FORCE_TRANSCODE, StreamingQuality.HD_720P, 5_000L)
+        coVerify { playbackRepository.resolvePlayable(match { it.maxVideoHeight == 720 && it.mode == PlaybackMode.FORCE_TRANSCODE }) }
+        sessionManager.reloadPlayback(PlaybackMode.AUTO, StreamingQuality.LOW_360P, 6_000L)
+        coVerify { playbackRepository.resolvePlayable(match { it.maxVideoHeight == 360 && it.mode == PlaybackMode.AUTO }) }
+    }
+
+    @Test
     fun reloadPlayback_reEvaluatesTheForcedBadge_fromTheRequestedMode() = runTest(testDispatcher) {
         loadOnlineSession()
         stubResolve(streamUrl = "https://stream/forced", playSessionId = "psid-forced")

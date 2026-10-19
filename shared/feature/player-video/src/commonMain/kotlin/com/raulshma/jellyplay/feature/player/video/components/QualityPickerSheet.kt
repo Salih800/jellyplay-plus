@@ -10,8 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -55,66 +53,54 @@ fun QualityPickerSheet(
         icon = Tabler.Outline.Video,
         subtitle = stringResource(Res.string.player_video_quality_description),
         onDismiss = onDismiss,
+        scrollable = true,
     ) { isTv, focusRequester ->
-        if (isTv) {
-            LazyColumn(modifier = Modifier.verticalWrapAround()) {
-                items(StreamingQuality.entries, key = { it.name }) { quality ->
-                    val isSelected = quality == currentQuality
-                    val isFirstOrSelected = isSelected || (currentQuality !in StreamingQuality.entries && quality == StreamingQuality.AUTO)
-                    TvFocusableOptionRow(
-                        selected = isSelected,
-                        onClick = { onSelect(quality); onDismiss() },
-                        focusRequesterModifier = Modifier.ifElse(isFirstOrSelected, Modifier.focusRequester(focusRequester)),
-                        trailingCheck = true,
-                    ) {
-                        TvOptionRowLabel(text = quality.displayName, selected = isSelected)
-                    }
-                }
-            }
-        } else {
-            FlowRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                StreamingQuality.entries.forEach { quality ->
-                    val isSelected = quality == currentQuality
-                    FilterChip(
-                        selected = isSelected,
-                        onClick = {
-                            onSelect(quality)
-                            onDismiss()
-                        },
-                        label = {
-                            Text(
-                                quality.displayName,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                            )
-                        },
-                        shape = ShapeCache.smoothPill,
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
-                            selectedLabelColor = MaterialTheme.colorScheme.primary,
-                        ),
-                        border = FilterChipDefaults.filterChipBorder(
-                            borderColor = Color.Transparent,
-                            selectedBorderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
-                            enabled = true,
-                            selected = isSelected,
-                        ),
-                    )
-                }
+        QualityPickerOptions(currentQuality, adaptiveBitrateEnabled, onToggleAdaptiveBitrate, onSelect, isTv, focusRequester)
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+internal fun QualityPickerOptions(
+    currentQuality: StreamingQuality,
+    adaptiveBitrateEnabled: Boolean,
+    onToggleAdaptiveBitrate: (Boolean) -> Unit,
+    onSelect: (StreamingQuality) -> Unit,
+    isTv: Boolean,
+    focusRequester: FocusRequester? = null,
+    enabled: Boolean = true,
+) {
+    if (isTv) {
+        Column {
+            StreamingQuality.entries.forEach { quality ->
+                TvFocusableOptionRow(
+                    selected = quality == currentQuality,
+                    enabled = enabled,
+                    focusRequesterModifier = if (focusRequester != null && quality == currentQuality) Modifier.focusRequester(focusRequester) else Modifier,
+                    onClick = { onSelect(quality) },
+                    trailingCheck = true,
+                ) { TvOptionRowLabel(quality.displayName, quality == currentQuality) }
             }
         }
-
-        Spacer(Modifier.height(20.dp))
-
-        AdaptiveBitrateToggle(
-            enabled = adaptiveBitrateEnabled,
-            onToggle = onToggleAdaptiveBitrate,
-        )
+    } else {
+        FlowRow(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            StreamingQuality.entries.forEach { quality ->
+                FilterChip(
+                    selected = quality == currentQuality,
+                    enabled = enabled,
+                    onClick = { onSelect(quality) },
+                    label = { Text(quality.displayName) },
+                    shape = ShapeCache.smoothPill,
+                )
+            }
+        }
+    }
+    if (enabled && currentQuality == StreamingQuality.AUTO) {
+        AdaptiveBitrateToggle(adaptiveBitrateEnabled, onToggleAdaptiveBitrate)
     }
 }
 
@@ -133,7 +119,7 @@ private fun AdaptiveBitrateToggle(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Column(modifier = Modifier.padding(end = 16.dp)) {
+        Column(modifier = Modifier.weight(1f).padding(end = 16.dp)) {
             Text(
                 text = stringResource(Res.string.player_video_adaptive_bitrate_cap),
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),

@@ -296,6 +296,20 @@ The tester runs fully offline (bundled sample clip + sample subtitle presets)
 and never disturbs your running playback — it owns its own isolated engine
 instance.
 
+## Subtitle picker language filter
+
+In **Settings → Language & Subtitles → Subtitles**, enable **Show only preferred
+subtitle languages** to limit the on-demand player's Tracks tab to your preferred
+subtitle language and ordered subtitle languages. The setting defaults to off.
+The **Off** row always remains available; if no language preference is configured,
+all tracks remain visible. If none of the preferred languages is available, only
+**Off** is shown. Turn the setting off to access other languages or tracks with
+unknown language metadata.
+
+This changes the picker list only. Automatic selection, per-series memory,
+subtitle search/download, timing, and online/offline playback use their existing
+behavior. The setting is included in subtitle settings backups and category resets.
+
 ## Other playback paths
 
 The three switchable engines above cover **on-demand video**. Two other

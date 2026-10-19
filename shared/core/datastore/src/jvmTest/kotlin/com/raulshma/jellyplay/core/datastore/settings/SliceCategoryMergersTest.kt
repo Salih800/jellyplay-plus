@@ -358,6 +358,7 @@ class SliceCategoryMergersTest {
     private val subtitleIncoming = SubtitleSlice(
         preferredSubtitleLanguage = "de",
         subtitlesForcedOnly = true,
+        showOnlyPreferredSubtitles = true,
         preferredAudioLanguage = "ja",
         subtitleDelayByItem = mapOf("item1" to 500L),
         subtitlePreviewInSettings = false,

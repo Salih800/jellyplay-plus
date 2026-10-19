@@ -59,11 +59,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -358,10 +355,7 @@ internal class PlaybackSession(
         uiState.update { it.copy(cinemaIntroState = state) }
     }
 
-    /**
-     * Writes the high-frequency position display flow — the seam behind
-     * [preSeedPlayhead].
-     */
+    /** Writes the high-frequency position display flow for [preSeedPlayhead]. */
     private val seedDisplayedPositionMs = { seed: Long ->
         positionMs.value = seed
     }

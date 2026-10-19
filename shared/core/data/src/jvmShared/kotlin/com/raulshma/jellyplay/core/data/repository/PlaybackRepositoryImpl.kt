@@ -267,6 +267,7 @@ class PlaybackRepositoryImpl(
         mode: PlaybackMode,
         playerType: PlayerType,
         liveStreamOption: LiveStreamOption?,
+        maxVideoHeight: Int? = null,
     ): Result<PlaybackInfoResult> = playbackApiClient.fetchPlaybackInfo(
         itemId = itemId,
         mediaSourceId = mediaSourceId,
@@ -277,6 +278,7 @@ class PlaybackRepositoryImpl(
         mode = mode,
         playerType = playerType,
         liveStreamOption = liveStreamOption,
+        maxVideoHeight = maxVideoHeight,
     )
 
     override suspend fun resolvePlayable(request: PlaybackResolveRequest): PlaybackResolution {
@@ -317,6 +319,7 @@ class PlaybackRepositoryImpl(
             mode = request.mode,
             playerType = request.playerType,
             liveStreamOption = request.liveStreamOption,
+            maxVideoHeight = request.maxVideoHeight,
         ).getOrNull() ?: run {
             Log.e(TAG, "PlaybackInfo fetch failed for item ${request.itemId}")
             return PlaybackResolution.Unplayable
@@ -387,6 +390,7 @@ class PlaybackRepositoryImpl(
             mode = request.mode,
             playerType = request.playerType,
             liveStreamOption = request.liveStreamOption,
+            maxVideoHeight = request.maxVideoHeight,
         ).getOrNull() ?: return null
 
         val source = result.mediaSources.firstOrNull { it.id == request.mediaSourceId }

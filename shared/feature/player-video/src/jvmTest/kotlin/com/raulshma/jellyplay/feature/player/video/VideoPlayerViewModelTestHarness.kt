@@ -54,6 +54,7 @@ open class VideoPlayerViewModelHarness {
 
     val testDispatcher = UnconfinedTestDispatcher()
 
+    protected lateinit var playbackStore: PlaybackStore
     lateinit var mediaRepository: com.raulshma.jellyplay.core.data.repository.MediaRepository
     lateinit var playbackRepository: com.raulshma.jellyplay.core.data.repository.PlaybackRepository
     lateinit var aggregateStore: VideoPlayerAggregateStore
@@ -104,7 +105,7 @@ open class VideoPlayerViewModelHarness {
         val subtitleStore = mockk<SubtitleLanguageStore>(relaxed = true)
         val securityStore = mockk<SecurityStore>(relaxed = true)
         val syncPlayCastStore = mockk<SyncPlayCastStore>(relaxed = true)
-        val playbackStore = mockk<PlaybackStore>(relaxed = true)
+        playbackStore = mockk<PlaybackStore>(relaxed = true)
         val audioStore = mockk<AudioStore>(relaxed = true)
         val audioEffectsStore = mockk<AudioEffectsStore>(relaxed = true)
         val videoPlayerStore = mockk<VideoPlayerStore>(relaxed = true)

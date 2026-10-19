@@ -87,4 +87,6 @@
     <string name="settings_subtitle_custom_color">Özel…</string>
     <string name="settings_subtitle_opacity_value">Opaklık: %1$d%</string>
     <string name="settings_subtitle_preview_text">Pijamalı hasta yağız şoföre\nçabucak güvendi.</string>
+    <string name="settings_show_only_preferred_subtitles">Yalnızca tercih edilen altyazı dilleri</string>
+    <string name="settings_show_only_preferred_subtitles_summary">Altyazı listesini tercih edilen dil ve sıralı altyazı dillerine göre filtreler. Dil tercihi yoksa tümünü gösterir.</string>
 </resources>

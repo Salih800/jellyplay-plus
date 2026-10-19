@@ -376,8 +376,8 @@ fun VideoPlayerScreen(
     val arePlaybackControlsVisible = showControls && !isInPipMode && !isScreenLocked
     // Reapply after initial engine creation and engine switches, even when
     // controls never changed visibility. Metadata also needs engine stats.
-    LaunchedEffect(engine, arePlaybackControlsVisible, uiState.uiPrefs.showPlaybackMetadata, uiState.uiPrefs.showVideoStats) {
-        viewModel.onEvent(VideoPlayerUiEvent.SetControlsVisible(arePlaybackControlsVisible))
+    LaunchedEffect(engine, arePlaybackControlsVisible, uiState.uiPrefs.showPlaybackMetadata, uiState.uiPrefs.showVideoStats, currentSheet) {
+        viewModel.onEvent(VideoPlayerUiEvent.SetControlsVisible(arePlaybackControlsVisible, currentSheet == PlayerSheet.PlaybackInfo))
     }
     val title = uiState.title
     val subtitle = uiState.subtitle
@@ -1440,11 +1440,8 @@ fun VideoPlayerScreen(
                     onVersionClick = { openSheet(PlayerSheet.Version) },
                 ),
                 tracks = TrackControls(
-                    engineName = if (isCastConnected) null else engine?.displayName,
-                    streamingQuality = uiState.uiPrefs.streamingQuality,
                     playbackMode = uiState.uiPrefs.playbackMode,
                     playMethod = uiState.media.playMethod,
-                    isDirectPlayForced = uiState.media.isDirectPlayForced,
                     hdrType = uiState.hdrType,
                     mediaStreams = uiState.media.mediaStreams,
                     audioTracks = trackState.audioTracks,

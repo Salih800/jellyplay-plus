@@ -19,9 +19,8 @@ class PlaybackMetadataRowTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun methodAndEngineChanges_replaceSourceMetadataWithTheCurrentDecodedStream() {
+    fun methodChanges_replaceSourceMetadataWithTheCurrentDecodedStream() {
         val method = mutableStateOf("Direct Play")
-        val engine = mutableStateOf("ExoPlayer")
         val directStats = PlaybackMetadataSnapshot(
             videoCodec = "hevc", videoResolution = "3840x2160", videoHdrType = "Dolby Vision",
             audioCodec = "truehd", audioChannels = 8,
@@ -34,19 +33,19 @@ class PlaybackMetadataRowTest {
         composeTestRule.setContent {
             MaterialTheme {
                 PlaybackMetadataRow(
-                    playMethod = method.value, engineName = engine.value,
-                    isDirectPlayForced = false, hdrType = "HDR", mediaStreams = source,
+                    playMethod = method.value,
+                    hdrType = "HDR", mediaStreams = source,
                     videoStats = stats.value, audioTracks = emptyList(),
                 )
             }
         }
-        for (label in listOf("Exo · Direct Play", "4K", "HEVC", "Dolby Vision", "TrueHD Atmos", "7.1")) {
+        for (label in listOf("4K", "HEVC", "Dolby Vision", "TrueHD Atmos", "7.1")) {
             composeTestRule.onNodeWithText(label).assertIsDisplayed()
         }
         // The new engine has not reported its format yet. Do not keep the
         // previous stream or fall back to the original file's HDR/HEVC tags.
         composeTestRule.runOnIdle { method.value = "Transcode"; stats.value = PlaybackMetadataSnapshot() }
-        composeTestRule.onNodeWithText("Exo · Transcode").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Exo · Transcode").assertDoesNotExist()
         for (label in listOf("4K", "HEVC", "Dolby Vision", "TrueHD Atmos", "7.1")) {
             composeTestRule.onNodeWithText(label).assertDoesNotExist()
         }
@@ -61,8 +60,8 @@ class PlaybackMetadataRowTest {
         }
         composeTestRule.onNodeWithText("Dolby Vision").assertDoesNotExist()
         composeTestRule.onNodeWithText("AAC Atmos").assertDoesNotExist()
-        composeTestRule.runOnIdle { method.value = "Direct Play"; engine.value = "mpv"; stats.value = directStats }
-        for (label in listOf("MPV · Direct Play", "HEVC", "4K", "Dolby Vision")) {
+        composeTestRule.runOnIdle { method.value = "Direct Play"; stats.value = directStats }
+        for (label in listOf("HEVC", "4K", "Dolby Vision")) {
             composeTestRule.onNodeWithText(label).assertIsDisplayed()
         }
         composeTestRule.onNodeWithText("H.264").assertDoesNotExist()
@@ -75,7 +74,6 @@ class PlaybackMetadataRowTest {
             MaterialTheme {
                 PlaybackMetadataRow(
                     playMethod = "Offline",
-                    isDirectPlayForced = false,
                     hdrType = null,
                     mediaStreams = emptyList(),
                     videoStats = metadata.value,
@@ -84,7 +82,7 @@ class PlaybackMetadataRowTest {
             }
         }
 
-        composeTestRule.onNodeWithText("Offline").assertIsDisplayed()
+        composeTestRule.onNodeWithText("Offline").assertDoesNotExist()
         composeTestRule.onNodeWithText("HEVC").assertDoesNotExist()
         composeTestRule.runOnIdle {
             metadata.value = PlaybackMetadataSnapshot(
@@ -95,7 +93,7 @@ class PlaybackMetadataRowTest {
                 audioChannels = 2,
             )
         }
-        for (label in listOf("Offline", "4K", "HEVC", "HDR10", "AAC", "Stereo")) {
+        for (label in listOf("4K", "HEVC", "HDR10", "AAC", "Stereo")) {
             composeTestRule.onNodeWithText(label).assertIsDisplayed()
         }
     }

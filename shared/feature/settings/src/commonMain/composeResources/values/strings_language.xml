@@ -89,4 +89,6 @@
     <string name="settings_subtitle_custom_color">Custom…</string>
     <string name="settings_subtitle_opacity_value">Opacity: %1$d%</string>
     <string name="settings_subtitle_preview_text">The quick brown fox\njumps over the lazy dog.</string>
+    <string name="settings_show_only_preferred_subtitles">Show only preferred subtitle languages</string>
+    <string name="settings_show_only_preferred_subtitles_summary">Filter the subtitle picker by your preferred language and ordered subtitle languages. Show all when no preference is set.</string>
 </resources>

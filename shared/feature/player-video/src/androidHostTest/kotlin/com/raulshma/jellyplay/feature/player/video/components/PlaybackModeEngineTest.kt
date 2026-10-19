@@ -4,12 +4,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.assertIsNotEnabled
+import com.raulshma.jellyplay.core.model.StreamingQuality
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.raulshma.jellyplay.core.model.PlaybackMode
 import com.raulshma.jellyplay.core.model.PlayerType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -19,7 +22,34 @@ class PlaybackModeEngineTest {
     @get:Rule val composeTestRule = createComposeRule()
 
     @Test
-    fun selectingAnotherEngine_dispatchesTheChoiceAndDismisses() {
+    fun forcedDirectPlayback_disablesResolutionSelection() {
+        composeTestRule.setContent {
+            MaterialTheme {
+                PlaybackModeSheet(currentMode = PlaybackMode.FORCE_DIRECT_PLAY, onSelect = {}, onDismiss = {})
+            }
+        }
+        composeTestRule.onNodeWithText("720p").performScrollTo().assertIsNotEnabled()
+    }
+
+    @Test
+    fun transcodeQuality_dispatchesWithoutClosingTheOptions() {
+        var quality: StreamingQuality? = null
+        var dismissed = false
+        composeTestRule.setContent {
+            MaterialTheme {
+                PlaybackModeSheet(
+                    currentMode = PlaybackMode.FORCE_TRANSCODE, onSelect = {}, onDismiss = { dismissed = true },
+                    onQualitySelect = { quality = it },
+                )
+            }
+        }
+        composeTestRule.onNodeWithText("720p").performScrollTo().performClick()
+        assertEquals(StreamingQuality.HD_720P, quality)
+        assertFalse(dismissed)
+    }
+
+    @Test
+    fun selectingAnotherEngine_dispatchesTheChoiceAndKeepsOptionsOpen() {
         var selected: PlayerType? = null
         var dismissed = false
         composeTestRule.setContent {
@@ -33,7 +63,7 @@ class PlaybackModeEngineTest {
         }
         composeTestRule.onNodeWithText("mpv").performClick()
         assertEquals(PlayerType.MPV, selected)
-        assertTrue(dismissed)
+        assertFalse(dismissed)
     }
 
     @Test

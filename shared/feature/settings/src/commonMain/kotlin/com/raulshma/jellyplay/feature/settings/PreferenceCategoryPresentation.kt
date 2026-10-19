@@ -49,6 +49,7 @@ import com.raulshma.jellyplay.core.ui.model.preferenceEnumLabelResources
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
 import com.raulshma.jellyplay.feature.settings.generated.resources.Res
+import com.raulshma.jellyplay.feature.settings.generated.resources.settings_show_only_preferred_subtitles
 // The diff rows' label sources: the existing settings-search titles (ss_*)
 // plus the diff_* residue — extension accessors on Res.string, imported in bulk.
 import com.raulshma.jellyplay.feature.settings.generated.resources.*
@@ -340,6 +341,7 @@ private val subtitlesLanguageDiffFields: List<DiffField<*>> = listOf(
     DiffField(Res.string.ss_subtitle_language_title, { it.subtitle.preferredSubtitleLanguage }, ::systemFallback),
     DiffField(Res.string.ss_audio_language_title, { it.subtitle.preferredAudioLanguage }, ::systemFallback),
     DiffField(Res.string.ss_subtitle_forced_only_title, { it.subtitle.subtitlesForcedOnly }, Boolean::onOff),
+    DiffField(Res.string.settings_show_only_preferred_subtitles, { it.subtitle.showOnlyPreferredSubtitles }, Boolean::onOff),
     DiffField(Res.string.diff_subtitle_preview, { it.subtitle.subtitlePreviewInSettings }, Boolean::onOff),
     DiffField(Res.string.diff_subtitle_style, { it.subtitle.subtitleStyle }, SubtitleStyle::summary),
     DiffField(Res.string.diff_subtitle_style_presets, { it.subtitle.userStylePresets }, List<SubtitleStylePreset>::presetsSummary),

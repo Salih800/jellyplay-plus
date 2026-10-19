@@ -48,6 +48,7 @@ class SubtitleLanguageStore constructor(
     internal object Keys {
         val PREFERRED_SUBTITLE_LANG = stringPreferencesKey("preferred_subtitle_lang")
         val SUBTITLES_FORCED_ONLY = booleanPreferencesKey("subtitles_forced_only")
+        val SHOW_ONLY_PREFERRED_SUBTITLES = booleanPreferencesKey("show_only_preferred_subtitles")
         val PREFERRED_AUDIO_LANG = stringPreferencesKey("preferred_audio_lang")
         val SUBTITLE_DELAY_BY_ITEM = stringPreferencesKey("subtitle_delay_by_item")
         val SUBTITLE_STYLE = stringPreferencesKey("subtitle_style")
@@ -148,6 +149,7 @@ class SubtitleLanguageStore constructor(
         return SubtitleSlice(
             preferredSubtitleLanguage = prefs[Keys.PREFERRED_SUBTITLE_LANG],
             subtitlesForcedOnly = PreferenceCodec.readBool(prefs, Keys.SUBTITLES_FORCED_ONLY, "subtitles_forced_only", false),
+            showOnlyPreferredSubtitles = PreferenceCodec.readBool(prefs, Keys.SHOW_ONLY_PREFERRED_SUBTITLES, "show_only_preferred_subtitles", false),
             preferredAudioLanguage = prefs[Keys.PREFERRED_AUDIO_LANG],
             subtitleDelayByItem = subtitleDelayByItem,
             languageRules = trackSelectionRules,
@@ -187,6 +189,10 @@ class SubtitleLanguageStore constructor(
 
     suspend fun setSubtitlesForcedOnly(enabled: Boolean) {
         dataStore.edit { it[Keys.SUBTITLES_FORCED_ONLY] = enabled }
+    }
+
+    suspend fun setShowOnlyPreferredSubtitles(enabled: Boolean) {
+        dataStore.edit { it[Keys.SHOW_ONLY_PREFERRED_SUBTITLES] = enabled }
     }
 
     suspend fun setSubtitleStyle(style: SubtitleStyle) {
@@ -290,6 +296,7 @@ class SubtitleLanguageStore constructor(
             Keys.PREFERRED_SUBTITLE_LANG,
             Keys.PREFERRED_AUDIO_LANG,
             Keys.SUBTITLES_FORCED_ONLY,
+            Keys.SHOW_ONLY_PREFERRED_SUBTITLES,
             Keys.SUBTITLE_PREVIEW_IN_SETTINGS,
             Keys.SUBTITLE_STYLE,
             Keys.HIGH_CONTRAST_SUBTITLES,
@@ -315,6 +322,7 @@ class SubtitleLanguageStore constructor(
         dataStore.edit { prefs ->
             slice.preferredSubtitleLanguage?.let { prefs[Keys.PREFERRED_SUBTITLE_LANG] = it }
             prefs[Keys.SUBTITLES_FORCED_ONLY] = slice.subtitlesForcedOnly
+            prefs[Keys.SHOW_ONLY_PREFERRED_SUBTITLES] = slice.showOnlyPreferredSubtitles
             slice.preferredAudioLanguage?.let { prefs[Keys.PREFERRED_AUDIO_LANG] = it }
             prefs[Keys.SUBTITLE_DELAY_BY_ITEM] = PreferenceCodec.encodeDefaultsJson.encodeToString(
                 kotlinx.serialization.serializer<Map<String, Long>>(),
@@ -355,6 +363,7 @@ class SubtitleLanguageStore constructor(
 data class SubtitleSlice(
     val preferredSubtitleLanguage: String? = null,
     val subtitlesForcedOnly: Boolean = false,
+    val showOnlyPreferredSubtitles: Boolean = false,
     val preferredAudioLanguage: String? = null,
     val subtitleDelayByItem: Map<String, Long> = emptyMap(),
     /** The track-language rule set; the default instance is the inert identity. */

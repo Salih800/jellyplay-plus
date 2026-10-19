@@ -55,6 +55,8 @@ import com.raulshma.jellyplay.feature.settings.generated.resources.ss_subtitle_f
 import com.raulshma.jellyplay.feature.settings.generated.resources.ss_subtitle_font_size_title
 import com.raulshma.jellyplay.feature.settings.generated.resources.ss_subtitle_forced_only_subtitle
 import com.raulshma.jellyplay.feature.settings.generated.resources.ss_subtitle_forced_only_title
+import com.raulshma.jellyplay.feature.settings.generated.resources.settings_show_only_preferred_subtitles
+import com.raulshma.jellyplay.feature.settings.generated.resources.settings_show_only_preferred_subtitles_summary
 import com.raulshma.jellyplay.feature.settings.generated.resources.ss_subtitle_language_subtitle
 import com.raulshma.jellyplay.feature.settings.generated.resources.ss_subtitle_language_title
 import com.raulshma.jellyplay.feature.settings.generated.resources.ss_subtitle_sync_offset_subtitle
@@ -122,7 +124,7 @@ internal object LanguageRows {
         route = Route.LanguageSettings(),
     )
 
-    // -- The "Subtitles" group's twelve rows — every id declares its gate (the strict shape) — in catalog order. --
+    // -- The "Subtitles" group's rows — every id declares its gate (the strict shape) — in catalog order. --
 
     val SubtitleFontSize = SettingsRow(
         id = "subtitle_font_size",
@@ -132,6 +134,18 @@ internal object LanguageRows {
         searchTitleRes = Res.string.ss_subtitle_font_size_title,
         searchSubtitleRes = Res.string.ss_subtitle_font_size_subtitle,
         keywords = listOf("subtitle size", "font size", "text size", "bigger"),
+        route = Route.LanguageSettings(),
+        gate = RowAdmission.Always,
+    )
+
+    val ShowOnlyPreferredSubtitles = SettingsRow(
+        id = "show_only_preferred_subtitles",
+        icon = Tabler.Outline.Subtitles,
+        titleRes = Res.string.settings_show_only_preferred_subtitles,
+        subtitleRes = Res.string.settings_show_only_preferred_subtitles_summary,
+        searchTitleRes = Res.string.settings_show_only_preferred_subtitles,
+        searchSubtitleRes = Res.string.settings_show_only_preferred_subtitles_summary,
+        keywords = listOf("subtitles", "preferred", "language", "filter", "tracks"),
         route = Route.LanguageSettings(),
         gate = RowAdmission.Always,
     )
@@ -301,6 +315,7 @@ internal val LanguageGeneralRows: List<SettingsRow> = listOf(
 internal val LanguageSubtitlesRows: List<SettingsRow> = listOf(
     LanguageRows.SubtitleFontSize,
     LanguageRows.SubtitleForcedOnly,
+    LanguageRows.ShowOnlyPreferredSubtitles,
     LanguageRows.PgsDirectPlay,
     LanguageRows.HdrSubtitleStyle,
     LanguageRows.SubtitleColor,

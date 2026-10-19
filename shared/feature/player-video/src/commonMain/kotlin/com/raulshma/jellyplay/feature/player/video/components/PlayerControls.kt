@@ -280,11 +280,8 @@ internal data class SheetControls(
  */
 @Immutable
 internal data class TrackControls(
-    val engineName: String? = null,
-    val streamingQuality: StreamingQuality = StreamingQuality.AUTO,
     val playbackMode: PlaybackMode = PlaybackMode.AUTO,
     val playMethod: String = "Direct Play",
-    val isDirectPlayForced: Boolean = false,
     val hdrType: String? = null,
     val mediaStreams: List<MediaStream> = emptyList(),
     val audioTracks: List<TrackOption> = emptyList(),
@@ -645,9 +642,7 @@ internal fun PlayerControls(
             ) {
                 if (tracks.showPlaybackMetadata) {
                     PlaybackMetadataRow(
-                        engineName = tracks.engineName,
                         playMethod = tracks.playMethod,
-                        isDirectPlayForced = tracks.isDirectPlayForced,
                         hdrType = tracks.hdrType,
                         mediaStreams = tracks.mediaStreams,
                         videoStats = playbackMetadata,
@@ -655,7 +650,7 @@ internal fun PlayerControls(
                         isConnectionMetered = tracks.isConnectionMetered,
                         subtitleDelayMs = tracks.subtitleDelayMs,
                         onSubtitleDelayClick = sheets.onSubtitleDelayClick,
-                        onPlayMethodClick = { sheets.openSheet(PlayerSheet.PlaybackMode) },
+                        onPlaybackOptionsClick = { sheets.openSheet(PlayerSheet.PlaybackMode) },
                         mpvConfigNoticeActive = tracks.mpvConfigNoticeActive,
                         onMpvConfigNoticeClick = sheets.onMpvConfigNoticeClick,
                         modifier = Modifier.padding(bottom = 4.dp)
@@ -707,8 +702,6 @@ internal fun PlayerControls(
                     // in which Row wraps it and which right-cluster buttons pin.
                     val primaryControls: @Composable () -> Unit = {
                         PrimaryMediaControls(
-                            supportsLiveQualitySwitch = capabilities.supportsLiveQualitySwitch,
-                            streamingQuality = tracks.streamingQuality,
                             playbackSpeed = playbackSpeed,
                             openSheet = sheets.openSheet,
                             onSubtitleClick = sheets.onSubtitleClick,

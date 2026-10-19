@@ -9,7 +9,8 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -23,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -108,6 +110,7 @@ internal fun BoxScope.PlayerStatusOverlayTier(
 ) {
     if (uiState.uiPrefs.showVideoStats) {
         VideoStatsOverlay(
+            onClose = { viewModel.onEvent(VideoPlayerUiEvent.ToggleVideoStats) },
             statsFlow = viewModel.videoStats,
             currentPositionFlow = viewModel.currentPositionMs,
             // the ranges readout row's source, collected at
@@ -123,8 +126,8 @@ internal fun BoxScope.PlayerStatusOverlayTier(
             },
             playMethod = uiState.media.playMethod,
             isOfflineSource = uiState.media.showDownloadedBadge,
-            streamingQuality = uiState.preferredPlayerType.name,
-            playerType = uiState.preferredPlayerType.name,
+            streamingQuality = uiState.uiPrefs.streamingQuality.displayName,
+            playerType = inputs.engine?.displayName.orEmpty(),
             decoderMode = inputs.decoderMode.displayName,
             transcodeReasons = rememberFormattedTranscodeReasons(uiState.media.transcodeReasons),
             // Engines expose a real audio session id (ExoPlayer: live
@@ -135,8 +138,11 @@ internal fun BoxScope.PlayerStatusOverlayTier(
             // they don't stack on the same (60dp, 16dp) anchor.
             modifier = Modifier
                 .align(Alignment.TopStart)
+                .zIndex(1f)
                 .padding(start = 16.dp, top = if (inputs.isCastConnected || inputs.isCastConnecting) 92.dp else 60.dp)
-                .width(280.dp),
+                .padding(end = 16.dp, bottom = 16.dp)
+                .widthIn(max = 380.dp)
+                .fillMaxHeight(),
         )
     }
 

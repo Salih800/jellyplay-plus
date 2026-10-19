@@ -21,6 +21,12 @@ import kotlin.test.assertTrue
  */
 class PlaybackStatsCollectionTest {
     @Test
+    fun infoSheet_collectsEvenWithHiddenControlsAndMetadataDisabled() {
+        assertTrue(shouldCollectPlaybackStats(false, false, false, showPlaybackInfo = true))
+        assertFalse(shouldCollectPlaybackStats(false, false, false, showPlaybackInfo = false))
+    }
+
+    @Test
     fun metadataRow_collectsStatsWithoutOpeningDetailedPanel() {
         assertTrue(shouldCollectPlaybackStats(true, true, false))
         assertFalse(shouldCollectPlaybackStats(false, true, false))

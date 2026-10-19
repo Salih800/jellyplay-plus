@@ -30,6 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.composables.icons.tabler.Tabler
 import com.composables.icons.tabler.outline.Clock
+import com.composables.icons.tabler.outline.Settings
+import com.raulshma.jellyplay.core.ui.player.PlayerIconButton
+import com.raulshma.jellyplay.feature.player.video.generated.resources.player_video_playback_mode
 import com.composables.icons.tabler.outline.Subtitles
 import com.composables.icons.tabler.outline.Wifi
 import com.raulshma.jellyplay.core.designsystem.theme.HdrColors
@@ -48,15 +51,13 @@ import com.raulshma.jellyplay.feature.player.video.generated.resources.player_vi
 import org.jetbrains.compose.resources.stringResource
 
 /**
- * The play-method / resolution / codec / HDR / audio / channels chip row shown
- * above the seekbar in [PlayerControls] (e.g. pill chips for "Direct Play", "4K",
+ * The resolution / codec / HDR / audio / channels chip row shown
+ * above the seekbar in [PlayerControls] (e.g. pill chips for "4K",
  * "HEVC", "Dolby Vision", "TrueHD Atmos", "7.1").
  *
  * Each metadata item is rendered as a refined glassmorphic pill chip with a
  * category-tuned translucent backdrop, delicate hairline border, and crisp
- * typography. The play-method chip is clickable (when [onPlayMethodClick] is
- * provided) and opens the playback-mode picker; the subtitle delay chip is
- * clickable and triggers the subtitle delay overlay.
+ * typography. The subtitle delay chip triggers the subtitle delay overlay.
  *
  * When [mpvConfigNoticeActive] (the engine's custom-mpv-config subtitle
  * ownership snapshot reports user-owned `sub-*` keys), a warning-tinted chip
@@ -70,16 +71,14 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun PlaybackMetadataRow(
     playMethod: String,
-    isDirectPlayForced: Boolean,
     hdrType: String?,
     mediaStreams: List<MediaStream>,
     videoStats: PlaybackMetadataSnapshot,
     audioTracks: List<TrackOption>,
-    engineName: String? = null,
     isConnectionMetered: Boolean = false,
     subtitleDelayMs: Long = 0L,
     onSubtitleDelayClick: () -> Unit = {},
-    onPlayMethodClick: (() -> Unit)? = null,
+    onPlaybackOptionsClick: (() -> Unit)? = null,
     mpvConfigNoticeActive: Boolean = false,
     onMpvConfigNoticeClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
@@ -148,64 +147,22 @@ internal fun PlaybackMetadataRow(
     val defaultBackground = playerScrimColor().copy(alpha = 0.55f)
     val defaultBorder = onScrim.copy(alpha = 0.16f)
 
-    val isDirectPlay = !isDirectPlayForced && playMethod.equals("Direct Play", ignoreCase = true)
-    val isTranscode = isDirectPlayForced || playMethod.lowercase().contains("transcod")
-
-    val (playMethodTextColor, playMethodContainerColor, playMethodBorderColor, playMethodHasDot) = when {
-        isDirectPlay -> Quadruple(
-            primaryColor,
-            primaryColor.copy(alpha = 0.14f),
-            primaryColor.copy(alpha = 0.32f),
-            true,
-        )
-        isTranscode -> Quadruple(
-            warningColor,
-            warningColor.copy(alpha = 0.14f),
-            warningColor.copy(alpha = 0.35f),
-            true,
-        )
-        else -> Quadruple(
-            onScrim,
-            defaultBackground,
-            defaultBorder,
-            false,
-        )
-    }
-    val methodLabel = if (isDirectPlayForced) "Direct Play \u26A0" else playMethod
-    val playMethodLabel = listOfNotNull(compactPlaybackEngineName(engineName), methodLabel.takeIf { it.isNotBlank() })
-        .joinToString(" · ")
-
     val mpvConfigChipLabel = stringResource(Res.string.player_video_mpv_config_chip)
 
     val items = remember(
-        playMethodLabel,
         resolutionLabel,
         videoCodec,
         hdrLabel,
         audioLabel,
         channelsLabel,
-        playMethodTextColor,
-        playMethodContainerColor,
-        playMethodBorderColor,
-        playMethodHasDot,
         isConnectionMetered,
         subtitleDelayMs,
-        onPlayMethodClick,
         onSubtitleDelayClick,
         mpvConfigNoticeActive,
         mpvConfigChipLabel,
         onMpvConfigNoticeClick,
     ) {
         listOfNotNull(
-            MetadataItem(
-                text = playMethodLabel,
-                textColor = playMethodTextColor,
-                containerColor = playMethodContainerColor,
-                borderColor = playMethodBorderColor,
-                hasIndicatorDot = playMethodHasDot,
-                dotColor = playMethodTextColor,
-                onClick = onPlayMethodClick,
-            ),
             resolutionLabel?.let {
                 MetadataItem(
                     text = it,
@@ -305,7 +262,7 @@ internal fun PlaybackMetadataRow(
         )
     }
 
-    if (items.isEmpty()) return
+    if (items.isEmpty() && onPlaybackOptionsClick == null) return
 
     FlowRow(
         modifier = modifier
@@ -314,6 +271,14 @@ internal fun PlaybackMetadataRow(
         horizontalArrangement = Arrangement.spacedBy(7.dp, Alignment.Start),
         verticalArrangement = Arrangement.spacedBy(7.dp),
     ) {
+        if (onPlaybackOptionsClick != null) {
+            PlayerIconButton(
+                icon = Tabler.Outline.Settings,
+                contentDescription = stringResource(Res.string.player_video_playback_mode),
+                onClick = onPlaybackOptionsClick,
+                modifier = Modifier.size(32.dp),
+            )
+        }
         items.forEach { item ->
             MetadataChip(
                 item = item,
@@ -426,6 +391,9 @@ internal fun formatVideoCodec(raw: String?): String? {
 
 internal fun formatAudioCodec(raw: String?): String? {
     if (raw.isNullOrBlank()) return null
+    // Decoder descriptions may describe a whole codec family rather than
+    // identify the selected bitstream. Never guess AC-3 vs E-AC-3 from A/52B.
+    if (raw.trim().startsWith("ATSC A/52B", ignoreCase = true)) return "AC-3 / E-AC-3"
     val upper = raw.substringBefore('(').trim().removePrefix("audio/").uppercase()
     return when {
         upper == "EAC3" || upper == "E-AC3" || upper == "EC-3" -> "E-AC-3"
@@ -435,7 +403,7 @@ internal fun formatAudioCodec(raw: String?): String? {
         upper == "DTSHD_MA" || upper == "DTS-HD MA" -> "DTS-HD MA"
         upper == "DCA" || upper == "DTS" -> "DTS"
         upper == "FLAC" -> "FLAC"
-        upper == "AAC" || upper == "MP4A-LATM" -> "AAC"
+        upper == "AAC" || upper == "MP4A-LATM" || upper == "ADVANCED AUDIO CODING" || upper == "ADVANCED AUDIO CODEC" -> "AAC"
         upper == "OPUS" -> "Opus"
         upper == "VORBIS" -> "Vorbis"
         upper == "MP3" -> "MP3"
@@ -465,13 +433,6 @@ internal fun compactPlaybackEngineName(name: String?): String? = when (name?.low
     "libvlc" -> "VLC"
     else -> name
 }
-
-private data class Quadruple<A, B, C, D>(
-    val first: A,
-    val second: B,
-    val third: C,
-    val fourth: D,
-)
 
 private data class MetadataItem(
     val text: String,

@@ -15,6 +15,23 @@ import kotlin.test.assertTrue
 class DeviceProfileProviderTest {
     private val provider = DeviceProfileProvider(DesktopDeviceCodecCapabilities())
 
+    @Test
+    fun `quality tiers constrain both video dimensions without modifying cached profiles`() {
+        for (player in listOf(PlayerType.EXO_PLAYER, PlayerType.MPV)) {
+            for ((height, width) in listOf(360 to 640, 480 to 854, 720 to 1280, 1080 to 1920, 2160 to 3840)) {
+                val capped = provider.forPlayer(player, maxVideoHeight = height)
+                val conditions = capped.codecProfiles.last().conditions
+                assertEquals(CodecType.VIDEO, capped.codecProfiles.last().type)
+                assertEquals(width.toString(), conditions.first { it.property == ProfileConditionValue.WIDTH }.value)
+                assertEquals(height.toString(), conditions.first { it.property == ProfileConditionValue.HEIGHT }.value)
+                assertTrue(conditions.all { it.condition == ProfileConditionType.LESS_THAN_EQUAL })
+            }
+            assertFalse(provider.forPlayer(player).codecProfiles.flatMap { it.conditions }.any {
+                it.property == ProfileConditionValue.HEIGHT
+            })
+        }
+    }
+
     /** The direct-play audio tokens of [profile]'s first video profile. */
     private fun audioTokens(profile: org.jellyfin.sdk.model.api.DeviceProfile): List<String> =
         profile.directPlayProfiles.first().audioCodec.orEmpty().split(',').map { it.trim() }

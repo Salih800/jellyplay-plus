@@ -157,6 +157,7 @@ internal fun PlayerSheetRouter(
             // branch — only this hub consumes them while the sheet is open.
             val trackState by viewModel.trackState.collectAsStateWithLifecycle()
             val subtitleState by viewModel.playbackSession.subtitles.state.collectAsStateWithLifecycle()
+            val subtitlePreferences by viewModel.subtitlePickerPreferences.collectAsStateWithLifecycle()
             // named style presets: the hub's Style tab is the apply/save/
             // delete surface. Presets are pure data over the subtitle-style
             // controller slice (the screen drives it directly, the funnel's
@@ -172,7 +173,12 @@ internal fun PlayerSheetRouter(
                 initialTab = inputs.subtitleHubInitialTab,
                 onDismiss = inputs.dismissSheet,
                 // Tracks tab
-                subtitleTracks = trackState.subtitleTracks,
+                subtitleTracks = visibleSubtitleTracks(
+                    tracks = trackState.subtitleTracks,
+                    showOnlyPreferred = subtitlePreferences.showOnlyPreferredSubtitles,
+                    preferredLanguage = subtitlePreferences.preferredSubtitleLanguage,
+                    orderedLanguages = subtitlePreferences.languageRules.subtitleLanguages,
+                ),
                 onSelectSubtitleTrack = { viewModel.onEvent(VideoPlayerUiEvent.SelectSubtitleTrack(it)) },
                 onResetSubtitleTrack = if (trackState.hasSubtitleOverride) {
                     { viewModel.onEvent(VideoPlayerUiEvent.ResetSubtitleTrack) }
@@ -288,6 +294,7 @@ internal fun PlayerSheetRouter(
         }
         is PlayerSheet.PlaybackInfo -> {
             // Track + effects slices: collected inside the branch.
+            val engine by viewModel.playerEngineFlow.collectAsStateWithLifecycle()
             val trackState by viewModel.trackState.collectAsStateWithLifecycle()
             val effectsState by viewModel.playbackSession.effects.state.collectAsStateWithLifecycle()
             PlayerModalBottomSheet(
@@ -295,14 +302,15 @@ internal fun PlayerSheetRouter(
                 sheetState = rememberModalBottomSheetState(),
             ) {
                 PlaybackInfoOverlay(
+                    statsFlow = viewModel.videoStats,
                     mediaSource = uiState.media.currentMediaSource,
                     mediaStreams = uiState.media.mediaStreams,
                     playMethod = uiState.media.playMethod,
                     isOfflineSource = uiState.media.showDownloadedBadge,
                     isConnectionMetered = uiState.isConnectionMetered,
                     hdrType = uiState.hdrType,
-                    playerType = uiState.preferredPlayerType.name,
-                    decoderMode = effectsState.decoderMode.name,
+                    playerType = engine?.displayName.orEmpty(),
+                    decoderMode = effectsState.decoderMode.displayName,
                     aspectRatio = uiState.videoFx.aspectRatio.name,
                     nightModeEnabled = effectsState.nightModeEnabled,
                     nightModeStrength = effectsState.nightModeStrength,
@@ -431,8 +439,14 @@ internal fun PlayerSheetRouter(
             val castConnected by viewModel.playbackSession.cast.isConnectedFlow.collectAsStateWithLifecycle()
             PlaybackModeSheet(
                 currentMode = uiState.uiPrefs.playbackMode,
+                currentPlayMethod = uiState.media.playMethod,
                 onSelect = { viewModel.onEvent(VideoPlayerUiEvent.SetPlaybackMode(it)) },
                 onDismiss = inputs.dismissSheet,
+                currentQuality = uiState.uiPrefs.streamingQuality,
+                adaptiveBitrateEnabled = uiState.uiPrefs.adaptiveBitrateEnabled,
+                onQualitySelect = { viewModel.onEvent(VideoPlayerUiEvent.SetStreamingQuality(it)) },
+                onToggleAdaptiveBitrate = { viewModel.onEvent(VideoPlayerUiEvent.SetAdaptiveBitrateEnabled(it)) },
+                qualityAvailable = !uiState.media.showDownloadedBadge && !castConnected && !uiState.isInSyncPlaySession,
                 currentEngineName = engine?.displayName,
                 availablePlayers = if (castConnected || uiState.isInSyncPlaySession) emptyList() else viewModel.availablePlayerTypes,
                 onPlayerSelect = { viewModel.onEvent(VideoPlayerUiEvent.SwitchPlayerEngine(it)) },

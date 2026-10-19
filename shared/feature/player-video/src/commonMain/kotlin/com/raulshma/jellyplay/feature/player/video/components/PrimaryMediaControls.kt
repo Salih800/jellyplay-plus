@@ -44,8 +44,6 @@ import org.jetbrains.compose.resources.stringResource
  */
 @Composable
 internal fun PrimaryMediaControls(
-    supportsLiveQualitySwitch: Boolean,
-    streamingQuality: StreamingQuality,
     playbackSpeed: Float,
     // Pure sheet openers funnel through this (see PlayerControls' KDoc);
     // onSubtitleClick stays separate because it flags the hub's tab state.
@@ -61,12 +59,6 @@ internal fun PrimaryMediaControls(
     isInSyncPlaySession: Boolean,
     currentAspectRatio: AspectRatio,
 ) {
-    if (supportsLiveQualitySwitch) {
-        PlayerQualityButton(
-            quality = streamingQuality,
-            onClick = { openSheet(PlayerSheet.Quality) },
-        )
-    }
     PlayerSpeedButton(speed = playbackSpeed, onClick = { openSheet(PlayerSheet.Speed) })
     PlayerIconButton(
         icon = Tabler.Outline.Music,
