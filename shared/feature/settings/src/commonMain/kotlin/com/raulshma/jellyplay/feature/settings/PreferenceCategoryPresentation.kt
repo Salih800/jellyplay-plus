@@ -48,6 +48,7 @@ import com.raulshma.jellyplay.core.ui.model.labelResource
 import com.raulshma.jellyplay.core.ui.model.preferenceEnumLabelResources
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.getString
+import com.raulshma.jellyplay.feature.settings.generated.resources.settings_skip_prompt_duration
 import com.raulshma.jellyplay.feature.settings.generated.resources.Res
 import com.raulshma.jellyplay.feature.settings.generated.resources.settings_show_only_preferred_subtitles
 // The diff rows' label sources: the existing settings-search titles (ss_*)
@@ -280,6 +281,7 @@ private val playbackDiffFields: List<DiffField<*>> = listOf(
     DiffField(Res.string.diff_default_muted, { it.videoPlayer.videoMuted }, Boolean::onOff),
     DiffField(Res.string.ss_gesture_indicator_side_title, { it.videoPlayer.videoGestureIndicatorSide }, enumLabel = GestureIndicatorSide::labelResource),
     DiffField(Res.string.ss_seek_duration_title, { it.videoPlayer.videoSeekDurationMs }, Long::millisToSeconds),
+    DiffField(Res.string.settings_skip_prompt_duration, { it.videoPlayer.skipPromptDurationMs }, Long::millisToSeconds),
     DiffField(Res.string.ss_controls_timeout_title, { it.videoPlayer.videoControlsTimeoutMs }, Long::millisToSeconds),
     DiffField(Res.string.ss_swipe_seek_range_title, { it.videoPlayer.videoSwipeSeekMaxMs }, Long::millisToSeconds),
     DiffField(Res.string.ss_audio_delay_title, { it.audio.audioDelayMs }, ::milliseconds),

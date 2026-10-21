@@ -84,6 +84,21 @@ object VideoPlayerPreferenceSpecs {
         ),
     )
 
+    val SKIP_PROMPT_DURATION_MS: PreferenceSpec<Long> = PreferenceSpec.plainLong(
+        keyName = "skip_prompt_duration_ms",
+        default = 10_000L,
+        resetCategory = PreferenceResetCategory.PLAYBACK,
+        search = PreferenceSearchSpec(
+            id = "skip_prompt_duration",
+            titleKey = "settings_skip_prompt_duration",
+            subtitleKey = "settings_skip_prompt_duration_subtitle",
+            categoryKey = "ss_cat_playback",
+            keywords = listOf("skip", "intro", "outro", "button", "duration", "seconds"),
+            routeKind = PlaybackPreferenceSpecs.ROUTE_PLAYBACK_SETTINGS,
+            isAdvanced = true,
+        ),
+    )
+
     val VIDEO_CONTROLS_TIMEOUT_MS: PreferenceSpec<Long> = PreferenceSpec.plainLong(
         keyName = "video_controls_timeout_ms",
         default = 5_000L,
@@ -957,6 +972,7 @@ object VideoPlayerPreferenceSpecs {
     val all: List<PreferenceSpec<*>> = listOf(
         VIDEO_SEEK_DURATION_MS,
         VIDEO_CONTROLS_TIMEOUT_MS,
+        SKIP_PROMPT_DURATION_MS,
         VIDEO_HIDE_OSD_ON_PAUSE,
         VIDEO_RESUME_ON_HEADSET_PLUG,
         VIDEO_DEFAULT_ORIENTATION,
@@ -1033,6 +1049,7 @@ object VideoPlayerPreferenceSpecs {
         STILL_WATCHING_MODE.searchEntry(),
         STILL_WATCHING_EPISODE_THRESHOLD.searchEntry(),
         VIDEO_CONTROLS_TIMEOUT_MS.searchEntry(),
+        SKIP_PROMPT_DURATION_MS.searchEntry(),
         VIDEO_HIDE_OSD_ON_PAUSE.searchEntry(),
         VIDEO_RESUME_ON_HEADSET_PLUG.searchEntry(),
         VIDEO_SKIP_BACK_ON_RESUME_MS.searchEntry(),

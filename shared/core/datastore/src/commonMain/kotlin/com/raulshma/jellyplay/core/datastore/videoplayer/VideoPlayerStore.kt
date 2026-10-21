@@ -142,6 +142,7 @@ class VideoPlayerStore constructor(
     internal fun read(prefs: Preferences): VideoPlayerSlice = VideoPlayerSlice(
         videoSeekDurationMs = VideoPlayerPreferenceSpecs.VIDEO_SEEK_DURATION_MS.readFrom(prefs),
         videoControlsTimeoutMs = VideoPlayerPreferenceSpecs.VIDEO_CONTROLS_TIMEOUT_MS.readFrom(prefs),
+        skipPromptDurationMs = VideoPlayerPreferenceSpecs.SKIP_PROMPT_DURATION_MS.readFrom(prefs).coerceIn(3_000L, 30_000L),
         videoHideOsdOnPause = VideoPlayerPreferenceSpecs.VIDEO_HIDE_OSD_ON_PAUSE.readFrom(prefs),
         videoResumeOnHeadsetPlug = VideoPlayerPreferenceSpecs.VIDEO_RESUME_ON_HEADSET_PLUG.readFrom(prefs),
         videoDefaultOrientation = VideoPlayerPreferenceSpecs.VIDEO_DEFAULT_ORIENTATION.readFrom(prefs),
@@ -190,6 +191,10 @@ class VideoPlayerStore constructor(
 
     suspend fun setVideoSeekDurationMs(ms: Long) {
         dataStore.edit { VideoPlayerPreferenceSpecs.VIDEO_SEEK_DURATION_MS.writeTo(it, ms) }
+    }
+
+    suspend fun setSkipPromptDurationMs(ms: Long) {
+        dataStore.edit { VideoPlayerPreferenceSpecs.SKIP_PROMPT_DURATION_MS.writeTo(it, ms.coerceIn(3_000L, 30_000L)) }
     }
 
     suspend fun setVideoControlsTimeoutMs(ms: Long) {
@@ -449,6 +454,7 @@ class VideoPlayerStore constructor(
         dataStore.edit { prefs ->
             VideoPlayerPreferenceSpecs.VIDEO_SEEK_DURATION_MS.writeTo(prefs, slice.videoSeekDurationMs)
             VideoPlayerPreferenceSpecs.VIDEO_CONTROLS_TIMEOUT_MS.writeTo(prefs, slice.videoControlsTimeoutMs)
+            VideoPlayerPreferenceSpecs.SKIP_PROMPT_DURATION_MS.writeTo(prefs, slice.skipPromptDurationMs.coerceIn(3_000L, 30_000L))
             VideoPlayerPreferenceSpecs.VIDEO_HIDE_OSD_ON_PAUSE.writeTo(prefs, slice.videoHideOsdOnPause)
             VideoPlayerPreferenceSpecs.VIDEO_RESUME_ON_HEADSET_PLUG.writeTo(prefs, slice.videoResumeOnHeadsetPlug)
             VideoPlayerPreferenceSpecs.VIDEO_DEFAULT_ORIENTATION.writeTo(prefs, slice.videoDefaultOrientation)
@@ -505,6 +511,7 @@ class VideoPlayerStore constructor(
 data class VideoPlayerSlice(
     val videoSeekDurationMs: Long = 10_000L,
     val videoControlsTimeoutMs: Long = 5_000L,
+    val skipPromptDurationMs: Long = 10_000L,
     /**
      * (jellyfin-androidtv #3924): pausing must not summon the control
      * overlay. Default **off** — today's show-on-pause behavior; on, only the

@@ -954,4 +954,8 @@
     <string name="settings_jellyplay_feature_analytics">Analytics</string>
     <string name="ss_jellyplay_feature_analytics_subtitle">The play-history dashboard in the admin area (admin only)</string>
     <string name="settings_integrations_intro">Connect JellyPlay+ to your media services to enable requests, discover, and download-queue tracking.</string>
+    <string name="settings_picker_search">Search options</string>
+    <string name="settings_picker_no_results">No matching options</string>
+    <string name="settings_skip_prompt_duration">Skip button duration</string>
+    <string name="settings_skip_prompt_duration_subtitle">How long skip buttons appear when an intro or media segment begins.</string>
 </resources>

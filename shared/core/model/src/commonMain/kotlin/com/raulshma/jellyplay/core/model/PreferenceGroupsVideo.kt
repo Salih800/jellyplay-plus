@@ -24,6 +24,7 @@ data class VideoPlayerPreferences(
     val videoSeekDurationMs: Long = 10_000L,
     val videoDefaultOrientation: OrientationMode = OrientationMode.SENSOR_LANDSCAPE,
     val videoControlsTimeoutMs: Long = 5_000L,
+    val skipPromptDurationMs: Long = 10_000L,
     val videoGestureMode: GestureMode = GestureMode.ALL,
     val videoHoldSpeedEnabled: Boolean = true,
     val videoHoldSpeedMultiplier: Float = 2.0f,
@@ -110,6 +111,7 @@ data class PlaybackPreferences(
     val videoSeekDurationMs: Long = 10_000L,
     val videoDefaultOrientation: OrientationMode = OrientationMode.SENSOR_LANDSCAPE,
     val videoControlsTimeoutMs: Long = 5_000L,
+    val skipPromptDurationMs: Long = 10_000L,
     /**
      * (jellyfin-androidtv #3924): pausing must not summon the control
      * overlay. Default **off** — today's behavior; on, only the summons is

@@ -24,11 +24,11 @@ class TimedSkipPromptTest {
     private val controlsVisible = mutableStateOf(false)
     private val interactions = mutableStateOf(0)
 
-    private fun setContent() {
+    private fun setContent(durationMs: Int = SKIP_PROMPT_DURATION_MS) {
         composeTestRule.mainClock.autoAdvance = false
         composeTestRule.setContent {
             MaterialTheme {
-                val prompt = rememberTimedSkipPrompt(promptKey.value, canShow.value, interactions.value)
+                val prompt = rememberTimedSkipPrompt(promptKey.value, canShow.value, interactions.value, durationMs)
                 SegmentSkipOverlay(
                     isVisible = promptKey.value != null && canShow.value &&
                         prompt.isVisible(controlsVisible.value, interactions.value),
@@ -59,10 +59,10 @@ class TimedSkipPromptTest {
         setContent()
         composeTestRule.onNodeWithText("Skip Intro").assertIsDisplayed()
         val initial = progress()
-        advanceBy(2_000)
+        advanceBy(4_000)
         val halfway = progress()
         assertTrue(halfway in 0.4f..0.65f && halfway < initial)
-        advanceBy(3_500)
+        advanceBy(6_500)
         composeTestRule.onNodeWithText("Skip Intro").assertDoesNotExist()
         composeTestRule.onNodeWithTag("skip-prompt-progress").assertDoesNotExist()
     }
@@ -71,7 +71,7 @@ class TimedSkipPromptTest {
     fun expiryHidesEvenWithControlsOpen_thenTouchRestoresWithoutRestartingTimer() {
         controlsVisible.value = true
         setContent()
-        advanceBy(5_500)
+        advanceBy(10_500)
         composeTestRule.onNodeWithText("Skip Intro").assertDoesNotExist()
         composeTestRule.runOnIdle { interactions.value++ }
         advanceBy(400)
@@ -87,7 +87,7 @@ class TimedSkipPromptTest {
     @Test
     fun nextSegmentGetsANewCountdown() {
         setContent()
-        advanceBy(5_500)
+        advanceBy(10_500)
         composeTestRule.runOnIdle { promptKey.value = "episode-1-recap" }
         advanceBy(400)
         composeTestRule.onNodeWithText("Skip Intro").assertIsDisplayed()
@@ -106,7 +106,16 @@ class TimedSkipPromptTest {
         advanceBy(400)
         composeTestRule.onNodeWithText("Skip Intro").assertIsDisplayed()
         assertTrue(progress() in (beforeHide - 0.12f)..beforeHide)
-        advanceBy(5_000)
+        advanceBy(10_000)
+        composeTestRule.onNodeWithText("Skip Intro").assertDoesNotExist()
+    }
+
+    @Test
+    fun customDurationControlsCountdown() {
+        setContent(durationMs = 3_000)
+        advanceBy(1_000)
+        composeTestRule.onNodeWithText("Skip Intro").assertIsDisplayed()
+        advanceBy(2_500)
         composeTestRule.onNodeWithText("Skip Intro").assertDoesNotExist()
     }
 

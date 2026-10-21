@@ -72,8 +72,26 @@ internal fun PlaybackMediaSegmentsGroup(
                     },
                     modifier = Modifier.padding(vertical = 8.dp),
                     initiallyExpanded = highlightSettingId?.startsWith("media_segment_") == true ||
-                        highlightSettingId == PlaybackRows.SkipSegmentsOnSeek.id,
+                        highlightSettingId == PlaybackRows.SkipSegmentsOnSeek.id ||
+                        highlightSettingId == PlaybackRows.SkipPromptDuration.id,
                 ) {
+                    val promptDurationTitle = rowTitle(PlaybackRows.SkipPromptDuration)
+                    SettingListItem(
+                        icon = rowIcon(PlaybackRows.SkipPromptDuration),
+                        title = promptDurationTitle,
+                        subtitle = rowSubtitle(PlaybackRows.SkipPromptDuration),
+                        trailingText = "${preferences.skipPromptDurationMs / 1000}s",
+                        highlighted = highlightSettingId == PlaybackRows.SkipPromptDuration.id,
+                        onClick = {
+                            activePicker.value = pickerChip(
+                                title = promptDurationTitle,
+                                values = listOf(3_000L, 5_000L, 10_000L, 15_000L, 20_000L, 30_000L),
+                                current = preferences.skipPromptDurationMs,
+                                label = { "${it / 1000}s" },
+                                onSelect = { ms -> viewModel.edit { it.videoPlayer.setSkipPromptDurationMs(ms) } },
+                            )
+                        },
+                    )
                     val skipOnSeekOn = stringResource(Res.string.settings_skip_segments_on_seek_on)
                     val skipOnSeekOff = stringResource(Res.string.settings_skip_segments_on_seek_off)
                     SettingToggleItem(

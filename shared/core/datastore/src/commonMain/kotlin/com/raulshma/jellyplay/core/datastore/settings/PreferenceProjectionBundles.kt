@@ -55,6 +55,7 @@ internal data class PlaybackCoreBundle(
         videoSeekDurationMs = video.videoSeekDurationMs,
         videoDefaultOrientation = video.videoDefaultOrientation,
         videoControlsTimeoutMs = video.videoControlsTimeoutMs,
+        skipPromptDurationMs = video.skipPromptDurationMs,
         videoHideOsdOnPause = video.videoHideOsdOnPause,
         videoResumeOnHeadsetPlug = video.videoResumeOnHeadsetPlug,
         videoGestureMode = video.videoGestureMode,

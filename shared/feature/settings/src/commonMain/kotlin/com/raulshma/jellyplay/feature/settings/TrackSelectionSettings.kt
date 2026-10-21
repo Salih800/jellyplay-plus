@@ -1,5 +1,16 @@
 package com.raulshma.jellyplay.feature.settings
 
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import kotlinx.coroutines.launch
+import com.raulshma.jellyplay.feature.settings.generated.resources.settings_picker_no_results
+
+import com.composables.icons.tabler.outline.ArrowLeft
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -73,13 +84,7 @@ import com.raulshma.jellyplay.feature.settings.generated.resources.settings_trac
  */
 internal const val TRACK_RULES_MAX = 10
 
-/**
- * The ordered-language editor: the current ordered preference with
- * move-up/move-down/remove controls per entry and an "add language" picker.
- * v1 keeps it deliberately minimal — no drag handles, no free-text codes; the
- * pickers reuse the screen-wide language catalogue
- * ([languages], ISO-639-2 codes normalised by the existing matchers).
- */
+/** Ordered preferences and inline language search share one scrollable sheet. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun OrderedLanguagesEditorSheet(
@@ -88,103 +93,119 @@ internal fun OrderedLanguagesEditorSheet(
     onDismiss: () -> Unit,
     onChange: (List<String>) -> Unit,
 ) {
-    var activePicker by remember { mutableStateOf<PickerState<String>?>(null) }
+    var query by rememberSaveable(title) { mutableStateOf("") }
+    var adding by remember { mutableStateOf(false) }
     val addLanguageTitle = stringResource(Res.string.settings_track_editor_add_language)
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
+    val searching = adding || query.isNotBlank()
+    val candidates = languages.mapNotNull { it.first }.filter { code ->
+        code !in ordered && matchesPickerQuery(query, languageNameByCode[code] ?: code, code)
+    }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    TvSafeSheet(onDismissRequest = onDismiss) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 32.dp),
-        ) {
-            SheetHeader(title = title, icon = Tabler.Outline.ListNumbers)
-            if (ordered.isEmpty()) {
-                Text(
-                    stringResource(Res.string.settings_track_editor_empty),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(vertical = 12.dp),
-                )
-            } else {
+    TvSafeSheet(onDismissRequest = onDismiss, sheetState = sheetState, showDragHandle = !searching) {
+        Column(Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+            if (!searching) {
                 LazyColumn(
-                    modifier = Modifier.heightIn(
-                        max = with(LocalDensity.current) {
-                            LocalWindowInfo.current.containerSize.height.toDp() * 0.35f
-                        },
-                    ),
+                    state = listState,
+                    modifier = Modifier.weight(1f, fill = false),
                 ) {
-                    itemsIndexed(ordered, key = { _, code -> code }) { index, code ->
-                        val shape = expressiveListShape(index, ordered.size)
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 2.dp)
-                                .clip(shape)
-                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
-                                .padding(horizontal = 16.dp, vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
+                    item(key = "header") {
+                        SheetHeader(title = title, icon = Tabler.Outline.ListNumbers)
+                    }
+                    if (ordered.isEmpty()) {
+                        item(key = "empty") {
                             Text(
-                                "$index · ${languageNameByCode[code] ?: code}",
-                                style = MaterialTheme.typography.bodyLarge,
-                                modifier = Modifier.weight(1f),
+                                stringResource(Res.string.settings_track_editor_empty),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
                             )
-                            IconButton(
-                                enabled = index > 0,
-                                onClick = { onChange(ordered.moved(index, up = true)) },
+                        }
+                    } else {
+                        itemsIndexed(ordered, key = { _, code -> "selected-$code" }) { index, code ->
+                            val shape = expressiveListShape(index, ordered.size)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 2.dp)
+                                    .clip(shape)
+                                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                                    .padding(horizontal = 16.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                Icon(
-                                    Tabler.Outline.ChevronUp,
-                                    contentDescription = stringResource(Res.string.settings_track_editor_move_up),
+                                Text(
+                                    "${index + 1} · ${languageNameByCode[code] ?: code}",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    modifier = Modifier.weight(1f),
                                 )
-                            }
-                            IconButton(
-                                enabled = index < ordered.lastIndex,
-                                onClick = { onChange(ordered.moved(index, up = false)) },
-                            ) {
-                                Icon(
-                                    Tabler.Outline.ChevronDown,
-                                    contentDescription = stringResource(Res.string.settings_track_editor_move_down),
-                                )
-                            }
-                            IconButton(onClick = { onChange(ordered - code) }) {
-                                Icon(
-                                    Tabler.Outline.X,
-                                    contentDescription = stringResource(Res.string.settings_track_editor_remove),
-                                )
+                                IconButton(enabled = index > 0, onClick = { onChange(ordered.moved(index, up = true)) }) {
+                                    Icon(Tabler.Outline.ChevronUp, contentDescription = stringResource(Res.string.settings_track_editor_move_up))
+                                }
+                                IconButton(enabled = index < ordered.lastIndex, onClick = { onChange(ordered.moved(index, up = false)) }) {
+                                    Icon(Tabler.Outline.ChevronDown, contentDescription = stringResource(Res.string.settings_track_editor_move_down))
+                                }
+                                IconButton(onClick = { onChange(ordered - code) }) {
+                                    Icon(Tabler.Outline.X, contentDescription = stringResource(Res.string.settings_track_editor_remove))
+                                }
                             }
                         }
                     }
                 }
             }
-            Spacer(Modifier.padding(top = 8.dp))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        activePicker = PickerState.List(
-                            title = addLanguageTitle,
-                            items = languages.mapNotNull { it.first }.filter { it !in ordered },
-                            label = { code -> languageNameByCode[code] ?: code },
-                            isSelected = { false },
-                            onSelect = { code -> onChange(ordered + code) },
-                        )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (searching) {
+                    IconButton(onClick = {
+                        query = ""
+                        adding = false
+                        focusManager.clearFocus(force = true)
+                        keyboard?.hide()
+                    }) {
+                        Icon(Tabler.Outline.ArrowLeft, contentDescription = title)
                     }
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(Tabler.Outline.Plus, contentDescription = null)
-                Spacer(Modifier.padding(start = 12.dp))
-                Text(
-                    addLanguageTitle,
-                    style = MaterialTheme.typography.bodyLarge,
+                }
+                PickerSearchField(
+                    query = query,
+                    onQueryChange = { query = it },
+                    placeholder = addLanguageTitle,
+                    requestFocus = searching,
+                    onFocusChange = { adding = it },
+                    modifier = Modifier.weight(1f).padding(horizontal = 16.dp, vertical = 8.dp),
                 )
+            }
+            if (searching) {
+                LazyColumn(modifier = Modifier.weight(1f, fill = false)) {
+                    if (candidates.isEmpty()) {
+                        item(key = "no-matches") {
+                            Text(stringResource(Res.string.settings_picker_no_results), modifier = Modifier.padding(24.dp))
+                        }
+                    }
+                    items(candidates, key = { "candidate-$it" }) { code ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    onChange(ordered + code)
+                                    query = ""
+                                    adding = false
+                                    focusManager.clearFocus(force = true)
+                                    keyboard?.hide()
+                                    scope.launch { listState.scrollToItem(0) }
+                                }
+                                .padding(horizontal = 24.dp, vertical = 14.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(languageNameByCode[code] ?: code, modifier = Modifier.weight(1f))
+                            Icon(Tabler.Outline.Plus, contentDescription = null)
+                        }
+                    }
+                }
             }
         }
     }
-
-    SettingsPickerDialog(state = activePicker, onDismiss = { activePicker = null })
 }
 
 /**

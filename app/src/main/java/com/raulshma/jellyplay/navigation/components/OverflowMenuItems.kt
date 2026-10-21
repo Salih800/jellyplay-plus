@@ -10,6 +10,8 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -139,7 +141,7 @@ fun OverflowMenuItems(
             space = 6.dp,
             alignment = if (alignToStart) Alignment.Top else Alignment.Bottom,
         ),
-        modifier = modifier,
+        modifier = modifier.verticalScroll(rememberScrollState()),
     ) {
         items.forEachIndexed { index, entry ->
             // Mounted fresh each open so the enter transition replays.

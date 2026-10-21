@@ -77,6 +77,7 @@ class PreferenceProjections constructor(
                 videoSeekDurationMs = video.videoSeekDurationMs,
                 videoDefaultOrientation = video.videoDefaultOrientation,
                 videoControlsTimeoutMs = video.videoControlsTimeoutMs,
+                skipPromptDurationMs = video.skipPromptDurationMs,
                 videoGestureMode = video.videoGestureMode,
                 videoHoldSpeedEnabled = video.videoHoldSpeedEnabled,
                 videoHoldSpeedMultiplier = video.videoHoldSpeedMultiplier,

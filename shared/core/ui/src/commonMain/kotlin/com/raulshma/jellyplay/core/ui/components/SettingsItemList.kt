@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableIntStateOf
 
 /**
  * Auto-indexing container for a vertical list of settings rows.
@@ -45,8 +44,10 @@ fun SettingsItemList(
     total: Int,
     content: @Composable () -> Unit,
 ) {
-    val indexHolder = remember { mutableIntStateOf(0) }
-    indexHolder.intValue = 0
+    // A fresh pass assigns indices in composition order. The counter must not
+    // be snapshot state: reading and incrementing it while composing rows
+    // invalidates those same rows continuously and can interrupt touch input.
+    val indexHolder = SettingsItemIndex()
     CompositionLocalProvider(
         LocalSettingsItemIndex provides indexHolder,
         LocalSettingsItemCount provides total,
@@ -56,12 +57,24 @@ fun SettingsItemList(
 }
 
 /**
- * Mutable index holder supplied by [SettingsItemList]. Each `SettingListItem` /
- * `SettingToggleItem` reads `value` for its index and bumps `intValue` after
- * composing, so the next row gets the next index. `null` outside a list —
- * rows then use their `index` parameter default (0).
+ * Pass-local index holder supplied by [SettingsItemList]. Each row remembers
+ * one slot from it, so local recomposition keeps the assigned index. A fresh
+ * containing pass assigns all slots again, including conditional rows.
+ * Outside a list, rows use their explicit index parameter.
  */
-val LocalSettingsItemIndex = compositionLocalOf<androidx.compose.runtime.MutableIntState?> { null }
+val LocalSettingsItemIndex = compositionLocalOf<SettingsItemIndex?> { null }
+
+class SettingsItemIndex internal constructor() {
+    private var next = 0
+    internal fun takeNext(): Int = next++
+}
+
+/** Child-only recomposition retains its slot until the containing pass changes. */
+@Composable
+internal fun rememberSettingsItemIndex(fallback: Int): Int {
+    val holder = LocalSettingsItemIndex.current
+    return remember(holder, fallback) { holder?.takeNext() ?: fallback }
+}
 
 /** Total row count, supplied to [SettingsItemList] by the caller. */
 val LocalSettingsItemCount = compositionLocalOf { 1 }
@@ -77,5 +90,5 @@ val LocalSettingsItemCount = compositionLocalOf { 1 }
  */
 @Composable
 fun ConsumeSettingsItemIndex() {
-    LocalSettingsItemIndex.current?.let { it.intValue += 1 }
+    rememberSettingsItemIndex(0)
 }

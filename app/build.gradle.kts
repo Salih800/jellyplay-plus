@@ -15,6 +15,8 @@ android {
     namespace = "com.raulshma.jellyplay"
     compileSdk = 37
 
+    testOptions.unitTests.isIncludeAndroidResources = true
+
     defaultConfig {
         applicationId = "com.salih800.jellyplay.plus"
         minSdk = 28
@@ -523,6 +525,7 @@ dependencies {
     // PlayerActivityArgs round-trip test exercises android.content.Intent
     // extras on the JVM (same setup as the nine modules already using it).
     testImplementation(libs.robolectric)
+    testImplementation(libs.compose.ui.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 

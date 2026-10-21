@@ -21,6 +21,8 @@ import com.raulshma.jellyplay.core.ui.generated.resources.core_segment_unknown_d
 import com.raulshma.jellyplay.core.ui.generated.resources.ss_cat_playback
 import com.raulshma.jellyplay.core.ui.navigation.Route
 import com.raulshma.jellyplay.core.ui.settingssearch.SettingsSearchItem
+import com.raulshma.jellyplay.feature.settings.generated.resources.settings_skip_prompt_duration
+import com.raulshma.jellyplay.feature.settings.generated.resources.settings_skip_prompt_duration_subtitle
 import com.raulshma.jellyplay.feature.settings.generated.resources.Res
 import com.raulshma.jellyplay.feature.settings.generated.resources.settings_input_bindings
 import com.raulshma.jellyplay.feature.settings.generated.resources.settings_input_bindings_subtitle
@@ -1497,6 +1499,14 @@ internal object PlaybackRows {
         searchSubtitleRes = CoreUiRes.string.core_segment_unknown_desc,
     )
 
+    val SkipPromptDuration = SettingsRow(
+        id = "skip_prompt_duration",
+        icon = Tabler.Outline.PlayerTrackNext,
+        titleRes = Res.string.settings_skip_prompt_duration,
+        subtitleRes = Res.string.settings_skip_prompt_duration_subtitle,
+        searchSubtitleRes = Res.string.settings_skip_prompt_duration_subtitle,
+    )
+
     val SkipSegmentsOnSeek = SettingsRow(
         id = "skip_segments_on_seek",
         icon = Tabler.Outline.PlayerTrackNext,
@@ -1668,6 +1678,7 @@ internal val PlaybackMediaSegmentsRows: List<SettingsRow> = listOf(
     PlaybackRows.MediaSegmentRecap,
     PlaybackRows.MediaSegmentCommercial,
     PlaybackRows.MediaSegmentUnknown,
+    PlaybackRows.SkipPromptDuration,
     PlaybackRows.SkipSegmentsOnSeek,
 )
 

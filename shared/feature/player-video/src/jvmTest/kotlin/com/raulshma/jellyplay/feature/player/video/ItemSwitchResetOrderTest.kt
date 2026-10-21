@@ -106,7 +106,7 @@ class ItemSwitchResetOrderTest {
             subtitleStyle = SubtitleStyle(fontSize = 40),
             dialogueBoostEnabled = true,
             dialogueBoostStrength = EffectStrength.HIGH,
-            uiPrefs = seed.uiPrefs.copy(controlsTimeoutMs = 12_345L, showVideoStats = true),
+            uiPrefs = seed.uiPrefs.copy(controlsTimeoutMs = 12_345L, skipPromptDurationMs = 20_000L, showVideoStats = true),
             gestures = seed.gestures.copy(seekDurationMs = 20_000L, isHoldSpeedActive = true),
             segmentState = seed.segmentState.copy(
                 segmentBehaviors = mapOf(MediaSegmentType.INTRO to SegmentBehavior.SHOW_BUTTON),
@@ -120,6 +120,7 @@ class ItemSwitchResetOrderTest {
         // Whitelist leaves carry.
         assertEquals(PlayerType.EXTERNAL, after.preferredPlayerType)
         assertEquals(12_345L, after.uiPrefs.controlsTimeoutMs)
+        assertEquals(20_000L, after.uiPrefs.skipPromptDurationMs)
         assertEquals(20_000L, after.gestures.seekDurationMs)
         assertEquals(
             mapOf(MediaSegmentType.INTRO to SegmentBehavior.SHOW_BUTTON),

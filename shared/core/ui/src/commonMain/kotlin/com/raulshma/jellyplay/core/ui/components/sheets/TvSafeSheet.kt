@@ -38,6 +38,7 @@ fun TvSafeSheet(
     modifier: Modifier = Modifier,
     title: String? = null,
     sheetState: SheetState = rememberModalBottomSheetState(),
+    showDragHandle: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val isTv = LocalJellyPlayUi.current.isTv
@@ -54,6 +55,7 @@ fun TvSafeSheet(
             onDismissRequest = onDismissRequest,
             modifier = modifier,
             sheetState = sheetState,
+            showDragHandle = showDragHandle,
             content = content,
         )
     }
@@ -137,6 +139,7 @@ private fun MobileBottomSheet(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState(),
+    showDragHandle: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val colorScheme = MaterialTheme.colorScheme
@@ -167,7 +170,7 @@ private fun MobileBottomSheet(
         containerColor = colorScheme.surface,
         contentColor = colorScheme.onSurface,
         tonalElevation = 0.dp,
-        dragHandle = { SheetDragHandle() },
+        dragHandle = if (showDragHandle) {{ SheetDragHandle() }} else null,
     ) {
         MaterialTheme(
             colorScheme = colorScheme,

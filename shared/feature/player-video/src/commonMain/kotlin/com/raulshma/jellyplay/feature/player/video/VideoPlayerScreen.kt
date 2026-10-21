@@ -478,6 +478,7 @@ fun VideoPlayerScreen(
         promptKey = cinemaIntroState ?: activeSegment?.takeIf { isSkipSegmentAvailable },
         canShow = canShowSkipPrompt,
         userInteractionCount = userInteractionCount,
+        durationMs = uiState.uiPrefs.skipPromptDurationMs.toInt(),
     )
     val showSkipButtons = canShowSkipPrompt && skipPrompt.isVisible(arePlaybackControlsVisible, userInteractionCount)
     val isCinemaIntroVisible = cinemaIntroState != null && showSkipButtons

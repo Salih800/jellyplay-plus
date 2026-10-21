@@ -825,4 +825,8 @@
     <string name="settings_jellyplay_feature_analytics">Analitik</string>
     <string name="ss_jellyplay_feature_analytics_subtitle">Yönetici alanındaki oyun geçmişi kontrol paneli (yalnızca yönetici)</string>
     <string name="settings_integrations_intro">İçerik istemek, yeni içerikler keşfetmek ve indirme kuyruğunu takip etmek için JellyPlay+ uygulamasını medya servislerinize bağlayın.</string>
+    <string name="settings_picker_search">Seçeneklerde ara</string>
+    <string name="settings_picker_no_results">Eşleşen seçenek yok</string>
+    <string name="settings_skip_prompt_duration">Atla düğmesinin süresi</string>
+    <string name="settings_skip_prompt_duration_subtitle">Giriş veya medya bölümü başladığında atla düğmelerinin görünme süresi.</string>
 </resources>

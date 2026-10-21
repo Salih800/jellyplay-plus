@@ -15,6 +15,7 @@ import com.raulshma.jellyplay.core.model.TrickplayInfo
 @Immutable
 data class PlayerUiPrefsState(
     val controlsTimeoutMs: Long = 5_000L,
+    val skipPromptDurationMs: Long = 10_000L,
     /**
      * (jellyfin-androidtv #3924): when on, PAUSING must not summon the
      * control overlay. Default **off** — today's show-on-pause behavior.

@@ -56,6 +56,7 @@ class VideoPlayerStoreTest {
         val slice = store.videoPlayer.first()
         assertEquals(10_000L, slice.videoSeekDurationMs)
         assertEquals(5_000L, slice.videoControlsTimeoutMs)
+        assertEquals(10_000L, slice.skipPromptDurationMs)
         assertEquals(120_000L, slice.videoSwipeSeekMaxMs)
         assertEquals(0.5f, slice.videoBrightnessLevel)
         assertEquals(1.0f, slice.videoDefaultSpeed)
@@ -63,6 +64,19 @@ class VideoPlayerStoreTest {
         assertTrue(slice.videoGestureMode == GestureMode.ALL)
         assertTrue(slice.videoAutoplayNext)
         assertFalse(slice.incognitoModeEnabled)
+    }
+
+    @Test
+    fun `skip prompt duration persists restores and clamps invalid values`() = runTest {
+        store.setSkipPromptDurationMs(15_000L)
+        assertEquals(15_000L, store.videoPlayer.first().skipPromptDurationMs)
+        val saved = store.videoPlayer.first()
+        store.setSkipPromptDurationMs(0L)
+        assertEquals(3_000L, store.videoPlayer.first().skipPromptDurationMs)
+        store.setSkipPromptDurationMs(Long.MAX_VALUE)
+        assertEquals(30_000L, store.videoPlayer.first().skipPromptDurationMs)
+        store.restore(saved)
+        assertEquals(15_000L, store.videoPlayer.first().skipPromptDurationMs)
     }
 
     @Test

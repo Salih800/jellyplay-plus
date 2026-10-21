@@ -6,6 +6,10 @@ plugins {
 kotlin {
     android {
         namespace = "com.raulshma.jellyplay.shared.feature.settings"
+        withHostTest {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+        }
     }
 
     sourceSets {
@@ -66,3 +70,18 @@ kotlin {
 // (`...feature.settings.generated.resources`, same as the legacy value) is a
 // path-derived default from the convention plugin now — see
 // KmpLibraryComposePlugin.
+
+// Compose picker regressions use the same Robolectric lane as core:ui.
+kotlin.sourceSets.configureEach {
+    if (name == "androidHostTest") {
+        dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.junit)
+            implementation(libs.robolectric)
+            implementation(libs.androidx.test.core)
+            implementation(project.dependencies.platform(libs.compose.bom))
+            implementation(libs.compose.ui.test)
+            implementation(libs.compose.ui.test.manifest)
+        }
+    }
+}

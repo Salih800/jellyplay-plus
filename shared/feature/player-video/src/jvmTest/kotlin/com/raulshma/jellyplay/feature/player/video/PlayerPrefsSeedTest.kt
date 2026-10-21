@@ -60,6 +60,7 @@ class PlayerPrefsSeedTest {
         uiPrefs = PlayerUiPrefsState(
             defaultOrientation = OrientationMode.SENSOR,
             controlsTimeoutMs = 1_000L,
+            skipPromptDurationMs = 3_000L,
             passOutProtectionHours = 2,
             trickplayEnabled = true,
             trickplayOnSeekGesture = true,
@@ -139,6 +140,7 @@ class PlayerPrefsSeedTest {
         videoPlayer = VideoPlayerSlice(
             videoDefaultOrientation = OrientationMode.LOCKED_PORTRAIT,
             videoControlsTimeoutMs = 7_500L,
+            skipPromptDurationMs = 20_000L,
             videoHideOsdOnPause = true,
             videoPassOutProtectionHours = 6,
             trickplayEnabled = false,
@@ -195,6 +197,7 @@ class PlayerPrefsSeedTest {
         // uiPrefs (13)
         assertEquals(OrientationMode.LOCKED_PORTRAIT, seeded.uiPrefs.defaultOrientation)
         assertEquals(7_500L, seeded.uiPrefs.controlsTimeoutMs)
+        assertEquals(20_000L, seeded.uiPrefs.skipPromptDurationMs)
         assertTrue(seeded.uiPrefs.hideOsdOnPause)
         assertEquals(6, seeded.uiPrefs.passOutProtectionHours)
         assertFalse(seeded.uiPrefs.trickplayEnabled)

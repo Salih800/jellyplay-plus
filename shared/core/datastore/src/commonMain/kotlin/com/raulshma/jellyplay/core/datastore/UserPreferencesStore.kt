@@ -214,7 +214,7 @@ class UserPreferencesStore constructor(
             ),
             longs = arrayOf(
                 "audio_delay_ms", "auto_lock_timer_ms", "video_seek_duration_ms",
-                "video_controls_timeout_ms", "video_swipe_seek_max_ms",
+                "video_controls_timeout_ms", "skip_prompt_duration_ms", "video_swipe_seek_max_ms",
                 "audio_skip_previous_threshold_ms", "audio_crossfade_duration_ms",
                 "sleep_timer_duration_ms", "dream_slideshow_interval_ms",
                 "newsletter_last_viewed_ms",

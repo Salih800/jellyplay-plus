@@ -13,7 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import kotlin.math.roundToInt
 
-internal const val SKIP_PROMPT_DURATION_MS = 5_000
+internal const val SKIP_PROMPT_DURATION_MS = 10_000
 
 /** One timed invitation per segment; later user interactions reveal the normal controls. */
 @Stable
@@ -26,11 +26,11 @@ internal class TimedSkipPromptState(initiallyActive: Boolean, private val initia
     fun isVisible(areControlsVisible: Boolean, userInteractionCount: Int): Boolean =
         isInitialPromptActive || (areControlsVisible && userInteractionCount != initialInteractionCount)
 
-    internal suspend fun countDown() {
+    internal suspend fun countDown(durationMs: Int) {
         remaining.animateTo(
             targetValue = 0f,
             animationSpec = tween(
-                durationMillis = (SKIP_PROMPT_DURATION_MS * remaining.value).roundToInt(),
+                durationMillis = (durationMs.coerceIn(3_000, 30_000) * remaining.value).roundToInt(),
                 easing = LinearEasing,
             ),
         )
@@ -43,14 +43,15 @@ internal fun rememberTimedSkipPrompt(
     promptKey: Any?,
     canShow: Boolean,
     userInteractionCount: Int,
+    durationMs: Int = SKIP_PROMPT_DURATION_MS,
 ): TimedSkipPromptState {
     val state = remember(promptKey) {
         TimedSkipPromptState(initiallyActive = promptKey != null, initialInteractionCount = userInteractionCount)
     }
     // Hidden by a sheet, lock or PiP: preserve the remaining time until the
     // invitation can actually be seen. Control visibility never restarts it.
-    LaunchedEffect(state, canShow) {
-        if (promptKey != null && canShow && state.isInitialPromptActive) state.countDown()
+    LaunchedEffect(state, canShow, durationMs) {
+        if (promptKey != null && canShow && state.isInitialPromptActive) state.countDown(durationMs)
     }
     return state
 }

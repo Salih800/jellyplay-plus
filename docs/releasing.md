@@ -20,12 +20,12 @@ these signing files as release assets.
 ## Build
 
 Choose a new version name and a strictly increasing version code. Published
-version 0.1.5 uses code 105. The next-version example below uses 0.1.6/code 106;
+version 0.1.6 uses code 106. The next-version example below uses 0.1.7/code 107;
 check the latest release before choosing values. From PowerShell at the repository root:
 
 ```powershell
-$releaseVersion = '0.1.6'
-$releaseVersionCode = 106
+$releaseVersion = '0.1.7'
+$releaseVersionCode = 107
 $credential = Import-Clixml "$env:USERPROFILE\.android\jellyplay-plus-release-signing.clixml"
 $env:KEYSTORE_PASSWORD = $credential.GetNetworkCredential().Password
 $env:KEY_PASSWORD = $env:KEYSTORE_PASSWORD

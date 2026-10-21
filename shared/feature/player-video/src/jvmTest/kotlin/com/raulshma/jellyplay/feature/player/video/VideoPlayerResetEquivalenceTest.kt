@@ -67,7 +67,7 @@ class VideoPlayerResetEquivalenceTest : VideoPlayerViewModelHarness() {
      */
     private val residualWhitelist = setOf(
         "preferredPlayerType",
-        "uiPrefs.defaultOrientation", "uiPrefs.controlsTimeoutMs",
+        "uiPrefs.defaultOrientation", "uiPrefs.controlsTimeoutMs", "uiPrefs.skipPromptDurationMs",
         "uiPrefs.showPlaybackMetadata", "uiPrefs.showClock",
         "uiPrefs.showTimeRemaining", "uiPrefs.keepScreenOnDuringVideo",
         "gestures.seekDurationMs", "gestures.gestureMode", "gestures.defaultSpeed",

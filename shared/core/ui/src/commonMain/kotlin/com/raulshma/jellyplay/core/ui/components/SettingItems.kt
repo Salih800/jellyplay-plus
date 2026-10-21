@@ -10,10 +10,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.material3.Icon
@@ -29,7 +32,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.MutableIntState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +41,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import com.composables.icons.tabler.Tabler
@@ -150,9 +153,8 @@ fun SettingListItem(
     // Inside a SettingsItemList, pick up the auto-incrementing index and the
     // caller-supplied total so call sites stop passing index/count by hand.
     val listIndex = LocalSettingsItemIndex.current
-    val resolvedIndex = listIndex?.value ?: index
+    val resolvedIndex = rememberSettingsItemIndex(index)
     val resolvedCount = if (listIndex != null) LocalSettingsItemCount.current else count
-    if (listIndex != null) listIndex.intValue += 1
     SettingListItemImpl(
         icon = icon,
         title = title,
@@ -211,87 +213,102 @@ private fun SettingListItemImpl(
         }
     }
 
-    ListItem(
-        headlineContent = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium,
-                color = headlineColor,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.enableMarqueeOnFocus(focused = tvFocusState.isFocused),
-            )
-        },
-        supportingContent = {
-            if (!subtitle.isNullOrBlank()) {
-                // Expandable so a long row description (#168 classic-rows
-                // explainer) is fully readable: two collapsed lines + a
-                // "Read more" toggle that only appears on real overflow. The
-                // toggle's own click target wins over the row's, so tapping
-                // it never fires the row action.
-                ExpandableText(
-                    text = subtitle,
-                    collapsedMaxLines = 2,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = supportingColor,
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        // Measure the row's available width, including split-window and font scaling.
+        val stackValue = maxWidth / LocalDensity.current.fontScale < 480.dp
+        val maxValueWidth = maxWidth * 0.4f
+        ListItem(
+            headlineContent = {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium,
+                    color = headlineColor,
+                    maxLines = if (stackValue) 2 else 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.enableMarqueeOnFocus(focused = tvFocusState.isFocused),
                 )
-            }
-        },
-        leadingContent = {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = iconColor,
-                modifier = Modifier.size(22.dp),
-            )
-        },
-        trailingContent = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-            ) {
-                if (trailingText != null) {
-                    Text(
-                        text = trailingText,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+            },
+            supportingContent = {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    if (stackValue && !trailingText.isNullOrBlank()) {
+                        Text(
+                            text = trailingText,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = supportingColor,
+                        )
+                    }
+                    if (!subtitle.isNullOrBlank()) {
+                        // Expandable so a long row description (#168 classic-rows
+                        // explainer) is fully readable: two collapsed lines + a
+                        // "Read more" toggle that only appears on real overflow. The
+                        // toggle's own click target wins over the row's, so tapping
+                        // it never fires the row action.
+                        ExpandableText(
+                            text = subtitle,
+                            collapsedMaxLines = 2,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = supportingColor,
+                        )
+                    }
+                }
+            },
+            leadingContent = {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = iconColor,
+                    modifier = Modifier.size(22.dp),
+                )
+            },
+            trailingContent = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    if (!stackValue && trailingText != null) {
+                        Text(
+                            text = trailingText,
+                            modifier = Modifier.widthIn(max = maxValueWidth),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                    Icon(
+                        Tabler.Outline.ChevronRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(18.dp),
                     )
                 }
-                Icon(
-                    Tabler.Outline.ChevronRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(18.dp),
-                )
-            }
-        },
-        colors = ListItemDefaults.colors(
-            containerColor = groupedItemContainerColor(),
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier)
-            .pressScale(
-                interactionSource = interactionSource,
-                defaultScale = 0.97f,
-                spec = MaterialTheme.motionScheme.fastSpatialSpec(),
-                pressedAlpha = 0.7f,
-            )
-            .highlightGlow(glowAlpha, shape, primaryColor)
-            .lightModeHairlineBorder(shape)
-            .focusRequester(focusRequester)
-            .bringIntoViewRequester(bringIntoViewRequester)
-            .then(tvFocusState.focusModifier)
-            .tvFocusIndicator(tvFocusState, shape)
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                onClick = onClick,
+            },
+            colors = ListItemDefaults.colors(
+                containerColor = groupedItemContainerColor(),
             ),
-    )
+            modifier = Modifier
+                .fillMaxWidth()
+                .then(modifier)
+                .pressScale(
+                    interactionSource = interactionSource,
+                    defaultScale = 0.97f,
+                    spec = MaterialTheme.motionScheme.fastSpatialSpec(),
+                    pressedAlpha = 0.7f,
+                )
+                .highlightGlow(glowAlpha, shape, primaryColor)
+                .lightModeHairlineBorder(shape)
+                .focusRequester(focusRequester)
+                .bringIntoViewRequester(bringIntoViewRequester)
+                .then(tvFocusState.focusModifier)
+                .tvFocusIndicator(tvFocusState, shape)
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    onClick = onClick,
+                ),
+        )
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -310,9 +327,8 @@ fun SettingToggleItem(
     onClick: (() -> Unit)? = null,
 ) {
     val listIndex = LocalSettingsItemIndex.current
-    val resolvedIndex = listIndex?.value ?: index
+    val resolvedIndex = rememberSettingsItemIndex(index)
     val resolvedCount = if (listIndex != null) LocalSettingsItemCount.current else count
-    if (listIndex != null) listIndex.intValue += 1
     SettingToggleItemImpl(
         icon = icon,
         title = title,
